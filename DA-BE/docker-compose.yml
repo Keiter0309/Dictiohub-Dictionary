@@ -1,0 +1,35 @@
+services:
+  services-da-prod:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: container-app-BE-prod
+    env_file: .env
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:latest
+    container_name: container-mysql-BE-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: keith@0309
+      MYSQL_DATABASE: da-mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: kiet@0309
+    ports:
+      - "3307:3307"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: container-redis-BE-prod
+    environment:
+      REDIS_PASSWORD: kiet@0309
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
