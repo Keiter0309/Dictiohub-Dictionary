@@ -14,13 +14,73 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  firstName      String   @db.VarChar(255)
-  lastName       String   @db.VarChar(255)
-  email          String   @unique @db.VarChar(255)
-  username       String   @unique @db.VarChar(255)
-  phone          String   @unique @db.VarChar(20)
-  password       String   @db.VarChar(255)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  firstName           String
+  lastName            String
+  username            String
+  email               String
+  password            String
+  confirmPassword     String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+  deletedBy           Int?
+  role                String
+  updatedBy           Int?
+  resetPasswordOTP    String?
+  resetPasswordExpires DateTime?
+
+}
+
+model Words {
+  id        Int      @id @default(autoincrement())
+  word      String
+  meaning   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  deletedBy Int?
+  updatedBy Int?    
+}
+
+model ExampleWords {
+  id        Int      @id @default(autoincrement())
+  wordId      String
+  exampleText   String
+  source   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  deletedBy Int?
+  updatedBy Int?   
+}
+
+model Pronunciations {
+  id  Int @id @default(autoincrement())
+  wordId Int
+  audioPath String
+  dialect String
+  ipaText String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  updatedBy Int?
+  deletedBy Int?
+}
+
+model wordCategories {
+  id Int @id @default(autoincrement())
+  wordId Int
+  categoryName String
+}
+
+model Tags {
+  id Int @id @default(autoincrement())
+  tagName String
+}
+
+model word_tags {
+  id Int @id @default(autoincrement())
+  wordId Int
+  tagId Int
 }

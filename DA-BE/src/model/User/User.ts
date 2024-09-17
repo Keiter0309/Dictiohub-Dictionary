@@ -1,5 +1,7 @@
 import db from "../../db/db";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 // User model
 export class User {
   // Get all users
