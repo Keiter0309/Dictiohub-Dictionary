@@ -34,6 +34,14 @@ class AuthController {
       });
     }
 
+    // Check if username is already taken
+    const existingUsername = await User.fetchByUsername(username);
+    if (existingUsername) {
+      return res.status(400).json({
+        message: "Username already taken",
+      });
+    }
+
     // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       return res.status(400).json({

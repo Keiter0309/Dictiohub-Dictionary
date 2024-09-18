@@ -56,6 +56,28 @@ export class User {
     });
   }
 
+  static fetchByUsername(username: string) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "select * from user where username = ?",
+        [username],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.error(err);
+
+            if (result.length > 0) {
+              resolve(result[0]);
+            } else {
+              resolve(null);
+            }
+          }
+        }
+      );
+    });
+  }
+
   // Create a new user
   static create(data: any) {
     return new Promise((resolve, reject) => {

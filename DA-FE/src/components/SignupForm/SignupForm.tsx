@@ -36,6 +36,15 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
       formData.password,
       formData.confirmPassword
     );
+
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
 
   return (

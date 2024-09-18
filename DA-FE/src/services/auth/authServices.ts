@@ -27,6 +27,16 @@ class AuthServices {
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
+        const errorData = err.response.data;
+        if (errorData.message) {
+          if (errorData.message === "User already registerd") {
+            throw new Error("User already registered");
+          } else if (errorData.message === "Password does not match") {
+            throw new Error("Password does not match");
+          } else if (errorData.message === "Username already taken") {
+            throw new Error("Username already taken");
+          }
+        }
         throw err.response.data;
       } else {
         throw new Error(err);
@@ -40,7 +50,6 @@ class AuthServices {
         `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
         { email, password }
       );
-
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {

@@ -17,12 +17,12 @@ model User {
   id                  Int      @id @default(autoincrement())
   firstName           String
   lastName            String
-  username            String
-  email               String
+  username            String   @unique
+  email               String   @unique
   password            String
   confirmPassword     String
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
   deletedAt           DateTime?
   deletedBy           Int?
   role                String
@@ -30,57 +30,58 @@ model User {
   resetPasswordOTP    String?
   resetPasswordExpires DateTime?
 
+  // Relations
+  words               Words[]
 }
 
 model Words {
-  id        Int      @id @default(autoincrement())
-  word      String
-  meaning   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  deletedBy Int?
-  updatedBy Int?    
+  id            Int      @id @default(autoincrement())
+  word          String
+  meaning       String
+  pronunciation String
+  example       String
+  definition    String
+  partOfSpeech  String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  deletedAt     DateTime?
+  deletedBy     Int?
+  updatedBy     Int?
+
+  // Relations
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  exampleWords  ExampleWords[]
+  pronunciations Pronunciations[]
 }
 
 model ExampleWords {
-  id        Int      @id @default(autoincrement())
-  wordId      String
-  exampleText   String
-  source   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  deletedBy Int?
-  updatedBy Int?   
+  id          Int      @id @default(autoincrement())
+  wordId      Int
+  exampleText String
+  source      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  deletedAt   DateTime?
+  deletedBy   Int?
+  updatedBy   Int?
+
+  // Relations
+  word        Words    @relation(fields: [wordId], references: [id])
 }
 
 model Pronunciations {
-  id  Int @id @default(autoincrement())
-  wordId Int
+  id        Int      @id @default(autoincrement())
+  wordId    Int
   audioPath String
-  dialect String
-  ipaText String
+  dialect   String
+  ipaText   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
   deletedAt DateTime?
-  updatedBy Int?
   deletedBy Int?
-}
+  updatedBy Int?
 
-model wordCategories {
-  id Int @id @default(autoincrement())
-  wordId Int
-  categoryName String
-}
-
-model Tags {
-  id Int @id @default(autoincrement())
-  tagName String
-}
-
-model word_tags {
-  id Int @id @default(autoincrement())
-  wordId Int
-  tagId Int
+  // Relations
+  word      Words    @relation(fields: [wordId], references: [id])
 }
