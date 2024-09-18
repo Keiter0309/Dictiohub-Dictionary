@@ -22,7 +22,7 @@ model User {
   password            String
   confirmPassword     String
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime @default(now())
   deletedAt           DateTime?
   deletedBy           Int?
   role                String

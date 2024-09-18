@@ -4,10 +4,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 // User model
 export class User {
-  // Get all users
+  // Get all user
   static fetchAll() {
     return new Promise((resolve, reject) => {
-      db.query("SELECT * FROM users", (err: any, result: any) => {
+      db.query("SELECT * FROM user", (err: any, result: any) => {
         if (err) {
           reject(err);
         } else {
@@ -21,7 +21,7 @@ export class User {
   static fetchById(id: number) {
     return new Promise((resolve, reject) => {
       db.query(
-        "SELECT * FROM users WHERE id = ?",
+        "SELECT * FROM user WHERE id = ?",
         [id],
         (err: any, result: any) => {
           if (err) {
@@ -37,7 +37,7 @@ export class User {
   static fetchByEmail(email: string) {
     return new Promise((resolve, reject) => {
       db.query(
-        "SELECT * FROM users WHERE email = ?",
+        "SELECT * FROM user WHERE email = ?",
         [email],
         (err: any, result: any) => {
           if (err) {
@@ -59,7 +59,7 @@ export class User {
   // Create a new user
   static create(data: any) {
     return new Promise((resolve, reject) => {
-      db.query("INSERT INTO users SET ?", data, (err: any, result: any) => {
+      db.query("INSERT INTO user SET ?", data, (err: any, result: any) => {
         if (err) {
           reject(err);
         } else {
@@ -73,7 +73,7 @@ export class User {
   static update(id: number, data: any) {
     return new Promise((resolve, reject) => {
       db.query(
-        "UPDATE users SET ? WHERE id = ?",
+        "UPDATE user SET ? WHERE id = ?",
         [data, id],
         (err: any, result: any) => {
           if (err) {
@@ -90,7 +90,7 @@ export class User {
   static delete(id: number) {
     return new Promise((resolve, reject) => {
       db.query(
-        "DELETE FROM users WHERE id = ?",
+        "DELETE FROM user WHERE id = ?",
         [id],
         (err: any, result: any) => {
           if (err) {
@@ -107,7 +107,7 @@ export class User {
   static saveOTP(email: string, otp: number) {
     return new Promise((resolve, reject) => {
       db.query(
-        "UPDATE users SET resetPasswordOTP = ?, resetPasswordExpires = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE email = ?",
+        "UPDATE user SET resetPasswordOTP = ?, resetPasswordExpires = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE email = ?",
         [otp, email],
         (err: any, result: any) => {
           if (err) {
@@ -124,7 +124,7 @@ export class User {
   static updatePassword(email: string, password: string) {
     return new Promise((resolve, reject) => {
       db.query(
-        "UPDATE users SET password = ? WHERE email = ?",
+        "UPDATE user SET password = ? WHERE email = ?",
         [password, email],
         (err: any, result: any) => {
           if (err) {

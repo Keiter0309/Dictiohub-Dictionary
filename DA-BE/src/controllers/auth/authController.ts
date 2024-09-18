@@ -14,14 +14,8 @@ import jwt from "jsonwebtoken";
 
 class AuthController {
   public async register(req: Request, res: Response) {
-    const {
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-      confirmPassword,
-    } = req.body as IUser;
+    const { firstName, lastName, username, email, password, confirmPassword } =
+      req.body as IUser;
 
     // Check for empty fields
     for (const key in req.body) {
@@ -59,6 +53,7 @@ class AuthController {
       email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
+      role: "users",
     };
 
     try {
@@ -144,13 +139,12 @@ class AuthController {
         process.env.JWT_SECRET || "",
         {
           expiresIn: process.env.JWT_EXPIRES_IN,
-        },
-      )
+        }
+      );
 
       return res.status(200).json({
         message: "Login successful",
         token: token,
-
       });
     } catch (err) {
       console.error(err);
