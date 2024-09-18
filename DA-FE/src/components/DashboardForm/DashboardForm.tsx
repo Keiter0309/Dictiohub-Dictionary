@@ -52,7 +52,7 @@ const DashboardForm: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search for a word"
-                  className="flex-grow px-4 py-2 rounded-l-lg border-t border-b border-l text-gray-800 border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="flex-grow px-4 py-2 rounded-l-lg border-t border-b border-l text-gray-800 border-gray-200 bg-white focus:outline-none focus:ring-1 focus:border-transparent"
                 />
                 <button
                   type="submit"

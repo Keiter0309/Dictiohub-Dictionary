@@ -29,14 +29,11 @@ model User {
   updatedBy           Int?
   resetPasswordOTP    String?
   resetPasswordExpires DateTime?
-
-  // Relations
-  words               Words[]
 }
 
 model Words {
   id            Int      @id @default(autoincrement())
-  word          String
+  word          String  @unique
   meaning       String
   pronunciation String
   example       String
@@ -49,8 +46,6 @@ model Words {
   updatedBy     Int?
 
   // Relations
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
   exampleWords  ExampleWords[]
   pronunciations Pronunciations[]
 }

@@ -11,38 +11,38 @@ export class Words {
       });
       return words;
     } catch (error) {
-      console.error('Error fetching all words:', error);
-      throw new Error('Error fetching all words');
+      console.error("Error fetching all words:", error);
+      throw new Error("Error fetching all words");
     }
   }
 
-  static async fetchById(id: number) {
+  // static async fetchById(id: number) {
+  //   try {
+  //     const word = await prisma.words.findUnique({
+  //       where: {
+  //         id: id,
+  //       },
+  //     });
+  //     return word;
+  //   } catch (error) {
+  //     console.error("Error fetching word by ID:", error);
+  //     throw new Error("Error fetching word by ID");
+  //   }
+  // }
+
+  static async fetchByWord(word: string) {
     try {
-      const word = await prisma.words.findUnique({
+      const wordRecords = await prisma.words.findUnique({
         where: {
-          id: id,
+          word: word,
         },
       });
-      return word;
+      return wordRecords;
     } catch (error) {
-      console.error('Error fetching word by ID:', error);
-      throw new Error('Error fetching word by ID');
+      console.error("Error fetching word by word:", error);
+      throw new Error("Error fetching word by word");
     }
   }
-
-//   static async fetchByWord(word: string) {
-//     try {
-//       const wordRecord = await prisma.words.findUnique({
-//         where: {
-//           word: word,
-//         },
-//       });
-//       return wordRecord;
-//     } catch (error) {
-//       console.error('Error fetching word:', error);
-//       throw new Error('Error fetching word');
-//     }
-//   }
 
   static async create(data: any) {
     try {
@@ -51,8 +51,8 @@ export class Words {
       });
       return newWord;
     } catch (error) {
-      console.error('Error creating word:', error);
-      throw new Error('Error creating word');
+      console.error("Error creating word:", error);
+      throw new Error("Error creating word");
     }
   }
 
@@ -66,8 +66,8 @@ export class Words {
       });
       return updatedWord;
     } catch (error) {
-      console.error('Error updating word:', error);
-      throw new Error('Error updating word');
+      console.error("Error updating word:", error);
+      throw new Error("Error updating word");
     }
   }
 
@@ -80,8 +80,8 @@ export class Words {
       });
       return deletedWord;
     } catch (error) {
-      console.error('Error deleting word:', error);
-      throw new Error('Error deleting word');
+      console.error("Error deleting word:", error);
+      throw new Error("Error deleting word");
     }
   }
 
@@ -90,8 +90,8 @@ export class Words {
       const result = await prisma.words.deleteMany();
       return result;
     } catch (error) {
-      console.error('Error deleting all words:', error);
-      throw new Error('Error deleting all words');
+      console.error("Error deleting all words:", error);
+      throw new Error("Error deleting all words");
     }
   }
 
@@ -108,8 +108,8 @@ export class Words {
       });
       return words;
     } catch (error) {
-      console.error('Error searching words:', error);
-      throw new Error('Error searching words');
+      console.error("Error searching words:", error);
+      throw new Error("Error searching words");
     }
   }
 }

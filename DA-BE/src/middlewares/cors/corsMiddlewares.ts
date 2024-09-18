@@ -4,15 +4,22 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-const trimTrailingSlash = (url: string) => url.replace(/\/$/, "");
+const trimTrailingSlash = (url: string): string => url.replace(/\/$/, "");
 
-const corsOptions = {
+const corsOptions: cors.CorsOptions = {
   origin: (
-    origin: string,
+    origin: string | undefined,
     callback: (error: Error | null, allow?: boolean) => void
   ) => {
-    const allowedOrigin = trimTrailingSlash(process.env.CLIENT_HOST || "");
+    const allowedOrigin = trimTrailingSlash(
+      process.env.CLIENT_HOST || process.env.SERVER_HOST || ""
+    );
     const requestOrigin = trimTrailingSlash(origin || "");
+
+    if (!allowedOrigin) {
+      callback(new Error("Allowed origin is not set in environment variables"));
+      return;
+    }
 
     if (requestOrigin === allowedOrigin) {
       callback(null, true);
@@ -24,4 +31,4 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-export default cors(corsOptions as cors.CorsOptions);
+export default cors(corsOptions);
