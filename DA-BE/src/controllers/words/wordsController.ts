@@ -66,7 +66,6 @@ class WordsController {
     }
   }
 
-  // Fuzzy search for words
   public async searchWords(req: Request, res: Response) {
     const word = req.query.word as string;
 

@@ -6,5 +6,6 @@ export interface SearchResultFormProps {
         partOfSpeech : string;
         pronunciation : string;
         meaning : string;
+        dialect: string;
     }
 }
