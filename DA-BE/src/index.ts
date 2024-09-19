@@ -7,7 +7,7 @@ import { wordsRoute } from "./routes/words/word";
 const app = express();
 const port = process.env.PORT || 3000;
 
-// app.use(corsMiddlewares);
+app.use(corsMiddlewares);
 app.use(express.json());
 app.use(bodyParser.json());
 

@@ -11,17 +11,14 @@ const corsOptions: cors.CorsOptions = {
     origin: string | undefined,
     callback: (error: Error | null, allow?: boolean) => void
   ) => {
-    const allowedOrigin = trimTrailingSlash(
-      process.env.CLIENT_HOST || process.env.SERVER_HOST || ""
-    );
+    const allowedOrigins = [
+      trimTrailingSlash(process.env.IP_HOST || ""),
+      trimTrailingSlash(process.env.CLIENT_HOST || ""),
+      trimTrailingSlash(process.env.SERVER_HOST || "")
+    ];
     const requestOrigin = trimTrailingSlash(origin || "");
 
-    if (!allowedOrigin) {
-      callback(new Error("Allowed origin is not set in environment variables"));
-      return;
-    }
-
-    if (requestOrigin === allowedOrigin) {
+    if (allowedOrigins.some(allowedOrigin => allowedOrigin === requestOrigin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

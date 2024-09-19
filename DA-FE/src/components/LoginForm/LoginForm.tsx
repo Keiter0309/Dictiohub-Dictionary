@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import signinBackground from "../../assets/signin_background.png";
-
-interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
-}
+import NavbarForm from "../NavbarForm/NavbarForm";
+import { LoginFormProps } from "../../types/Users/Auth";
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
@@ -20,6 +18,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   };
 
   return (
+    // Navbar Components
+    <>
+      <NavbarForm />
     <div className="h-[100vh] items-center flex justify-center px-5 lg:px-0">
       <div className="max-w-screen-xl bg-white border shadow sm:rounded-lg flex justify-center flex-1">
         <div className="flex-1 bg-blue-900 text-center hidden md:flex">
@@ -121,6 +122,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

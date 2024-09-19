@@ -28,28 +28,3 @@
 .custom-spin .ant-spin-dot i {
   background-color: #1890ff; /* Change this to your desired color */
 }
-
-/* Custom styles for SweetAlert2 */
-.custom-swal-popup {
-  background-color: #f0f0f0; /* Custom background color */
-  border-radius: 10px; /* Custom border radius */
-}
-
-.custom-swal-title {
-  color: #333; /* Custom title color */
-  font-size: 24px; /* Custom title font size */
-}
-
-.custom-swal-content {
-  color: #666; /* Custom content color */
-  font-size: 18px; /* Custom content font size */
-}
-
-.custom-swal-confirm-button {
-  background-color: #1890ff; /* Custom button background color */
-  color: white; /* Custom button text color */
-  border: none; /* Remove button border */
-  border-radius: 5px; /* Custom button border radius */
-  padding: 10px 20px; /* Custom button padding */
-  font-size: 16px; /* Custom button font size */
-}

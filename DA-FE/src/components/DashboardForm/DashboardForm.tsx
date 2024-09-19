@@ -1,42 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Search, Volume, Bookmark } from "lucide-react";
+import { Search, Volume, Bookmark } from "lucide-react";
+import { DashboardFormProps } from "../../types/Dashboard/DashboardFormProps";
+import wordServices from "../../services/word/wordServices";
+import NavbarForm from "../NavbarForm/NavbarForm";
+import SearchResultForm from "../SearchResultForm/SearchResultForm";
+import { SearchOutlined } from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { Select } from "antd";
+import Fuse from "fuse.js";
 
-const DashboardForm: React.FC = () => {
+const { Option } = Select;
+
+const DashboardForm: React.FC<DashboardFormProps> = ({
+  onSubmit,
+  searchResult,
+}) => {
+  const [word, setWord] = useState("");
+  const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
+  const [filteredOptions, setFilteredOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(word);
+  };
+
+  const handleSelectChange = (value: string) => {
+    setWord(value);
+  };
+
+  const fuse = new Fuse(options, {
+    keys: ["label"],
+    includeScore: true,
+  });
+
+  const handleInputChange = async (inputValue: string) => {
+    if (!inputValue) {
+      setFilteredOptions([]);
+    } else {
+      try {
+        const response = await wordServices.getAllWords();
+        const newOptions = response.map((result: any) => ({
+          value: result.word,
+          label: result.word,
+        }));
+        setOptions(newOptions);
+        const result = fuse.search(inputValue);
+        setFilteredOptions(result.map(({ item }) => item));
+      } catch (error) {
+        console.error("Error fetching words:", error);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <Link to="/" className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">
-                DictioHub
-              </span>
-            </Link>
-            <nav className="flex space-x-4">
-              <Link to="/" className="text-gray-500 hover:text-gray-900">
-                Home
-              </Link>
-              <Link
-                to="/dictionary"
-                className="text-gray-500 hover:text-gray-900"
-              >
-                Dictionary
-              </Link>
-              <Link
-                to="/thesaurus"
-                className="text-gray-500 hover:text-gray-900"
-              >
-                Thesaurus
-              </Link>
-              <Link to="/about" className="text-gray-500 hover:text-gray-900">
-                About
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      {/* Navbar Components */}
+      <NavbarForm />
 
       <main className="flex-grow">
         <section className="bg-blue-50">
@@ -48,24 +70,49 @@ const DashboardForm: React.FC = () => {
               Discover definitions, synonyms, and more with DictioHub Dictionary
             </p>
             <div className="max-w-xl mx-auto">
-              <form className="flex">
-                <input
-                  type="text"
+              <form
+                className="flex flex-row items-center"
+                onSubmit={handleSubmit}
+              >
+                <Select
+                  showSearch
+                  value={word}
+                  onChange={handleSelectChange}
+                  onSearch={handleInputChange}
                   placeholder="Search for a word"
-                  className="flex-grow px-4 py-2 rounded-l-lg border-t border-b border-l text-gray-800 border-gray-200 bg-white focus:outline-none focus:ring-1 focus:border-transparent"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-r-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+                  filterOption={false}
+                  className="flex-grow"
                 >
-                  <Search className="h-5 w-5" />
-                </button>
+                  {filteredOptions.map((option) => (
+                    <Option key={option.value} value={option.value}>
+                      {option.label}
+                    </Option>
+                  ))}
+                </Select>
+                <div className="flex items-center align-middle">
+                  <Tooltip title="search">
+                    <Button
+                      htmlType="submit"
+                      className="ml-2"
+                      type="primary"
+                      shape="circle"
+                      icon={<SearchOutlined />}
+                    />
+                  </Tooltip>
+                </div>
               </form>
             </div>
           </div>
         </section>
 
-        <section className="py-12 sm:py-16 lg:py-20 bg-white">
+        {/* Search Result Components */}
+        <section className="py-12 sm:py-16 lg:py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {searchResult && <SearchResultForm result={searchResult} />}
+          </div>
+        </section>
+
+        <section className="py-8 sm:py-16 lg:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-8">
               Our Features
@@ -110,7 +157,7 @@ const DashboardForm: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <p className="text-gray-500 text-sm">
-              © 2023 DictioHub Dictionary. All rights reserved.
+              © 2024 DictioHub Dictionary. All rights reserved.
             </p>
             <nav className="flex space-x-4 mt-4 sm:mt-0">
               <Link

@@ -10,13 +10,15 @@ const Login: React.FC = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [navigate]);
   const handleLogin = async (email: string, password: string) => {
     try {
       await AuthServices.login(email, password);
+      sessionStorage.setItem("token", "true");
       showSwal("User logged in successfully", "success");
+      navigate("/");
     } catch (err: any) {
       showSwal(err.message, "error");
     }

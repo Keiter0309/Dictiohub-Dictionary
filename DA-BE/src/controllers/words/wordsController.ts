@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import { Words } from "../../model/Words/Word";
-
-const prisma = new PrismaClient();
 
 class WordsController {
   // Create a new word
@@ -24,7 +21,7 @@ class WordsController {
   // Get all words
   public async getAllWords(req: Request, res: Response) {
     try {
-      const words = await Words.fetchAll();
+      const words = await Words.fetchAllWords();
       return res.status(200).json(words);
     } catch (err) {
       res.status(500).json({ error: "Error fetching all words" });

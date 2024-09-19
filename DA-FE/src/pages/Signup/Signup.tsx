@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SignupForm from "../../components/SignupForm/SignupForm";
 import AuthServices from "../../services/auth/authServices";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { Spin } from "antd";
 import "./Signup.css";
+import { useNavigate } from "react-router-dom";
 
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const formRef = React.useRef<any>(null);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleSignup = async (
     firstName: string,
@@ -30,6 +39,7 @@ const Signup: React.FC = () => {
       );
 
       showSwal("User registered successfully", "success");
+      navigate("/login");
 
       // Clear form fields
       if (formRef.current) {

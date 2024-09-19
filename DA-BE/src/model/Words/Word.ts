@@ -16,6 +16,16 @@ export class Words {
     }
   }
 
+  static async fetchAllWords() {
+    try {
+      const words = await prisma.words.findMany();
+      return words;
+    } catch (error) {
+      console.error("Error fetching all words:", error);
+      throw new Error("Error fetching all words");
+    }
+  }
+
   // static async fetchById(id: number) {
   //   try {
   //     const word = await prisma.words.findUnique({
