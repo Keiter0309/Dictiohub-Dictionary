@@ -159,5 +159,3 @@ model UserSearchHistory {
   word Word @relation(fields: [wordId], references: [id])
   user User @relation(fields: [userId], references: [id])
 }
-
-// feat: Update Prisma schema with new models and relations
