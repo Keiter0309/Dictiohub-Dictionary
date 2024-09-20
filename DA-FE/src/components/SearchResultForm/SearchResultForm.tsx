@@ -1,5 +1,5 @@
 import React from "react";
-import { Volume } from "lucide-react";
+import { Volume2 } from "lucide-react";
 import { SearchResultFormProps } from "../../types/Dashboard/SearchResultFormProps";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
@@ -12,7 +12,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             className="text-blue-600 hover:text-blue-800 focus:outline-none"
             aria-label="Listen to pronunciation"
           >
-            <Volume className="h-6 w-6" />
+            <Volume2 className="h-6 w-6" />
           </button>
         </div>
         <p className="text-gray-600 mt-1">Definition: {result.definition}</p>

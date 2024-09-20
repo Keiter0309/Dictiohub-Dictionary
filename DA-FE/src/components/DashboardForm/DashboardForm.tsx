@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Volume, Bookmark } from "lucide-react";
+import { Search, Volume2, Bookmark } from "lucide-react";
 import { DashboardFormProps } from "../../types/Dashboard/DashboardFormProps";
 import wordServices from "../../services/word/wordServices";
 import NavbarForm from "../NavbarForm/NavbarForm";
@@ -129,7 +129,7 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
                 </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <Volume className="h-8 w-8 text-blue-600 mb-4" />
+                <Volume2 className="h-8 w-8 text-blue-600 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Audio Pronunciations
                 </h3>

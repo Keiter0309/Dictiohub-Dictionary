@@ -14,69 +14,150 @@ datasource db {
 }
 
 model User {
-  id                  Int      @id @default(autoincrement())
-  firstName           String
-  lastName            String
-  username            String   @unique
-  email               String   @unique
-  password            String
-  confirmPassword     String
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @default(now()) @updatedAt
-  deletedAt           DateTime?
-  deletedBy           Int?
-  role                String
-  updatedBy           Int?
-  resetPasswordOTP    String?
+  id                   Int       @id @default(autoincrement())
+  firstName            String
+  lastName             String
+  username             String    @unique
+  email                String    @unique
+  password             String
+  confirmPassword      String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now()) @updatedAt
+  deletedAt            DateTime?
+  deletedBy            Int?
+  role                 String
+  updatedBy            Int?
+  resetPasswordOTP     String?
   resetPasswordExpires DateTime?
+
+  userSearchHistory UserSearchHistory[]
 }
 
-model Words {
-  id            Int      @id @default(autoincrement())
-  word          String  @unique
+model Word {
+  id            Int       @id @default(autoincrement())
+  word          String    @unique
   meaning       String
   pronunciation String
   example       String
   definition    String
   partOfSpeech  String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
   deletedAt     DateTime?
   deletedBy     Int?
   updatedBy     Int?
 
   // Relations
-  exampleWords  ExampleWords[]
-  pronunciations Pronunciations[]
+  exampleWords   ExampleWord[]
+  pronunciations Pronunciation[]
+  definitions    Definition[]
+  wordCategories WordCategory[]
+  SynonymsAntonyms SynonymsAntonyms[]
+  userSearchHistory UserSearchHistory[]
 }
 
-model ExampleWords {
-  id          Int      @id @default(autoincrement())
+model ExampleWord {
+  id          Int       @id @default(autoincrement())
   wordId      Int
   exampleText String
   source      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
   deletedAt   DateTime?
   deletedBy   Int?
   updatedBy   Int?
 
   // Relations
-  word        Words    @relation(fields: [wordId], references: [id])
+  word Word @relation(fields: [wordId], references: [id])
 }
 
-model Pronunciations {
-  id        Int      @id @default(autoincrement())
+model Pronunciation {
+  id        Int       @id @default(autoincrement())
   wordId    Int
   audioPath String
   dialect   String
   ipaText   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
   deletedBy Int?
   updatedBy Int?
 
   // Relations
-  word      Words    @relation(fields: [wordId], references: [id])
+  word Word @relation(fields: [wordId], references: [id])
 }
+
+model PartOfSpeech {
+  id           Int    @id @default(autoincrement())
+  partOfSpeech String
+
+  // Relations
+  definitions Definition[]
+}
+
+model Definition {
+  id             Int       @id @default(autoincrement())
+  wordId         Int
+  posId          Int
+  definitionText String
+  usageExample   String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  deletedAt      DateTime?
+  deletedBy      Int?
+  updatedBy      Int?
+
+  // Relations
+  word Word         @relation(fields: [wordId], references: [id])
+  pos  PartOfSpeech @relation(fields: [posId], references: [id])
+}
+
+model Category {
+  id           Int       @id @default(autoincrement())
+  categoryName String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  deletedBy    Int?
+  updatedBy    Int?
+
+  // Relations
+  wordCategories WordCategory[]
+}
+
+model WordCategory {
+  id         Int @id @default(autoincrement())
+  wordId     Int
+  categoryId Int
+
+  // Relations
+  word     Word     @relation(fields: [wordId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model SynonymsAntonyms {
+  id          Int    @id @default(autoincrement())
+  wordId      Int
+  synonyms    String
+  antonyms    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+  deletedBy   Int?
+  updatedBy   Int?
+
+  // Relations
+  word Word @relation(fields: [wordId], references: [id])
+}
+
+model UserSearchHistory {
+  id Int @id @default(autoincrement())
+  wordId Int
+  userId Int
+  searchTime DateTime @default(now())
+
+  word Word @relation(fields: [wordId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+// feat: Update Prisma schema with new models and relations
