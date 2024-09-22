@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export class Words {
   static async fetchAll(page: number = 1, pageSize: number = 10) {
     try {
-      const words = await prisma.words.findMany({
+      const words = await prisma.word.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
       });
@@ -18,8 +18,23 @@ export class Words {
 
   static async fetchAllWords() {
     try {
-      const words = await prisma.words.findMany();
-      return words;
+      const words = await prisma.word.findMany();
+      const exampleWords = await prisma.exampleWord.findMany();
+      const pronunciations = await prisma.pronunciation.findMany();
+      const definitions = await prisma.definition.findMany();
+      const wordCategories = await prisma.wordCategory.findMany();
+      const synonymsAntonyms = await prisma.synonymsAntonyms.findMany();
+      const meanings = await prisma.meaning.findMany();
+
+      return {
+        words,
+        exampleWords,
+        pronunciations,
+        definitions,
+        wordCategories,
+        synonymsAntonyms,
+        meanings,
+      };
     } catch (error) {
       console.error("Error fetching all words:", error);
       throw new Error("Error fetching all words");
@@ -28,7 +43,7 @@ export class Words {
 
   // static async fetchById(id: number) {
   //   try {
-  //     const word = await prisma.words.findUnique({
+  //     const word = await prisma.word.findUnique({
   //       where: {
   //         id: id,
   //       },
@@ -42,12 +57,64 @@ export class Words {
 
   static async fetchByWord(word: string) {
     try {
-      const wordRecords = await prisma.words.findUnique({
+      // Fetch the word record
+      const wordRecord = await prisma.word.findUnique({
         where: {
           word: word,
         },
       });
-      return wordRecords;
+
+      // Check if the word record exists
+      if (!wordRecord) {
+        throw new Error(`Word not found: ${word}`);
+      }
+
+      // Fetch the words related to the word record
+      const exampleWords = await prisma.exampleWord.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      const pronunciationWords = await prisma.pronunciation.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      const definitionWords = await prisma.definition.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      const wordCategoryWords = await prisma.wordCategory.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      const synonymsAntonymsWords = await prisma.synonymsAntonyms.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      const meaningWords = await prisma.meaning.findMany({
+        where: {
+          wordId: wordRecord.id,
+        },
+      });
+
+      return {
+        ...wordRecord,
+        exampleWords,
+        pronunciationWords,
+        definitionWords,
+        wordCategoryWords,
+        synonymsAntonymsWords,
+        meaningWords,
+      };
     } catch (error) {
       console.error("Error fetching word by word:", error);
       throw new Error("Error fetching word by word");
@@ -56,7 +123,7 @@ export class Words {
 
   static async create(data: any) {
     try {
-      const newWord = await prisma.words.create({
+      const newWord = await prisma.word.create({
         data: data,
       });
       return newWord;
@@ -68,7 +135,7 @@ export class Words {
 
   static async update(id: number, data: any) {
     try {
-      const updatedWord = await prisma.words.update({
+      const updatedWord = await prisma.word.update({
         where: {
           id: id,
         },
@@ -83,7 +150,7 @@ export class Words {
 
   static async delete(id: number) {
     try {
-      const deletedWord = await prisma.words.delete({
+      const deletedWord = await prisma.word.delete({
         where: {
           id: id,
         },
@@ -97,7 +164,7 @@ export class Words {
 
   static async deleteAll() {
     try {
-      const result = await prisma.words.deleteMany();
+      const result = await prisma.word.deleteMany();
       return result;
     } catch (error) {
       console.error("Error deleting all words:", error);
@@ -107,7 +174,7 @@ export class Words {
 
   static async search(word: string, page: number = 1, pageSize: number = 10) {
     try {
-      const words = await prisma.words.findMany({
+      const words = await prisma.word.findMany({
         where: {
           word: {
             contains: word,

@@ -77,6 +77,7 @@ class WordsController {
 
     try {
       const words = await Words.fetchByWord(word);
+      console.log(words);
       return res.status(200).json(words);
     } catch (err) {
       console.error("Error fetching word:", err);

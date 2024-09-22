@@ -17,7 +17,9 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
   searchResult,
 }) => {
   const [word, setWord] = useState("");
-  const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
+  const [options, setOptions] = useState<{ value: string; label: string }[]>(
+    []
+  );
   const [filteredOptions, setFilteredOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -42,7 +44,9 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
     } else {
       try {
         const response = await wordServices.getAllWords();
-        const newOptions = response.map((result: any) => ({
+        const wordsResponse = response.words;
+
+        const newOptions = wordsResponse.map((result: any) => ({
           value: result.word,
           label: result.word,
         }));

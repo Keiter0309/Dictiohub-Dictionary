@@ -34,25 +34,21 @@ model User {
 }
 
 model Word {
-  id            Int       @id @default(autoincrement())
-  word          String    @unique
-  meaning       String
-  pronunciation String
-  example       String
-  definition    String
-  partOfSpeech  String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  deletedAt     DateTime?
-  deletedBy     Int?
-  updatedBy     Int?
+  id        Int       @id @default(autoincrement())
+  word      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  deletedBy Int?
+  updatedBy Int?
 
   // Relations
-  exampleWords   ExampleWord[]
-  pronunciations Pronunciation[]
-  definitions    Definition[]
-  wordCategories WordCategory[]
-  SynonymsAntonyms SynonymsAntonyms[]
+  meanings          Meaning[]
+  exampleWords      ExampleWord[]
+  pronunciations    Pronunciation[]
+  definitions       Definition[]
+  wordCategories    WordCategory[]
+  SynonymsAntonyms  SynonymsAntonyms[]
   userSearchHistory UserSearchHistory[]
 }
 
@@ -99,6 +95,7 @@ model Definition {
   id             Int       @id @default(autoincrement())
   wordId         Int
   posId          Int
+  partOfSpeech   String
   definitionText String
   usageExample   String
   createdAt      DateTime  @default(now())
@@ -126,9 +123,10 @@ model Category {
 }
 
 model WordCategory {
-  id         Int @id @default(autoincrement())
-  wordId     Int
-  categoryId Int
+  id           Int    @id @default(autoincrement())
+  wordId       Int
+  categoryId   Int
+  categoryName String
 
   // Relations
   word     Word     @relation(fields: [wordId], references: [id])
@@ -136,26 +134,39 @@ model WordCategory {
 }
 
 model SynonymsAntonyms {
-  id          Int    @id @default(autoincrement())
-  wordId      Int
-  synonyms    String
-  antonyms    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
-  deletedAt   DateTime?
-  deletedBy   Int?
-  updatedBy   Int?
+  id        Int       @id @default(autoincrement())
+  wordId    Int
+  synonyms  String
+  antonyms  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  deletedBy Int?
+  updatedBy Int?
 
   // Relations
   word Word @relation(fields: [wordId], references: [id])
 }
 
 model UserSearchHistory {
-  id Int @id @default(autoincrement())
-  wordId Int
-  userId Int
+  id         Int      @id @default(autoincrement())
+  wordId     Int
+  userId     Int
   searchTime DateTime @default(now())
 
   word Word @relation(fields: [wordId], references: [id])
   user User @relation(fields: [userId], references: [id])
+}
+
+model Meaning {
+  id          Int       @id @default(autoincrement())
+  wordId      Int
+  meaningText String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+  deletedBy   Int?
+  updatedBy   Int?
+
+  word Word @relation(fields: [wordId], references: [id])
 }

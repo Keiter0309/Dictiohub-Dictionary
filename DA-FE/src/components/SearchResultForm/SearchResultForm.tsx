@@ -15,45 +15,74 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             <Volume2 className="h-6 w-6" />
           </button>
         </div>
-        <p className="text-gray-600 mt-1">Definition: {result.definition}</p>
       </div>
       <div className="px-6 py-4">
         <div className="mb-6 last:mb-0">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {result.example}
+            Definitions
           </h3>
-          <p className="text-gray-800 mb-2">Example sentence using the word.</p>
-          <p className="text-gray-600 italic">Additional example or note.</p>
+          <ul className="list-disc list-inside">
+            {result.definitionWords.map((def: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                {def.definitionText}
+                <br />
+                {def.usageExample &&(
+                  <div>
+                    <span className="text-gray-600">{def.usageExample} </span>
+                    <span className="text-gray-600">
+                      ({def.partOfSpeech})
+                    </span>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="mb-6 last:mb-0">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Examples</h3>
+          <ul className="list-disc list-inside">
+            {result.exampleWords.map((example: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                {example.exampleText}
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Pronunciation
+            Pronunciations
           </h3>
-          <p className="text-gray-800"><code>{result.pronunciation}</code></p>
+          <ul className="list-disc list-inside">
+            {result.pronunciationWords.map((pron: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                {pron.ipaText}
+                {pron.dialect && <span> ({pron.dialect})</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Meanings</h3>
+          <ul className="list-disc list-inside">
+            {result.meaningWords.map((meaning: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                {meaning.meaningText}
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Part of Speech
+            Synonyms and Antonyms
           </h3>
-          <p className="text-gray-800">{result.partOfSpeech}</p>
-        </div>
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Meaning</h3>
-          <p className="text-gray-900">{result.meaning}</p>
-        </div>
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Synonyms</h3>
-          <div className="flex flex-wrap gap-2">
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-              Synonym 1
-            </span>
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-              Synonym 2
-            </span>
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-              Synonym 3
-            </span>
-          </div>
+          <ul className="list-disc list-inside">
+            {result.synonymsAntonymsWords.map((synAnt: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                <strong>Synonym:</strong> {synAnt.synonyms} / {" "}
+                <strong>Antonym:</strong> {synAnt.antonyms}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

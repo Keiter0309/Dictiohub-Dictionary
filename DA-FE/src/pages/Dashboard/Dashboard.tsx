@@ -16,7 +16,6 @@ const Dashboard: React.FC = () => {
     
     try {
       const response = await wordServices.searchWord(word);
-      console.log(response);
       setSearchResult(response);
       setLoading(true);
     } catch (err: any) {
