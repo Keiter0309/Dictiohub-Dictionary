@@ -4,24 +4,26 @@ import { BookOpen, Menu, X } from "lucide-react";
 
 const NavbarForm: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const isLogged = sessionStorage.getItem("token");
 
   let navItems = [
     { to: "/", label: "Home" },
-    { to: "/thesaurus", label: "Thesaurus " },
+    { to: "/thesaurus", label: "Thesaurus" },
     { to: "/about", label: "About" },
-    { to: "/login", label: "Login" },
   ];
 
-  if (sessionStorage.getItem("token")) {
-    navItems = navItems.filter((item) => item.to !== "/login");
-
-    navItems.push({ to: "/logout", label: "Logout" });
-  }
+  let avatarItems = [
+    { to: "/profile", label: "Profile" },
+    { to: "/favorites", label: "Favorites" },
+    { to: "/logout", label: "Logout" },
+  ];
 
   const handleLogoutClick = () => {
     sessionStorage.removeItem("token");
+    localStorage.removeItem("favorites");
     window.location.href = "/";
-  }
+  };
 
   return (
     <header className="bg-white shadow-sm">
@@ -33,18 +35,60 @@ const NavbarForm: React.FC = () => {
               DictioHub
             </span>
           </Link>
-          <nav className="hidden md:flex space-x-4 ml-auto">
+          <nav className="hidden md:flex flex-1 justify-center space-x-4">
             {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                onClick={item.to === "/logout" ? handleLogoutClick : undefined}
                 className="text-gray-500 hover:text-gray-900"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
+          {/* Dropdown Profile */}
+          {isLogged ? (
+            <div className="items-center ml-4 hidden md:flex">
+              <div className="relative">
+                <button
+                  className="flex items-center"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <img
+                    src="https://avatar.iran.liara.run/public"
+                    alt="Avatar"
+                    className="h-10 w-10 rounded-full hover:cursor-pointer"
+                  />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                    {avatarItems.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={() => {
+                          if (item.to === "/logout") {
+                            handleLogoutClick();
+                          }
+                          setIsDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden md:flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+            >
+              Login
+            </Link>
+          )}
           <button
             className="md:hidden flex items-center ml-auto"
             onClick={() => setIsOpen(!isOpen)}

@@ -189,4 +189,49 @@ export class Words {
       throw new Error("Error searching words");
     }
   }
+
+  // Add favorite word
+  static async addFavorite(id: number, userId: number) {
+    try {
+      const favorite = await prisma.favoriteWord.create({
+        data: {
+          wordId: id,
+          userId: userId,
+        }
+      });
+      return favorite;
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+      throw new Error("Error adding favorite");
+    }
+  }
+
+  static async checkFavorite(id: number, userId: number) {
+    try {
+      const favorite = await prisma.favoriteWord.findMany({
+        where: {
+          wordId: id,
+          userId: userId,
+        }
+      })
+    } catch (err: any) {
+      console.error("Error checking favorite:", err);
+      throw new Error("Error checking favorite");
+    }
+  }
+
+  static async deleteFavorite(id: number, userId: number) {
+    try {
+      const favorite = await prisma.favoriteWord.deleteMany({
+        where: {
+          wordId: id,
+          userId: userId,
+        }
+      });
+      return favorite;
+    } catch (error) {
+      console.error("Error deleting favorite:", error);
+      throw new Error("Error deleting favorite");
+    }
+  }
 }

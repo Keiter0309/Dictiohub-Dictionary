@@ -174,10 +174,10 @@ model Meaning {
 }
 
 model FavoriteWord {
-  id         Int      @id @default(autoincrement())
-  wordId     Int
-  userId     Int
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  wordId    Int
+  userId    Int
+  createdAt DateTime @default(now())
 
   word Word @relation(fields: [wordId], references: [id])
   user User @relation(fields: [userId], references: [id])

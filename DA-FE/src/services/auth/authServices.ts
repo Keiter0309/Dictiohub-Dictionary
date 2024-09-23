@@ -50,6 +50,9 @@ class AuthServices {
         `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
         { email, password }
       );
+      const userId = response.data.userId;
+
+      localStorage.setItem("id", userId);
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {

@@ -7,13 +7,9 @@ import { Spin } from "antd";
 
 const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [delayedLoading, setDelayedLoading] = useState(false);
   const [searchResult, setSearchResult] = useState(null);
 
   const handleSearch = async (word: string) => {
-    setDelayedLoading(false);
-    setTimeout(() => setDelayedLoading(true), 2000);
-    
     try {
       const response = await wordServices.searchWord(word);
       setSearchResult(response);
@@ -22,8 +18,9 @@ const Dashboard: React.FC = () => {
       console.error(err);
       showSwal(err.error, "error");
     } finally {
-      setLoading(false);
-      setDelayedLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
     }
   };
 
@@ -42,7 +39,7 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <DashboardForm onSubmit={handleSearch} searchResult={searchResult} />
-      {loading &&delayedLoading && (
+      {loading && (
         <div className="spin-container">
           <Spin size="large" className="custom-spin" />
         </div>

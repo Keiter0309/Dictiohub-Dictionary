@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bookmark, Volume2 } from "lucide-react";
 import Swal from "sweetalert2";
 import { Modal } from "antd";
 import { SearchResultFormProps } from "../../types/Dashboard/SearchResultFormProps";
+import wordServices from "../../services/word/wordServices";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
-  const isFavorite = localStorage.getItem("favorites");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -15,19 +15,52 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   );
   const navigate = useNavigate();
 
-  const handleFavorite = (word: string) => {
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
+
+  const handleFavorite = async (word: string) => {
     const token = sessionStorage.getItem("token");
+    const userId = localStorage.getItem("id");
+    const wordId = localStorage.getItem("ord");
     if (token) {
       if (favorites.includes(word)) {
-        setFavorites(favorites.filter((fav) => fav !== word));
-        console.log(favorites);
-        localStorage.removeItem("favorites");
+        const updatedFavorites = favorites.filter((fav) => fav !== word);
+        setFavorites(updatedFavorites);
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+        try {
+          const response = await wordServices.removeFavoriteWord(
+            Number(wordId),
+            Number(userId)
+          );
+          console.log(response);
+        }
+        catch (err: any) {
+          console.error(err);
+        }
         showSwal("Removed from favorites", "success");
       } else {
         const updatedFavorites = [...favorites, word];
-          setFavorites(updatedFavorites);
-          localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-          showSwal("Added to favorites", "success");
+        setFavorites(updatedFavorites);
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+        showSwal("Added to favorites", "success");
+        try {
+          const response = await wordServices.addFavoriteWord(
+            Number(wordId),
+            Number(userId)
+          );
+          console.log(response);
+        } catch (err: any) {
+          console.error(err);
+        }
+
+        // Save to params
+        const params = new URLSearchParams();
+        params.append("word", word);
+        console.log(params.toString());
       }
     } else {
       setOpen(true);
@@ -75,7 +108,9 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             >
               <Bookmark
                 className={`h-6 w-6 ${
-                  isFavorite ? "text-blue-600" : "text-gray-600"
+                  favorites.includes(result.word)
+                    ? "text-blue-600"
+                    : "text-gray-600"
                 }`}
               />
             </button>

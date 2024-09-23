@@ -120,6 +120,7 @@ class AuthController {
     try {
       // Check user is existing
       const existingUser = (await User.fetchByEmail(email)) as ILogin;
+      const userId = existingUser.id;
 
       if (!existingUser) {
         return res.status(404).json({
@@ -153,6 +154,7 @@ class AuthController {
       return res.status(200).json({
         message: "Login successful",
         token: token,
+        userId: userId,
       });
     } catch (err) {
       console.error(err);

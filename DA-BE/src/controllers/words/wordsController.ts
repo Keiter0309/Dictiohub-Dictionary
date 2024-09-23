@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Words } from "../../model/Words/Word";
-
 class WordsController {
   // Create a new word
   public async createWord(req: Request, res: Response) {
@@ -68,7 +67,6 @@ class WordsController {
 
   public async searchWords(req: Request, res: Response) {
     const word = req.query.word as string;
-
     if (!word) {
       return res
         .status(400)
@@ -77,11 +75,36 @@ class WordsController {
 
     try {
       const words = await Words.fetchByWord(word);
-      console.log(words);
       return res.status(200).json(words);
     } catch (err) {
       console.error("Error fetching word:", err);
       return res.status(500).json({ error: "Error fetching word" });
+    }
+  }
+
+  public async addFavorite(req: Request, res: Response) {
+    const id = req.body.wordId;
+    const userId = req.body.userId;
+
+    try {
+      const favorite = await Words.addFavorite(id, userId);
+      return res.status(200).json(favorite);
+    } catch (err) {
+      res.status(500).json({ error: "Error adding favorite" });
+    }
+  }
+
+  public async deleteFavorite(req: Request, res: Response) {
+    const id = req.body.wordId;
+    const userId = req.body.userId;
+
+    try {
+      const favorite = await Words.deleteFavorite(id, userId);
+      return res.status(200).json({
+        message: "Favorite deleted successfully",
+      });
+    } catch (err: any) {
+      console.error("Error deleting favorite:", err);
     }
   }
 }

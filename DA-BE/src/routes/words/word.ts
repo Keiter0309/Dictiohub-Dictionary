@@ -8,3 +8,5 @@ wordsRoute.get(EWords.WORDS, WordsController.getAllWords);
 wordsRoute.post(EWords.CREATE_WORD, WordsController.createWord);
 wordsRoute.put(EWords.WORD, WordsController.updateWord);
 wordsRoute.get(EWords.SEARCH, WordsController.searchWords);
+wordsRoute.post(EWords.ADD_FAVORITE, WordsController.addFavorite);
+wordsRoute.delete(EWords.DELETE_FAVORITE, WordsController.deleteFavorite);
