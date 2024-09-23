@@ -17,7 +17,7 @@ async function main() {
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "We have been abandoned to our fate,’ said one resident.",
+          exampleText: "We have been abandoned to our fate, said one resident.",
           source: "Oxford Dictionary",
         },
         {
