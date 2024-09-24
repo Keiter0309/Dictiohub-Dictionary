@@ -136,9 +136,9 @@ export class AdminUserController {
 }
 
 export class AdminWordController {
-    public static getAllWords(req: Request, res: Response) {
+    public static async getAllWords(req: Request, res: Response) {
         try {
-            const words = Words.fetchAllWords();
+            const words = await Words.fetchAllWords();
             return res.status(200).json({
                 status_code: 200,
                 message: "success",
@@ -151,10 +151,10 @@ export class AdminWordController {
         }
     }
 
-    public static createWord(req: Request, res: Response) {
+    public static async createWord(req: Request, res: Response) {
         const { word, meaning, updatedBy } = req.body;
         try {
-            const newWord = Words.create({
+            const newWord = await Words.create({
                 word: word,
                 meaning: meaning,
                 updatedBy: updatedBy,
