@@ -125,6 +125,22 @@ export class User {
     });
   }
 
+  static search(username: string) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM user WHERE username LIKE ?",
+        ["%" + username + "%"],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
   // Save OTP to the database
   static saveOTP(email: string, otp: number) {
     return new Promise((resolve, reject) => {

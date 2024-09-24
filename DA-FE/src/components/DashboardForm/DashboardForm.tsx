@@ -27,6 +27,9 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(word);
+
+    // Clear the input field
+    setWord("");
   };
 
   const handleSelectChange = (value: string) => {

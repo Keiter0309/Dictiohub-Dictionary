@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Words } from "../../model/Words/Word";
+import { Words, Favorites } from "../../model/Words/Word";
 class WordsController {
   // Create a new word
   public async createWord(req: Request, res: Response) {
@@ -26,17 +26,6 @@ class WordsController {
       res.status(500).json({ error: "Error fetching all words" });
     }
   }
-
-  // Get word by ID
-  //   public async getWordById(req: Request, res: Response) {
-  //     const id = parseInt(req.params.id);
-  //     try {
-  //       const word = await Words.fetchById(id);
-  //       return res.status(200).json(word);
-  //     } catch (err) {
-  //       res.status(500).json({ error: "Error fetching word by ID" });
-  //     }
-  //   }
 
   // Update a word
   public async updateWord(req: Request, res: Response) {
@@ -87,10 +76,26 @@ class WordsController {
     const userId = req.body.userId;
 
     try {
-      const favorite = await Words.addFavorite(id, userId);
+      const favorite = await Favorites.addFavorite(id, userId);
       return res.status(200).json(favorite);
     } catch (err) {
       res.status(500).json({ error: "Error adding favorite" });
+    }
+  }
+
+  public async fetchAllFavorites(req: Request, res: Response) {
+    const userId = parseInt(req.params.userId);
+    
+    try {
+      const favorites = await Favorites.fetchAll(userId);
+      return res.status(200).json({
+        data: {
+          wordId: favorites.map((favorite) => favorite.wordId),
+          userId: favorites.map((favorite) => favorite.userId),
+        }
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: "Error fetching all favorite words" });
     }
   }
 
@@ -99,7 +104,7 @@ class WordsController {
     const userId = req.body.userId;
 
     try {
-      const favorite = await Words.deleteFavorite(id, userId);
+      const favorite = await Favorites.deleteFavorite(id, userId);
       return res.status(200).json({
         message: "Favorite deleted successfully",
       });

@@ -41,20 +41,6 @@ export class Words {
     }
   }
 
-  // static async fetchById(id: number) {
-  //   try {
-  //     const word = await prisma.word.findUnique({
-  //       where: {
-  //         id: id,
-  //       },
-  //     });
-  //     return word;
-  //   } catch (error) {
-  //     console.error("Error fetching word by ID:", error);
-  //     throw new Error("Error fetching word by ID");
-  //   }
-  // }
-
   static async fetchByWord(word: string) {
     try {
       // Fetch the word record
@@ -189,6 +175,39 @@ export class Words {
       throw new Error("Error searching words");
     }
   }
+}
+export class Favorites {
+  // Fetch all favorite words
+  static async fetchAll(userId: number) {
+    try {
+      const favorites = await prisma.favoriteWord.findMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      console.log("userId:::", userId);
+      return favorites;
+    } catch (error) {
+      console.error("Error fetching all favorite words:", error);
+      throw new Error("Error fetching all favorite words");
+    }
+  }
+
+  static async deleteFavorite(id: number, userId: number) {
+    try {
+      const favorite = await prisma.favoriteWord.deleteMany({
+        where: {
+          wordId: id,
+          userId: userId,
+        },
+      });
+      return favorite;
+    } catch (error) {
+      console.error("Error deleting favorite:", error);
+      throw new Error("Error deleting favorite");
+    }
+  }
 
   // Add favorite word
   static async addFavorite(id: number, userId: number) {
@@ -197,7 +216,7 @@ export class Words {
         data: {
           wordId: id,
           userId: userId,
-        }
+        },
       });
       return favorite;
     } catch (error) {
@@ -212,26 +231,11 @@ export class Words {
         where: {
           wordId: id,
           userId: userId,
-        }
-      })
+        },
+      });
     } catch (err: any) {
       console.error("Error checking favorite:", err);
       throw new Error("Error checking favorite");
-    }
-  }
-
-  static async deleteFavorite(id: number, userId: number) {
-    try {
-      const favorite = await prisma.favoriteWord.deleteMany({
-        where: {
-          wordId: id,
-          userId: userId,
-        }
-      });
-      return favorite;
-    } catch (error) {
-      console.error("Error deleting favorite:", error);
-      throw new Error("Error deleting favorite");
     }
   }
 }

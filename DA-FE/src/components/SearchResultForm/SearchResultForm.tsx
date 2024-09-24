@@ -37,6 +37,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Number(userId)
           );
           console.log(response);
+          localStorage.removeItem("ord");
         }
         catch (err: any) {
           console.error(err);
@@ -53,6 +54,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Number(userId)
           );
           console.log(response);
+          localStorage.removeItem("ord");
         } catch (err: any) {
           console.error(err);
         }

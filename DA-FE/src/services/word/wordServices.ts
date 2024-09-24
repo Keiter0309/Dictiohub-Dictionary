@@ -49,6 +49,20 @@ class WordServices {
     }
   }
 
+  public async getFavoriteWords(userId: number) {
+    try {
+      const response = await axios.get(
+        `${EWord.WORD_SERVER_HOST}/${EWord.WORD_FAVORITE}/userId=${userId}`
+      );
+
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (err: any) {
+      console.error(err);
+    }
+  } 
+
   public async removeFavoriteWord(wordId: number, userId: number) {
     try {
       const response = await axios.delete(
@@ -63,6 +77,7 @@ class WordServices {
       console.error(err);
     }
   }
+
 }
 
 export default new WordServices();
