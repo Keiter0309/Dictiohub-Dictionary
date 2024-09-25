@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthServices from "../../services/auth/authServices";
+import AuthServices from "../../../services/auth/authServices";
 import withReactContent from "sweetalert2-react-content";
-import LoginForm from "../../components/LoginForm/LoginForm";
+import LoginForm from "../../../components/Client/LoginForm/LoginForm";
 import Swal from "sweetalert2";
 
 const Login: React.FC = () => {

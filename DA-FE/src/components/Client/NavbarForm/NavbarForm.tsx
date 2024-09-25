@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Menu, X } from "lucide-react";
+import { BookOpen, Menu, X, ArrowLeft } from "lucide-react";
 
 const NavbarForm: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,7 +103,7 @@ const NavbarForm: React.FC = () => {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="bg-white w-64 h-full shadow-lg transition-transform transform">
+        <div className="bg-white w-64 h-full shadow-lg transition-transform transform flex flex-col">
           <div className="flex justify-between items-center p-4 border-b">
             <span className="text-xl font-bold text-gray-900">DictioHub</span>
             <button onClick={() => setIsOpen(false)}>
@@ -111,17 +111,44 @@ const NavbarForm: React.FC = () => {
               <span className="sr-only">Close menu</span>
             </button>
           </div>
-          <div className="p-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="block text-gray-500 hover:text-gray-900"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+          <div className="flex flex-col justify-between flex-grow">
+            <div className="p-4 space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="block text-gray-500 hover:text-gray-900"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <div className="p-4 mt-auto border-t">
+              {isLogged ? (
+                <Link
+                  to="/logout"
+                  className="block px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md duration-300"
+                  onClick={() => {
+                    handleLogoutClick();
+                    setIsOpen(false);
+                  }}
+                >
+                  <div className="flex">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="ml-2">Logout</span>
+                  </div>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

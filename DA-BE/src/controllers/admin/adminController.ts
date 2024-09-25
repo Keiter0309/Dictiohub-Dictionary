@@ -152,11 +152,16 @@ export class AdminWordController {
     }
 
     public static async createWord(req: Request, res: Response) {
-        const { word, meaning, updatedBy } = req.body;
+        const { word, meaning, definitionText, partOfSpeech, categoryName, exampleText, audioPath, dialect, ipaText, usageExample, synonyms, antonyms, updatedBy } = req.body;
         try {
             const newWord = await Words.create({
                 word: word,
-                meaning: meaning,
+                meaning: { meaningText: meaning},
+                definition: { definitionText: definitionText, partOfSpeech: partOfSpeech, usageExample: usageExample,  },
+                category: { categoryName: categoryName },
+                example: { exampleText: exampleText },
+                pronunciation: { audioPath: audioPath, ipaText: ipaText, dialect: dialect},
+                synonymsantonyms: { synonyms: synonyms, antonyms: antonyms },
                 updatedBy: updatedBy,
             });
             return res.status(200).json({

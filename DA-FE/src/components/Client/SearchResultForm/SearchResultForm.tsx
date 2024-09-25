@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Bookmark, Volume2 } from "lucide-react";
 import Swal from "sweetalert2";
 import { Modal } from "antd";
-import { SearchResultFormProps } from "../../types/Dashboard/SearchResultFormProps";
-import wordServices from "../../services/word/wordServices";
+import { SearchResultFormProps } from "../../../types/Dashboard/SearchResultFormProps";
+import wordServices from "../../../services/word/wordServices";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);

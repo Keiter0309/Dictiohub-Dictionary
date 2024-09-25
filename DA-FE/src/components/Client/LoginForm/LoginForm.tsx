@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import signinBackground from "../../assets/signin_background.png";
+import signinBackground from "../../../assets/signin_background.png";
 import NavbarForm from "../NavbarForm/NavbarForm";
-import { LoginFormProps } from "../../types/Users/Auth";
+import { LoginFormProps } from "../../../types/Users/Auth";
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState("");

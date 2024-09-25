@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import DashboardForm from "../../components/DashboardForm/DashboardForm";
-import wordServices from "../../services/word/wordServices";
-import '../../styles/global-style.css';
+import DashboardForm from "../../../components/Client/DashboardForm/DashboardForm";
+import wordServices from "../../../services/word/wordServices";
+import '../../../styles/global-style.css';
 import Swal from "sweetalert2";
 import { Spin } from "antd";
 

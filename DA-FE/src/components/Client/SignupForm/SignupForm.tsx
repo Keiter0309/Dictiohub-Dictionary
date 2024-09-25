@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { SignupFormProps } from "../../types/Users/Auth";
+import { SignupFormProps } from "../../../types/Users/Auth";
 import { useNavigate } from "react-router-dom";
-import signupBackground from "../../assets/signup_background.png";
+import signupBackground from "../../../assets/signup_background.png";
 
 const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
   const navigate = useNavigate();

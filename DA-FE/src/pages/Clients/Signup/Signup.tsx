@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import SignupForm from "../../components/SignupForm/SignupForm";
-import AuthServices from "../../services/auth/authServices";
+import SignupForm from "../../../components/Client/SignupForm/SignupForm";
+import AuthServices from "../../../services/auth/authServices";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { Spin } from "antd";

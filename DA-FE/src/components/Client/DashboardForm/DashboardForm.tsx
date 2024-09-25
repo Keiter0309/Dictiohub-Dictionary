@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Volume2, Bookmark, } from "lucide-react";
-import { DashboardFormProps } from "../../types/Dashboard/DashboardFormProps";
-import wordServices from "../../services/word/wordServices";
+import { DashboardFormProps } from "../../../types/Dashboard/DashboardFormProps";
+import wordServices from "../../../services/word/wordServices";
 import NavbarForm from "../NavbarForm/NavbarForm";
 import SearchResultForm from "../SearchResultForm/SearchResultForm";
 import { SearchOutlined } from "@ant-design/icons";
