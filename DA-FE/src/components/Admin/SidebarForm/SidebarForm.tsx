@@ -36,7 +36,7 @@ const SidebarForm: React.FC = () => {
       <aside
         id="container_sidebar"
         className={`bg-white shadow-md transition-all duration-300 ease-in-out group ${
-          open ? "w-64" : "w-20 hover:w-64 group-hover:w-64"
+          open ? "w-64 transition-all duration-200" : "w-20 hover:w-64 group-hover:w-64 fixed inset-0 z-50"
         }`}
       >
         <div className="p-4">
@@ -86,8 +86,8 @@ const SidebarForm: React.FC = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto p-8">
-        <div className="flex justify-between items-center mb-8">
+      <main className="flex-1 overflow-y-auto p-8 ml-20 transition-transform transform">
+        <div className="flex justify-between items-center mb-8 transition-all duration-200">
           <h2 className="text-3xl font-bold text-gray-900">
             {(active ?? "").charAt(0).toUpperCase() + (active ?? "").slice(1)}
           </h2>
