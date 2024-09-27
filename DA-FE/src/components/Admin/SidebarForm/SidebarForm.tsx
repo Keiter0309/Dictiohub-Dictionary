@@ -36,14 +36,17 @@ const SidebarForm: React.FC = () => {
   };
 
   return (
-    <div id="container" className="flex h-screen bg-gray-100 transition-transform transform">
+    <div
+      id="container"
+      className="flex h-screen bg-gray-100 transition-transform transform"
+    >
       {/* Sidebar */}
       <aside
         id="container_sidebar"
         className={`bg-white shadow-md transition-all duration-300 ease-in-out group ${
-          open ? "w-64" : "w-20 hover:w-64 group-hover:w-64"
+          open ? "w-64 open" : "w-20 hover:w-64 group-hover:w-64"
         } fixed md:relative inset-0 z-50 md:z-auto ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileOpen ? "translate-x-0" : "md:translate-x-0 -translate-x-full"
         }`}
       >
         <div className="p-4">
@@ -71,7 +74,10 @@ const SidebarForm: React.FC = () => {
                       ? "bg-blue-500 text-white duration-200 ease-in-out"
                       : "text-gray-700 hover:bg-slate-100 duration-200"
                   }`}
-                  onClick={() => setActive(item.name)}
+                  onClick={() => {
+                    setActive(item.name);
+                    setMobileOpen(false);
+                  }}
                 >
                   <span className="flex items-center">
                     {item.icon}
@@ -86,11 +92,6 @@ const SidebarForm: React.FC = () => {
                     )}
                   </span>
                 </Link>
-                {!open && (
-                  <span className="absolute left-20 bg-white text-gray-700 shadow-lg rounded-lg px-2 py-1 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {item.name}
-                  </span>
-                )}
               </div>
             ))}
           </nav>
