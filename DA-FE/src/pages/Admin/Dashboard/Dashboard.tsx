@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminDashboardForm from '../../../components/Admin/DashboardForm/DashboardForm';
+import AdminDashboardForm from '../../../components/Admin/Home/HomePageForm';
 const Dashboard: React.FC = () => {
     return (
         <>

@@ -1,6 +1,0 @@
-@media (min-width: 1024px) {
-  #container_sidebar:not(.open) {
-    position: fixed;
-    z-index: 1000;
-  }
-}
