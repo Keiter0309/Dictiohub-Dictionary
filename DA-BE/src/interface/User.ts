@@ -17,6 +17,7 @@ export interface ILogin {
   id: number;
   email: string;
   password: string;
+  role: string;
 }
 
 export interface IForgotPassword {

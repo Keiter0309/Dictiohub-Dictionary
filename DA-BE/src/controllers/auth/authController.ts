@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { SendMailTemplates } from "../../constant/mails/sendmails";
 import {
   IUser,
   ILogin,
@@ -68,32 +69,12 @@ class AuthController {
       await User.create(data);
 
       // Send welcome email
+      const mailOptions = SendMailTemplates.MAIL_REGISTRATION(firstName)
       await sendMail(
         email,
-        "Welcome to Our Platform!",
-        `Hello ${firstName},
-        
-        Welcome to Our Platform! We're excited to have you on board.
-        
-        Here are some resources to get you started:
-        - Visit our website: https://www.ourplatform.com
-        - Check out our help center: https://www.ourplatform.com/help
-        - Join our community forum: https://www.ourplatform.com/forum
-        
-        If you have any questions, feel free to reply to this email or contact our support team at support@ourplatform.com.
-        
-        Best regards,
-        The Our Platform Team`,
-        `<p>Hello ${firstName},</p>
-             <p>Welcome to <strong>Our Platform</strong>! We're excited to have you on board.</p>
-             <p>Here are some resources to get you started:</p>
-             <ul>
-                 <li>Visit our website: <a href="https://www.ourplatform.com">https://www.ourplatform.com</a></li>
-                 <li>Check out our help center: <a href="https://www.ourplatform.com/help">https://www.ourplatform.com/help</a></li>
-                 <li>Join our community forum: <a href="https://www.ourplatform.com/forum">https://www.ourplatform.com/forum</a></li>
-             </ul>
-             <p>If you have any questions, feel free to reply to this email or contact our support team at <a href="mailto:support@ourplatform.com">support@ourplatform.com</a>.</p>
-             <p>Best regards,<br>The Our Platform Team</p>`
+        mailOptions.subject,
+        mailOptions.text,
+        mailOptions.html
       );
 
       return res.status(201).json({
@@ -123,8 +104,8 @@ class AuthController {
       const userId = existingUser.id;
 
       if (!existingUser) {
-        return res.status(404).json({
-          message: "User not found",
+        return res.status(401).json({
+          message: "Invalid credentials",
         });
       }
 
@@ -142,8 +123,8 @@ class AuthController {
       // Generate token
       const token = jwt.sign(
         {
-          email: existingUser.email,
-          password: existingUser.password,
+          id: existingUser.id,
+          role: existingUser.role,
         },
         process.env.JWT_SECRET || "",
         {
@@ -189,21 +170,12 @@ class AuthController {
       await User.saveOTP(email, otp);
 
       // Send OTP to the email
+      const mailOptions = SendMailTemplates.MAIL_FORGOT_PASSWORD(existingUser.firstName, otp)
       await sendMail(
         email,
-        "Password Reset OTP",
-        `Hello ${existingUser.firstName},
-            
-            Your OTP for resetting your password is ${otp}.
-            
-            If you did not request this OTP, please ignore this email.
-            
-            Best regards,
-            The Our Platform Team`,
-        `<p>Hello ${existingUser.firstName},</p>
-            <p>Your OTP for resetting your password is <strong>${otp}</strong>.</p>
-            <p>If you did not request this OTP, please ignore this email.</p>
-            <p>Best regards,<br>The Our Platform Team</p>`
+        mailOptions.subject,
+        mailOptions.text,
+        mailOptions.html
       );
 
       return res.status(200).json({
@@ -261,21 +233,12 @@ class AuthController {
       await User.updatePassword(email, hashedPassword);
 
       // Send email notification
+      const mailOptions = SendMailTemplates.MAIL_RESET_PASSWORD(existingUser.firstName)
       await sendMail(
         email,
-        "Password Reset Successful",
-        `Hello ${existingUser.firstName},
-            
-            This is to notify you that your password has been successfully reset.
-            
-            If you did not request this password reset, please contact our support team immediately.
-            
-            Best regards,
-            The Our Platform Team`,
-        `<p>Hello ${existingUser.firstName},</p>
-            <p>This is to notify you that your password has been successfully reset.</p>
-            <p>If you did not request this password reset, please contact our support team immediately.</p>
-            <p>Best regards,<br>The Our Platform Team</p>`
+        mailOptions.subject,
+        mailOptions.text,
+        mailOptions.html
       );
 
       return res.status(200).json({
@@ -348,20 +311,12 @@ class AuthController {
       await User.updatePassword(email, hashedPassword);
 
       // Send email notification
+      const mailOptions = SendMailTemplates.MAIL_CHANGE_PASSWORD(existingUser.firstName)
       await sendMail(
         email,
-        "Password Change Succesful",
-        `Hello ${existingUser.firstName},
-            This is to notify you that your password has been successfully changed.
-
-            If you did not request this password change, please contact our support team immediately.
-
-            Best regards,
-            The Our Platform Team`,
-        `<p>Hello ${existingUser.firstName},</p>
-            <p>This is to notify you that your password has been successfully changed.</p>
-            <p>If you did not request this password change, please contact our support team imeediately.</p>
-            <p>Best regards, <br> The Our Platform Team</p>`
+        mailOptions.subject,
+        mailOptions.text,
+        mailOptions.html
       );
 
       return res.status(200).json({

@@ -43,8 +43,6 @@ export class User {
           if (err) {
             reject(err);
           } else {
-            console.log("Result:", result);
-
             if (result.length > 0) {
               resolve(result[0]);
             } else {

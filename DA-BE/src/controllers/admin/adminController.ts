@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { User } from "../../model/User/User";
 import { Words } from "../../model/Words/Word";
-import { IUser } from "../../interface/User";
+import { IUser, ILogin } from "../../interface/User";
+import bycrypt from "bcrypt";
 
 export class AdminUserController {
   public static async fetchAllUsers(req: Request, res: Response) {
@@ -175,4 +176,37 @@ export class AdminWordController {
             return res.status(500).json({ error: "Error creating word" });
         }
     }
+}
+
+export class AdminAuthController {
+  public static async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+    try {
+      const user = (await User.fetchByEmail(email)) as ILogin;
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const isInvalidPassword = bycrypt.compareSync(password, user.password);
+
+      if (!isInvalidPassword) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      return res.status(200).json({
+        status_code: 200,
+        message: "success",
+        data: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error logging in user" });
+    }
+  }
 }
