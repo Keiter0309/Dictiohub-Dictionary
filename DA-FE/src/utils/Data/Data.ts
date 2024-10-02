@@ -9,6 +9,7 @@ import {
   Archive,
   SquarePen,
   Search,
+  Timer
 } from "lucide-react";
 import React from "react";
 
@@ -66,18 +67,42 @@ export const statisticsData = [
 
 export const userData = [
   {
+    id: 1,
     title: "Total Users",
     value: "10",
     icon: React.createElement(User, {className: "text-blue-500 h-8 w-8"}),
   },
   {
+    id: 2,
     title: "Active Editors",
     value: "5",
     icon: React.createElement(SquarePen, {className: "text-blue-500 h-8 w-8"}),
   },
   {
+    id: 3,
     title: "Total Words",
     value: "1000",
     icon: React.createElement(BookOpenCheck, {className: "text-blue-500 h-8 w-8"}),
+  }
+]
+
+export const wordData = [
+  {
+    id: 1,
+    title: "Total Words",
+    value: "1000",
+    icon: React.createElement(BookOpenCheck, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 2,
+    title: "Total Categories",
+    value: "100",
+    icon: React.createElement(Archive, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 3,
+    title: "Last Updated",
+    value: "2 days ago",
+    icon: React.createElement(Timer, {className: "text-blue-500 h-8 w-8"}),
   }
 ]
