@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bookmark, Volume2 } from "lucide-react";
-import Swal from "sweetalert2";
 import { Modal } from "antd";
 import { SearchResultFormProps } from "../../../types/Dashboard/SearchResultFormProps";
 import wordServices from "../../../services/word/wordServices";
+import Toast from "../../../utils/ToastData/Toast";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -69,17 +69,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
     }
   };
 
-  const showSwal = (message: string, icon: "success" | "error") => {
-    Swal.fire({
-      toast: true,
-      text: message,
-      icon: icon,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  };
+  const showSwal = Toast;
 
   const handleOk = () => {
     setModalText("You must be logged in to add to favorites");

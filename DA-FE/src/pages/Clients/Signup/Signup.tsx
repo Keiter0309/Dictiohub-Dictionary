@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import SignupForm from "../../../components/Client/SignupForm/SignupForm";
 import AuthServices from "../../../services/auth/authServices";
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
 import { Spin } from "antd";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
+import Toast from "../../../utils/ToastData/Toast";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -52,18 +51,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  const showSwal = (message: string, icon: "success" | "error") => {
-    const MySwal = withReactContent(Swal);
-    MySwal.fire({
-      toast: true,
-      text: message,
-      icon: icon,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  };
+  const showSwal = Toast;
 
   return (
     <div className="signup-wrapper">

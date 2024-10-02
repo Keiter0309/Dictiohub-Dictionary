@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { BookOpen } from "lucide-react";
+import { LoginFormProps } from "../../../types/Users/Auth";
 
-const AdminLoginForm: React.FC = () => {
+const AdminLoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -10,15 +11,13 @@ const AdminLoginForm: React.FC = () => {
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
+    onSubmit(email, password);
     if (email === "" || password === "") {
       setError("Please fill in all fields");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setError("Please enter a valid email address");
     } else {
       setError("");
-      console.log("Email:", email);
-      console.log("Password:", password);
-      console.log("Remember Me:", rememberMe);
     }
   };
 

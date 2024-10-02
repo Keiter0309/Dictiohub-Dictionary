@@ -6,3 +6,8 @@ export enum EAuth {
   AUTH_CHANGE_PASSWORD = "api/v1/auth/change-password",
   AUTH_CLIENT_HOST = "http://localhost:9000",
 }
+
+export enum EAdmin {
+  ADMIN_LOGIN = "api/v1/admin/login",
+  ADMIN_CLIENT_HOST = "http://localhost:9000",
+}

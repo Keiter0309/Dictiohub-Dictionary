@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthServices from "../../../services/auth/authServices";
-import withReactContent from "sweetalert2-react-content";
 import LoginForm from "../../../components/Client/LoginForm/LoginForm";
-import Swal from "sweetalert2";
+import Toast from "../../../utils/ToastData/Toast";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -24,18 +23,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const showSwal = (message: string, icon: "success" | "error") => {
-    const MySwal = withReactContent(Swal);
-    MySwal.fire({
-      toast: true,
-      text: message,
-      icon: icon,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  };
+  const showSwal = Toast;
 
   return (
     <div className="login-wrapper">

@@ -1,6 +1,7 @@
 import React from "react";
 import "./DashboardForm-module.css";
-import { sideBarData, statisticsData } from "../../../utils/Data";
+import { sideBarData, statisticsData } from "../../../utils/Data/Data";
+import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import {
   BookOpen,
@@ -16,6 +17,11 @@ import {
   Clock,
   ChartLine,
 } from "lucide-react";
+import UserContent from "./Content/UserContent/UserContent";
+import WordContent from "./Content/WordContent/WordContent";
+import CategoriesContent from "./Content/CategoriesContent/CategoriesContent";
+import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
+import SettingContent from "./Content/SettingContent/SettingContent";
 
 const SidebarForm: React.FC = () => {
   // Data from utils/Data.ts
@@ -25,7 +31,6 @@ const SidebarForm: React.FC = () => {
   const [active, setActive] = React.useState("Dashboard");
   const [open, setOpen] = React.useState(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
 
   // Click event handlers
   const handleClickSidebar = () => {
@@ -142,7 +147,9 @@ const SidebarForm: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-2xl text-gray-800 font-semibold">23,054</p>
+                <p className="text-2xl text-gray-800 font-semibold">
+                  <CountUp end={10000} duration={2} />
+                </p>
                 <span className="text-md text-gray-800">
                   +2% from last month
                 </span>
@@ -168,7 +175,9 @@ const SidebarForm: React.FC = () => {
                         {item.icon}
                       </div>
                       <div>
-                        <p className="text-gray-800 text-xl">{item.value}</p>
+                        <p className="text-gray-800 text-xl">
+                          <CountUp end={parseInt(item.value)} duration={2} />
+                        </p>
                         <span className="text-xs text-slate-400">
                           {item.name}
                         </span>
@@ -188,9 +197,7 @@ const SidebarForm: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full h-64 ">
-                demo
-              </div>
+              <div className="w-full h-64 ">demo</div>
             </div>
 
             <div className="bg-white p-5 rounded-md shadow-lg mt-8 transition-transform duration-200 ease-in-out">
@@ -229,6 +236,16 @@ const SidebarForm: React.FC = () => {
             </div>
           </div>
         )}
+
+        {active === "Users" && <UserContent />}
+
+        {active === "Words" && <WordContent />}
+
+        {active === "Categories" && <CategoriesContent />}
+
+        {active === "Favorites" && <FavoritesContent />}
+
+        {active === "Settings" && <SettingContent />}
       </main>
 
       {/* Overlay for mobile sidebar */}

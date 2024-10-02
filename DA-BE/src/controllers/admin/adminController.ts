@@ -137,45 +137,65 @@ export class AdminUserController {
 }
 
 export class AdminWordController {
-    public static async getAllWords(req: Request, res: Response) {
-        try {
-            const words = await Words.fetchAllWords();
-            return res.status(200).json({
-                status_code: 200,
-                message: "success",
-                data: {
-                    words: words,
-                },
-            });
-        } catch (err) {
-            return res.status(500).json({ error: "Error fetching all words" });
-        }
+  public static async getAllWords(req: Request, res: Response) {
+    try {
+      const words = await Words.fetchAllWords();
+      return res.status(200).json({
+        status_code: 200,
+        message: "success",
+        data: {
+          words: words,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error fetching all words" });
     }
+  }
 
-    public static async createWord(req: Request, res: Response) {
-        const { word, meaning, definitionText, partOfSpeech, categoryName, exampleText, audioPath, dialect, ipaText, usageExample, synonyms, antonyms, updatedBy } = req.body;
-        try {
-            const newWord = await Words.create({
-                word: word,
-                meaning: { meaningText: meaning},
-                definition: { definitionText: definitionText, partOfSpeech: partOfSpeech, usageExample: usageExample,  },
-                category: { categoryName: categoryName },
-                example: { exampleText: exampleText },
-                pronunciation: { audioPath: audioPath, ipaText: ipaText, dialect: dialect},
-                synonymsantonyms: { synonyms: synonyms, antonyms: antonyms },
-                updatedBy: updatedBy,
-            });
-            return res.status(200).json({
-                status_code: 200,
-                message: "success",
-                data: {
-                    word: newWord,
-                },
-            })
-        } catch (err) {
-            return res.status(500).json({ error: "Error creating word" });
-        }
+  public static async createWord(req: Request, res: Response) {
+    const {
+      word,
+      meaning,
+      definitionText,
+      partOfSpeech,
+      categoryName,
+      exampleText,
+      audioPath,
+      dialect,
+      ipaText,
+      usageExample,
+      synonyms,
+      antonyms,
+    } = req.body;
+    try {
+      const newWord = await Words.create({
+        word: word,
+        meaning: { meaningText: meaning },
+        definition: {
+          definitionText: definitionText,
+          partOfSpeech: partOfSpeech,
+          usageExample: usageExample,
+        },
+        category: { categoryName: categoryName },
+        example: { exampleText: exampleText },
+        pronunciation: {
+          audioPath: audioPath,
+          ipaText: ipaText,
+          dialect: dialect,
+        },
+        synonymsantonyms: { synonyms: synonyms, antonyms: antonyms },
+      });
+      return res.status(200).json({
+        status_code: 200,
+        message: "success",
+        data: {
+          word: newWord,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error creating word" });
     }
+  }
 }
 
 export class AdminAuthController {
