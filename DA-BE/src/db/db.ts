@@ -25,21 +25,24 @@ con.connect(async (err) => {
   // Add the admin user
   const prisma = new PrismaClient();
   try {
+    const admin_email = process.env.ADMIN_EMAIL as string;
+    const admin_password = process.env.ADMIN_PASSWORD as string;
+
     // Check if the admin user already exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: "admin@gmail.com" },
+      where: { email: admin_email },
     });
 
     if (!existingAdmin) {
       // Hash the admin password
-      const hashedPassword = await bcrypt.hash("Dictiohub@admin", 10);
+      const hashedPassword = await bcrypt.hash(admin_password, 10);
 
       // Create the admin user
       await prisma.user.create({
         data: {
           firstName: "Admin",
           lastName: "Admin",
-          email: "admin@gmail.com",
+          email: admin_email,
           username: "administrator",
           password: hashedPassword,
           confirmPassword: hashedPassword,

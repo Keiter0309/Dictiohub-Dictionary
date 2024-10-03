@@ -100,7 +100,7 @@ async function main() {
       definitions: [
         {
           definitionText: "The fact that somebody/something is able to do something.",
-          usageExample: "People with the disease may lose their ability to communicate.",
+          usageExample: " ",
           partOfSpeech: "noun",
         },
       ],

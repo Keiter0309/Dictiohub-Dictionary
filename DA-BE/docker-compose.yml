@@ -17,7 +17,7 @@ services:
       MYSQL_ROOT_PASSWORD: keith@0309
       MYSQL_DATABASE: da-mysql
       MYSQL_USER: root
-      MYSQL_PASSWORD: kiet@0309
+      MYSQL_PASSWORD: keith@0309
     ports:
       - "3307:3307"
     volumes:

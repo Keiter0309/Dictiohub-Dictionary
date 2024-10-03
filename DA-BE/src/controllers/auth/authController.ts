@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { SendMailTemplates } from "../../constant/mails/sendmails";
 import {
   IUser,
-  ILogin,
   IResetPassword,
   IForgotPassword,
   IChangePassword,
@@ -12,6 +11,7 @@ import { sendMail } from "../../utils/mailer";
 import { randomOtpDigit } from "../../utils/randomOtpDigit";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { access } from "fs";
 
 class AuthController {
   public async register(req: Request, res: Response) {
@@ -69,7 +69,7 @@ class AuthController {
       await User.create(data);
 
       // Send welcome email
-      const mailOptions = SendMailTemplates.MAIL_REGISTRATION(firstName)
+      const mailOptions = SendMailTemplates.MAIL_REGISTRATION(firstName);
       await sendMail(
         email,
         mailOptions.subject,
@@ -100,8 +100,7 @@ class AuthController {
 
     try {
       // Check user is existing
-      const existingUser = (await User.fetchByEmail(email)) as ILogin;
-      const userId = existingUser.id;
+      const existingUser = (await User.fetchByEmail(email)) as IUser;
 
       if (!existingUser) {
         return res.status(401).json({
@@ -133,9 +132,17 @@ class AuthController {
       );
 
       return res.status(200).json({
+        status_code: 200,
         message: "Login successful",
-        token: token,
-        userId: userId,
+        access_token: token,
+        data: {
+          id: existingUser.id,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          username: existingUser.username,
+          email: existingUser.email,
+          role: existingUser.role,
+        },
       });
     } catch (err) {
       console.error(err);
@@ -170,7 +177,10 @@ class AuthController {
       await User.saveOTP(email, otp);
 
       // Send OTP to the email
-      const mailOptions = SendMailTemplates.MAIL_FORGOT_PASSWORD(existingUser.firstName, otp)
+      const mailOptions = SendMailTemplates.MAIL_FORGOT_PASSWORD(
+        existingUser.firstName,
+        otp
+      );
       await sendMail(
         email,
         mailOptions.subject,
@@ -233,7 +243,9 @@ class AuthController {
       await User.updatePassword(email, hashedPassword);
 
       // Send email notification
-      const mailOptions = SendMailTemplates.MAIL_RESET_PASSWORD(existingUser.firstName)
+      const mailOptions = SendMailTemplates.MAIL_RESET_PASSWORD(
+        existingUser.firstName
+      );
       await sendMail(
         email,
         mailOptions.subject,
@@ -311,7 +323,9 @@ class AuthController {
       await User.updatePassword(email, hashedPassword);
 
       // Send email notification
-      const mailOptions = SendMailTemplates.MAIL_CHANGE_PASSWORD(existingUser.firstName)
+      const mailOptions = SendMailTemplates.MAIL_CHANGE_PASSWORD(
+        existingUser.firstName
+      );
       await sendMail(
         email,
         mailOptions.subject,

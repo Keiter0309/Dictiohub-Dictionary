@@ -4,7 +4,7 @@ import AuthServices from "../../../services/auth/authServices";
 import { Spin } from "antd";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
-import Toast from "../../../utils/ToastData/Toast";
+import { Toast } from "../../../utils/ToastData/Toast";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();

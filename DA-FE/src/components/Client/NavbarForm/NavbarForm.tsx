@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Menu, X, ArrowLeft } from "lucide-react";
+import { Cookies } from "react-cookie";
 
 const NavbarForm: React.FC = () => {
+  const cookies = new Cookies();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const isLogged = sessionStorage.getItem("token");
+  const isLogged = cookies.get("token");
 
   let navItems = [
     { to: "/", label: "Home" },

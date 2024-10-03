@@ -69,3 +69,7 @@ export const verifyUser = (req: Request & {user?: JwtPayload}, res: Response, ne
     });
   }
 }
+
+export const generateToken = (payload: JwtPayload) => {
+  return jwt.sign(payload, secretKey, { expiresIn: "1h" });
+}

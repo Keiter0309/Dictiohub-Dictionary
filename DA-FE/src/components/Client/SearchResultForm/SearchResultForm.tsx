@@ -4,7 +4,7 @@ import { Bookmark, Volume2 } from "lucide-react";
 import { Modal } from "antd";
 import { SearchResultFormProps } from "../../../types/Dashboard/SearchResultFormProps";
 import wordServices from "../../../services/word/wordServices";
-import Toast from "../../../utils/ToastData/Toast";
+import { Toast } from "../../../utils/ToastData/Toast";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);

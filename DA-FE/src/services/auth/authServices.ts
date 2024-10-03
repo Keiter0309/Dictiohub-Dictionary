@@ -1,5 +1,6 @@
 import axios from "axios";
 import { EAuth } from "../../enums/Auth/EAuth";
+import { Cookies } from "react-cookie";
 
 class AuthServices {
   public async register(
@@ -17,7 +18,7 @@ class AuthServices {
       username,
       password,
       confirmPassword,
-    };
+    }; 
 
     try {
       const response = await axios.post(
@@ -50,7 +51,11 @@ class AuthServices {
         `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
         { email, password }
       );
-      const userId = response.data.userId;
+      const userId = response.data.data["id"];
+      const cookies = new Cookies();
+      cookies.set("token", 'true', {
+        maxAge: 3600,
+      });
 
       localStorage.setItem("id", userId);
       return response.data;

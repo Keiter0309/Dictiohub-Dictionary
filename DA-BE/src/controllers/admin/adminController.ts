@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { User } from "../../model/User/User";
 import { Words } from "../../model/Words/Word";
-import { IUser, ILogin } from "../../interface/User";
+import { IUser } from "../../interface/User";
 import bycrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export class AdminUserController {
   public static async fetchAllUsers(req: Request, res: Response) {
@@ -202,7 +203,7 @@ export class AdminAuthController {
   public static async login(req: Request, res: Response) {
     const { email, password } = req.body;
     try {
-      const user = (await User.fetchByEmail(email)) as ILogin;
+      const user = (await User.fetchByEmail(email)) as IUser;
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -216,6 +217,18 @@ export class AdminAuthController {
       if (user.role !== "admin") {
         return res.status(401).json({ error: "Unauthorized" });
       }
+
+      // Generate Token
+      const token = jwt.sign(
+        {
+          id: user.id,
+          role: user.role,
+        },
+        process.env.JWT_SECRET || "",
+        {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+        }
+      );
       return res.status(200).json({
         status_code: 200,
         message: "success",
@@ -223,6 +236,7 @@ export class AdminAuthController {
           id: user.id,
           email: user.email,
           role: user.role,
+          access_token: token,
         },
       });
     } catch (err) {
