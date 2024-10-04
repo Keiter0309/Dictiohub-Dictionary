@@ -8,6 +8,7 @@ export enum EAuth {
 }
 
 export enum EAdmin {
-  ADMIN_LOGIN = "api/v1/admin/login",
   ADMIN_CLIENT_HOST = "http://localhost:9000",
+  ADMIN_LOGIN = "api/v1/admin/login",
+  ADMIN_FETCH_USERS = "api/v1/admin/users",
 }

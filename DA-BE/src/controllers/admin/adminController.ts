@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { User } from "../../model/User/User";
 import { Words } from "../../model/Words/Word";
-import { IUser } from "../../interface/User";
+import { ILogin, IUser } from "../../interface/User";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export class AdminUserController {
   public static async fetchAllUsers(req: Request, res: Response) {
     try {
-      const users = (await User.fetchAll()) as IUser[];
+      const users = (await User.fetchAll()) as ILogin[];
       return res.status(200).json({
         status_code: 200,
         message: "success",
@@ -19,6 +19,7 @@ export class AdminUserController {
               username: user.username,
               email: user.email,
               role: user.role,
+              lastLogin: user.lastLogin,
             };
           }),
         },
@@ -88,20 +89,35 @@ export class AdminUserController {
   }
 
   public static async createUser(req: Request, res: Response) {
+    const { firstName, lastName, username, email, password, role } = req.body;
     try {
-      const user = (await User.create(req.body)) as IUser;
-      return res.status(200).json({
-        status_code: 200,
-        message: "success",
-        data: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        },
-      });
+      const newUser = await User.create({
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        email: email,
+        password: password,
+        role: role
+      })
+
+      const existingUsername = await User.fetchByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({
+          message: "Username already taken",
+        });
+      }
+
+      const existingEmail = await User.fetchByEmail(email);
+      if (existingEmail) {
+        return res.status(400).json({
+          message: "Email already taken",
+        });
+      }
+
+      const hashedPassword = bycrypt.hashSync(password, 10);
+
+      
+
     } catch (err) {
       return res.status(500).json({ error: "Error creating user" });
     }
@@ -203,7 +219,7 @@ export class AdminAuthController {
   public static async login(req: Request, res: Response) {
     const { email, password } = req.body;
     try {
-      const user = (await User.fetchByEmail(email)) as IUser;
+      const user = (await User.fetchByEmail(email)) as ILogin;
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -229,6 +245,11 @@ export class AdminAuthController {
           expiresIn: process.env.JWT_EXPIRES_IN,
         }
       );
+
+      // last login
+      const lastLogin = new Date();
+      await User.updateLastLogin(email, lastLogin);
+
       return res.status(200).json({
         status_code: 200,
         message: "success",

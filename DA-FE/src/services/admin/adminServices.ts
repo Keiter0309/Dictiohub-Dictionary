@@ -14,6 +14,19 @@ class AdminServices {
       return error.response.data;
     }
   }
+
+  public static async fetchUsers() {
+    try {
+      const response = await axios.get(
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`
+      );
+      if (response) {
+        return response.data.data.users;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 export default AdminServices;

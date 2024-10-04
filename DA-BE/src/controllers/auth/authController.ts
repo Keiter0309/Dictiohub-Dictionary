@@ -5,6 +5,7 @@ import {
   IResetPassword,
   IForgotPassword,
   IChangePassword,
+  ILogin,
 } from "../../interface/User";
 import { User } from "../../model/User/User";
 import { sendMail } from "../../utils/mailer";
@@ -62,7 +63,7 @@ class AuthController {
       email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      role: "users",
+      role: "viewer",
     };
 
     try {
@@ -100,7 +101,7 @@ class AuthController {
 
     try {
       // Check user is existing
-      const existingUser = (await User.fetchByEmail(email)) as IUser;
+      const existingUser = (await User.fetchByEmail(email)) as ILogin;
 
       if (!existingUser) {
         return res.status(401).json({
@@ -130,6 +131,10 @@ class AuthController {
           expiresIn: process.env.JWT_EXPIRES_IN,
         }
       );
+
+      // Last Login
+      const lastLogin = new Date();
+      await User.updateLastLogin(email, lastLogin);
 
       return res.status(200).json({
         status_code: 200,

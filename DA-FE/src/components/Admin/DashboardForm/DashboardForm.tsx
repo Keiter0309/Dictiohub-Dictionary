@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./DashboardForm-module.css";
 import { sideBarData, statisticsData } from "../../../utils/Data/Data";
 import CountUp from "react-countup";
@@ -28,9 +28,16 @@ const SidebarForm: React.FC = () => {
   const sidebarItems = sideBarData;
   const statisticsItems = statisticsData;
 
-  const [active, setActive] = React.useState("Dashboard");
+  // Active tab state
+  const [active, setActive] = React.useState(
+    localStorage.getItem("active") || "Dashboard"
+  );
   const [open, setOpen] = React.useState(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("active", active);
+  }, [active]);
 
   // Click event handlers
   const handleClickSidebar = () => {

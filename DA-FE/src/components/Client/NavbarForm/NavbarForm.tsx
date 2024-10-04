@@ -22,7 +22,7 @@ const NavbarForm: React.FC = () => {
   ];
 
   const handleLogoutClick = () => {
-    sessionStorage.removeItem("token");
+    cookies.remove("token");
     localStorage.removeItem("favorites");
     window.location.href = "/";
   };

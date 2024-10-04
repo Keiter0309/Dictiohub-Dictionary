@@ -172,4 +172,21 @@ export class User {
       );
     });
   }
+
+  // Update last login
+  static updateLastLogin(email: string, lastLogin: Date) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "UPDATE user SET lastLogin = NOW() WHERE email = ?",
+        [email],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
 }

@@ -9,6 +9,12 @@ export interface IUser {
   role: string;
 }
 
+export interface ILogin extends IUser {
+  lastLogin: Date;
+  lastIP: string;
+  wordAdded: number;
+}
+
 export interface IAuthResponse {
   message: string;
 }
@@ -36,4 +42,9 @@ export interface IChangePassword {
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface JwtPayload {
+  id: string;
+  role: string;
 }

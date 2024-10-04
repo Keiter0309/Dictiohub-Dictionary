@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { JwtPayload } from "../../interface/JwtPayload";
 
 // Load environment variables
 dotenv.config();
@@ -9,11 +10,6 @@ const secretKey = process.env.JWT_SECRET as string;
 
 if (!secretKey) {
   throw new Error("JWT_SECRET is not defined in the environment variables");
-}
-
-interface JwtPayload {
-  id: string;
-  role: string;
 }
 
 export const authenticateToken = (

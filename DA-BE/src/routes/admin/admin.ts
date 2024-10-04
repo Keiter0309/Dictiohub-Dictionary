@@ -5,5 +5,5 @@ import { authenticateToken, verifyAdmin } from "../../middlewares/auth/authMiddl
 
 export const adminRoute = Router();
 
-adminRoute.get(EAdmin.FETCH_USERS, verifyAdmin, authenticateToken, AdminUserController.fetchAllUsers);
+adminRoute.get(EAdmin.FETCH_USERS, AdminUserController.fetchAllUsers);
 adminRoute.post(EAdmin.LOGIN, AdminAuthController.login);

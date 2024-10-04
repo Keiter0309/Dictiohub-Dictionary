@@ -29,6 +29,9 @@ model User {
   updatedBy            Int?
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
+  lastLogin            DateTime?
+  lastLoginIP          String?
+  wordAdded            Int?
 
   userSearchHistory UserSearchHistory[]
   favoriteWords     FavoriteWord[]

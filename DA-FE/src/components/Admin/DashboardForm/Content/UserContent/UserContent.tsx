@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userData } from "../../../../../utils/Data/Data";
 import { Pagination, Modal, Select, Input } from "antd";
-import { Plus, Search, Pencil, Trash2, ChevronUp } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, ChevronUp, Key } from "lucide-react";
+import AdminServices from "../../../../../services/admin/adminServices";
 
 const UserContent: React.FC = () => {
   const userTableData = userData;
   const [currentPage, setCurrentPage] = useState(1);
+  const [users, setUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [password, setPassword] = useState("");
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -21,6 +24,46 @@ const UserContent: React.FC = () => {
     setShowModal(false);
   };
 
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const generateRandomPassword = () => {
+    length = 12
+    const charset= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+
+    for (let i = 0; i < length; i++) {
+      const at = Math.floor(Math.random() * charset.length);
+      password += charset.charAt(at);
+      setPassword(password);  
+    }
+
+    return password;
+  }
+
+  const fetchAllUsers = async () => {
+    try {
+      const response = await AdminServices.fetchUsers();
+      setUsers(response);
+      return response;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
   return (
     <div>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-5">
@@ -62,9 +105,37 @@ const UserContent: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-5">
               Add User
             </h3>
-            <form action="" className="flex flex-col gap-5">
-              <Input placeholder="Name" />
-              <Input placeholder="Email" />
+            <form className="flex flex-col gap-5">
+              <Input
+                placeholder="First Name"
+                name="firstName"
+              />
+              <Input
+                placeholder="Last Name"
+                name="lastName"
+              />
+              <Input.Password
+                placeholder="Password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={generateRandomPassword}
+                className="bg-blue-500 hover:bg-indigo-500 text-white px-4 py-2 rounded-md flex items-center transition-all duration-200 ease-linear"
+              >
+                <Key className="mr-2 w-5 h-5" />
+                <span>Random password</span>
+              </button>
+              <Input
+                placeholder="Username"
+                name="username"
+              />
+              <Input
+                placeholder="Email"
+                name="email"
+              />
               <Select
                 placeholder="Select a role"
                 className="w-full"
@@ -92,6 +163,9 @@ const UserContent: React.FC = () => {
         <table className="min-w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
           <thead className="bg-gray-100">
             <tr className="border-b border-gray-200">
+              <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                ID
+              </th>
               <th className="py-3 px-5 text-left font-semibold text-gray-700 flex gap-x-2">
                 Name
                 <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -114,58 +188,35 @@ const UserContent: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="hover:bg-gray-50">
-              <td className="py-3 px-5 text-left">John Doe</td>
-              <td className="py-3 px-5 text-left">john.doe@example.com</td>
-              <td className="py-3 px-5 text-left">Admin</td>
-              <td className="py-3 px-5 text-left">2024-10-01</td>
-              <td className="py-3 px-5 text-left">150</td>
-              <td className="py-3 px-5 text-left">
-                <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
-                  <Pencil />
-                </button>
-                <button className="text-red-500 hover:text-red-700 ml-3">
-                  <Trash2 />
-                </button>
-              </td>
-            </tr>
-            <tr className="hover:bg-gray-50">
-              <td className="py-3 px-5 text-left">Jane Smith</td>
-              <td className="py-3 px-5 text-left">jane.smith@example.com</td>
-              <td className="py-3 px-5 text-left">Editor</td>
-              <td className="py-3 px-5 text-left">2024-09-15</td>
-              <td className="py-3 px-5 text-left">200</td>
-              <td className="py-3 px-5 text-left">
-                <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
-                  <Pencil />
-                </button>
-                <button className="text-red-500 hover:text-red-700 ml-3">
-                  <Trash2 />
-                </button>
-              </td>
-            </tr>
-            <tr className="hover:bg-gray-50">
-              <td className="py-3 px-5 text-left">Alice Johnson</td>
-              <td className="py-3 px-5 text-left">alice.johnson@example.com</td>
-              <td className="py-3 px-5 text-left">Viewer</td>
-              <td className="py-3 px-5 text-left">2024-08-20</td>
-              <td className="py-3 px-5 text-left">50</td>
-              <td className="py-3 px-5 text-left">
-                <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
-                  <Pencil />
-                </button>
-                <button className="text-red-500 hover:text-red-700 ml-3">
-                  <Trash2 />
-                </button>
-              </td>
-            </tr>
+            {users.map((user: any) => {
+              return (
+                <tr className="hover:bg-gray-50" key={user.id}>
+                  <td className="py-3 px-5 text-left">{user.id}</td>
+                  <td className="py-3 px-5 text-left">{user.username}</td>
+                  <td className="py-3 px-5 text-left">{user.email}</td>
+                  <td className="py-3 px-5 text-left">{user.role}</td>
+                  <td className="py-3 px-5 text-left">
+                    {formatDateTime(user.lastLogin)}
+                  </td>
+                  <td className="py-3 px-5 text-left">{user.wordsAdded}</td>
+                  <td className="py-3 px-5 text-left">
+                    <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
+                      <Pencil />
+                    </button>
+                    <button className="text-red-500 hover:text-red-700 ml-3">
+                      <Trash2 />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {/* Pagination */}
         <div className="flex justify-center items-center p-5">
           <Pagination
             current={currentPage}
-            total={50}
+            total={users.length}
             onChange={handlePageChange}
           />
         </div>
