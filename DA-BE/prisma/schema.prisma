@@ -20,7 +20,7 @@ model User {
   username             String    @unique
   email                String    @unique
   password             String
-  confirmPassword      String
+  confirmPassword      String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @default(now()) @updatedAt
   deletedAt            DateTime?

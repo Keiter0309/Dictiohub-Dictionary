@@ -6,4 +6,8 @@ import { authenticateToken, verifyAdmin } from "../../middlewares/auth/authMiddl
 export const adminRoute = Router();
 
 adminRoute.get(EAdmin.FETCH_USERS, AdminUserController.fetchAllUsers);
+adminRoute.get(EAdmin.FETCH_USER, AdminUserController.fetchUserByEmail);
 adminRoute.post(EAdmin.LOGIN, AdminAuthController.login);
+adminRoute.post(EAdmin.CREATE_USER, AdminUserController.createUser);
+adminRoute.delete(EAdmin.DELETE_USER, AdminUserController.deleteUser);
+adminRoute.put(EAdmin.UPDATE_USER, AdminUserController.updateUser);

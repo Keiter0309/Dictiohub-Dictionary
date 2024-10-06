@@ -17,11 +17,12 @@ import {
   Clock,
   ChartLine,
 } from "lucide-react";
-import UserContent from "./Content/UserContent/UserContent";
 import WordContent from "./Content/WordContent/WordContent";
 import CategoriesContent from "./Content/CategoriesContent/CategoriesContent";
 import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
 import SettingContent from "./Content/SettingContent/SettingContent";
+import UserContentForm from "./Content/UserContent/UserContent";
+import AdminServices from "../../../services/admin/adminServices";
 
 const SidebarForm: React.FC = () => {
   // Data from utils/Data.ts
@@ -46,6 +47,32 @@ const SidebarForm: React.FC = () => {
 
   const handleMobileClick = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleCreateUser = async (
+    firstName: string,
+    lastName: string,
+    username: string,
+    email: string,
+    password: string,
+    role: string
+  ) => {
+    try {
+      const response = await AdminServices.createUser(
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+        role
+      );
+
+      if (response) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -244,7 +271,7 @@ const SidebarForm: React.FC = () => {
           </div>
         )}
 
-        {active === "Users" && <UserContent />}
+        {active === "Users" && <UserContentForm onSubmit={handleCreateUser} />}
 
         {active === "Words" && <WordContent />}
 

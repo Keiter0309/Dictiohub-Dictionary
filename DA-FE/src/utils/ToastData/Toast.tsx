@@ -22,3 +22,15 @@ export const Modal = (message: string, icon: "success" | "error" | "info") => {
     confirmButtonText: "OK",
   });
 };
+
+
+export const Confirm = (message: string, icon: "success" | "error" | "info") => {
+  const MySwal = withReactContent(Swal);
+  return MySwal.fire({
+    text: message,
+    icon: icon,
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: "No",
+  });
+}

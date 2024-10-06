@@ -48,58 +48,135 @@ export class AdminUserController {
     }
   }
 
-  public static async deleteUser(req: Request, res: Response) {
-    const id = parseInt(req.params.id);
+  public static async fetchUserByEmail(req: Request, res: Response) {
+    const email = req.params.email as string;
+
     try {
-      const user = (await User.delete(id)) as IUser;
+      const user = (await User.fetchByEmail(email)) as ILogin;
+
+      if (!user) {
+        return res.status(404).json({
+          status_code: 404,
+          message: "User not found",
+        });
+      }
+
+      const data = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        lastLogin: user.lastLogin,
+        lastIP: user.lastIP,
+        wordAdded: user.wordAdded,
+      };
+
       return res.status(200).json({
         status_code: 200,
         message: "success",
-        data: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        },
+        data: data,
       });
-    } catch (err) {
-      return res.status(500).json({ error: "Error deleting user" });
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
+    }
+  }
+
+  public static async deleteUser(req: Request, res: Response) {
+    const email = req.params.email as string;
+
+    // Validate input
+    if (!email) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "Email parameter is required",
+      });
+    }
+
+    try {
+      // Check if user exists
+      const user = await User.fetchByEmail(email);
+      if (!user) {
+        return res.status(404).json({
+          status_code: 404,
+          message: "User not found",
+        });
+      }
+
+      // Delete the user
+      await User.deleteByEmail(email);
+
+      return res.status(200).json({
+        status_code: 200,
+        message: "User deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return res.status(500).json({
+        status_code: 500,
+        message: "Error deleting user",
+      });
     }
   }
 
   public static async updateUser(req: Request, res: Response) {
     const id = parseInt(req.params.id);
+    const { email, firstName, lastName, username, role } = req.body;
+
+    // Validate input
+    if (!email || !firstName || !lastName || !username || !role) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "All fields are required",
+      });
+    }
+
     try {
-      const user = (await User.update(id, req.body)) as IUser;
+      // Check if user exists
+      const existingUser = await User.fetchById(id);
+      if (!existingUser) {
+        return res.status(404).json({
+          status_code: 404,
+          message: "User not found",
+        });
+      }
+
+      // Update the user
+      const updatedUser = (await User.update(id, { firstName, lastName, username, role })) as IUser;
+
       return res.status(200).json({
         status_code: 200,
-        message: "success",
+        message: "User updated successfully",
         data: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          username: user.username,
-          email: user.email,
-          role: user.role,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          role: updatedUser.role,
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: "Error updating user" });
+      console.error('Error updating user:', err);
+      return res.status(500).json({
+        status_code: 500,
+        message: "Error updating user",
+      });
     }
   }
 
   public static async createUser(req: Request, res: Response) {
     const { firstName, lastName, username, email, password, role } = req.body;
-    try {
-      const newUser = await User.create({
-        firstName: firstName,
-        lastName: lastName,
-        username: username,
-        email: email,
-        password: password,
-        role: role
-      })
 
+    // Validate input
+    if (!firstName || !lastName || !username || !email || !password || !role) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    try {
+      // Check if username already exists
       const existingUsername = await User.fetchByUsername(username);
       if (existingUsername) {
         return res.status(400).json({
@@ -107,6 +184,7 @@ export class AdminUserController {
         });
       }
 
+      // Check if email already exists
       const existingEmail = await User.fetchByEmail(email);
       if (existingEmail) {
         return res.status(400).json({
@@ -114,12 +192,36 @@ export class AdminUserController {
         });
       }
 
+      // Hash the password
       const hashedPassword = bycrypt.hashSync(password, 10);
 
-      
+      // Create the user
+      const newUser = (await User.create({
+        firstName,
+        lastName,
+        username,
+        email,
+        password: hashedPassword,
+        role,
+      })) as IUser;
 
+      return res.status(201).json({
+        status_code: 201,
+        message: "User created successfully",
+        data: {
+          id: newUser.id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          username: newUser.username,
+          email: newUser.email,
+          role: newUser.role,
+        },
+      });
     } catch (err) {
-      return res.status(500).json({ error: "Error creating user" });
+      console.error("Error creating user:", err);
+      return res.status(500).json({
+        message: "Error creating user",
+      });
     }
   }
 

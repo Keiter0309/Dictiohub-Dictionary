@@ -123,6 +123,22 @@ export class User {
     });
   }
 
+  static deleteByEmail(email: string) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "DELETE FROM user WHERE email = ?",
+        [email],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
   static search(username: string) {
     return new Promise((resolve, reject) => {
       db.query(
