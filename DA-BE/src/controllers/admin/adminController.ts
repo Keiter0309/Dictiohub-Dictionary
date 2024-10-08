@@ -143,7 +143,7 @@ export class AdminUserController {
       }
 
       // Update the user
-      const updatedUser = (await User.update(id, { firstName, lastName, username, role })) as IUser;
+      const updatedUser = (await User.update(id, {firstName, lastName, username, email, role })) as IUser;
 
       return res.status(200).json({
         status_code: 200,

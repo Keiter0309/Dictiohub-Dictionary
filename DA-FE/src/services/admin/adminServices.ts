@@ -85,6 +85,7 @@ class AdminServices {
         `
         ${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_USER}/${id}`,
         { firstName, lastName, username, email, role }
+
       );
       console.log(response.data);
       return response.data;

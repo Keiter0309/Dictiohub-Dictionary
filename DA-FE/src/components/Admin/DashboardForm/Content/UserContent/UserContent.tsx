@@ -5,6 +5,8 @@ import { Plus, Search, Pencil, Trash2, ChevronUp, Key } from "lucide-react";
 import AdminServices from "../../../../../services/admin/adminServices";
 import { UserContentProps } from "../../../../../types/Dashboard/Contents/UserContentProps";
 import { Confirm } from "../../../../../utils/ToastData/Toast";
+import formatDateTime from "../../../../../utils/Format/FormatDateTime";
+import Fuse from "fuse.js";
 
 const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const userTableData = userData;
@@ -19,10 +21,10 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
 
-  const handleCreateUser = (event: React.FormEvent) => {
+  const handleCreateUser = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      onSubmit(firstName, lastName, username, email, password, role);
+      await onSubmit(firstName, lastName, username, email, password, role);
       handleCloseModal();
       // Clear input fields
       setFirstName("");
@@ -66,52 +68,23 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     setRole("");
   };
 
-  const showConfirmSwal = async (email: string) => {
-    const result = await Confirm(
-      `Are you sure you want to delete ${email}?`,
-      "error"
-    );
-    if (result.isConfirmed) {
-      handleDeleteUser(email);
-    }
-  };
-
   const handleEditUser = async (email: string) => {
     setShowModal(true);
     fetchUser(email);
     setTitleTable("Edit User");
   };
 
-  const handleUpdateUser = async (
-    event: React.FormEvent
-  ) => {
+  const handleUpdateUser = async (event: React.FormEvent) => {
     event.preventDefault();
-    const response = await fetchUser(email);
-    const id = response.id;
-    const firstName = response.firstName;
-    const lastName = response.lastName;
-    const username = response.username;
-    const role = response.role;
     try {
-      AdminServices.updateUser(id, firstName, lastName, username, email, role);
-      console.log("User updated successfully");
+      const response = await AdminServices.fetchUser(email);
+      const { id } = response;
+      await AdminServices.updateUser(id, firstName, lastName, username, email, role);
       handleCloseModal();
       fetchAllUsers();
     } catch (error) {
-      console.error(error);
+      console.error("Error updating user:", error);
     }
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
   };
 
   const generateRandomPassword = () => {
@@ -152,6 +125,16 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
       throw error;
+    }
+  };
+
+  const showConfirmSwal = async (email: string) => {
+    const result = await Confirm(
+      `Are you sure you want to delete ${email}?`,
+      "error"
+    );
+    if (result.isConfirmed) {
+      handleDeleteUser(email);
     }
   };
 
@@ -199,14 +182,11 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
             <h3 className="text-xl font-semibold text-gray-800 mb-5">
               {titleTable}
             </h3>
-            <form
-              className="flex flex-col gap-5"
-              onSubmit={
-                titleTable === "Add User"
-                  ? handleCreateUser
-                  : () => handleUpdateUser
-              }
-            >
+            <form className="flex flex-col gap-5" onSubmit={
+              titleTable === "Add User"
+                ? handleCreateUser
+                : handleUpdateUser
+            }>
               <Input
                 placeholder="First Name"
                 name="firstName"
@@ -261,7 +241,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
                   type="submit"
                   className="p-2 rounded-md shadow-sm bg-blue-500 hover:bg-indigo-500 transition-all duration-300 text-white w-24"
                 >
-                  {titleTable === "Add User" ? "Add" : "Update"}
+                  Submit
                 </button>
               </div>
             </form>
