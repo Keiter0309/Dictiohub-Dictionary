@@ -256,7 +256,7 @@ export class AdminUserController {
 }
 
 export class AdminWordController {
-  public static async getAllWords(req: Request, res: Response) {
+  public static async fetchAllWords(req: Request, res: Response) {
     try {
       const words = await Words.fetchAllWords();
       return res.status(200).json({
@@ -336,17 +336,14 @@ export class AdminAuthController {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      // Generate Token
-      const token = jwt.sign(
-        {
-          id: user.id,
-          role: user.role,
-        },
-        process.env.JWT_SECRET || "",
-        {
-          expiresIn: process.env.JWT_EXPIRES_IN,
-        }
-      );
+      const payload = {
+        id: user.id,
+        role: user.role,
+      }
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+        expiresIn: "15m",
+      });
 
       // last login
       const lastLogin = new Date();

@@ -22,7 +22,7 @@ import CategoriesContent from "./Content/CategoriesContent/CategoriesContent";
 import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
 import SettingContent from "./Content/SettingContent/SettingContent";
 import UserContentForm from "./Content/UserContent/UserContent";
-import AdminServices from "../../../services/admin/adminServices";
+import { AdminServices } from "../../../services/admin/adminServices";
 
 const SidebarForm: React.FC = () => {
   // Data from utils/Data.ts

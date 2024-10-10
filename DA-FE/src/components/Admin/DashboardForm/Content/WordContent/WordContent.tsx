@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pagination, Input, Modal, Select } from "antd";
 import { Search, Plus, Pencil, Trash2, ChevronUp } from "lucide-react";
 import { wordData } from "../../../../../utils/Data/Data";
+import { AdminWordServices } from "../../../../../services/admin/adminServices";
 
 const WordContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [words, setWords] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const { TextArea } = Input;
+
+  const fetchAllWords = async () => {
+    try {
+      const response = await AdminWordServices.fetchAllWords();
+      setWords(response);
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -20,6 +33,11 @@ const WordContent: React.FC = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
+  useEffect(() => {
+    fetchAllWords();
+  }, []);
+
   return (
     <div>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-5">
@@ -144,20 +162,28 @@ const WordContent: React.FC = () => {
           <tbody>
             <tr className="hover:bg-gray-50">
               <td className="py-3 px-5 text-left">Ability</td>
-              <td className="py-3 px-5 text-left">
+              <td className="py-3 px-5 text-left whitespace-nowrap">
                 The fact that somebody/something is able to do something.
               </td>
-              <td className="py-3 px-5 text-left">
+              <td className="py-3 px-5 text-left whitespace-nowrap">
                 The fact that somebody/something is able to do something.
               </td>
-              <td className="py-3 px-5 text-left">
+              <td className="py-3 px-5 text-left whitespace-nowrap">
                 A gentle form of exercise will increase your ability to relax.
               </td>
-              <td className="py-3 px-5 text-left">capability, capacity</td>
-              <td className="py-3 px-5 text-left">inability, incapacity</td>
-              <td className="py-3 px-5 text-left">/əˈbɪləti/</td>
-              <td className="py-3 px-5 text-left">American English</td>
-              <td className="py-3 px-5 text-left">
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                capability, capacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                inability, incapacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                /əˈbɪləti/
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                American English
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
                 The ability to work well with others is a key skill.
               </td>
               <td className="py-3 px-5 text-left">/audio/ability.mp3</td>
@@ -170,12 +196,34 @@ const WordContent: React.FC = () => {
                 </button>
               </td>
             </tr>
+
             <tr className="hover:bg-gray-50">
-              <td className="py-3 px-5 text-left">Jane Smith</td>
-              <td className="py-3 px-5 text-left">jane.smith@example.com</td>
-              <td className="py-3 px-5 text-left">Editor</td>
-              <td className="py-3 px-5 text-left">2024-09-15</td>
-              <td className="py-3 px-5 text-left">200</td>
+              <td className="py-3 px-5 text-left">Ability</td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The fact that somebody/something is able to do something.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The fact that somebody/something is able to do something.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                A gentle form of exercise will increase your ability to relax.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                capability, capacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                inability, incapacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                /əˈbɪləti/
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                American English
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The ability to work well with others is a key skill.
+              </td>
+              <td className="py-3 px-5 text-left">/audio/ability.mp3</td>
               <td className="py-3 px-5 text-left">
                 <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
                   <Pencil className="w-5 h-5" />
@@ -185,12 +233,34 @@ const WordContent: React.FC = () => {
                 </button>
               </td>
             </tr>
+
             <tr className="hover:bg-gray-50">
-              <td className="py-3 px-5 text-left">Alice Johnson</td>
-              <td className="py-3 px-5 text-left">alice.johnson@example.com</td>
-              <td className="py-3 px-5 text-left">Viewer</td>
-              <td className="py-3 px-5 text-left">2024-08-20</td>
-              <td className="py-3 px-5 text-left">50</td>
+              <td className="py-3 px-5 text-left">Ability</td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The fact that somebody/something is able to do something.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The fact that somebody/something is able to do something.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                A gentle form of exercise will increase your ability to relax.
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                capability, capacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                inability, incapacity
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                /əˈbɪləti/
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                American English
+              </td>
+              <td className="py-3 px-5 text-left whitespace-nowrap">
+                The ability to work well with others is a key skill.
+              </td>
+              <td className="py-3 px-5 text-left">/audio/ability.mp3</td>
               <td className="py-3 px-5 text-left">
                 <button className="text-blue-500 hover:text-blue-700 transition-all duration-300">
                   <Pencil className="w-5 h-5" />

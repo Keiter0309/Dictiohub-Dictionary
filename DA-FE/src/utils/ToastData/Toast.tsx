@@ -14,7 +14,7 @@ export const Toast = (message: string, icon: "success" | "error") => {
   });
 };
 
-export const Modal = (message: string, icon: "success" | "error" | "info") => {
+export const ModalShowSwal = (message: string, icon: "success" | "error" | "info") => {
   const MySwal = withReactContent(Swal);
   MySwal.fire({
     text: message,

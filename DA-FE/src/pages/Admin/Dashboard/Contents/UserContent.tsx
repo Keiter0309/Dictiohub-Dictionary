@@ -1,5 +1,5 @@
 import React from "react";
-import AdminServices from "../../../../services/admin/adminServices";
+import { AdminServices } from "../../../../services/admin/adminServices";
 import UserContentForm from "../../../../components/Admin/DashboardForm/Content/UserContent/UserContent";
 
 const UserContent: React.FC = () => {
@@ -20,10 +20,7 @@ const UserContent: React.FC = () => {
         password,
         role
       );
-
-      if (response) {
-        console.log(response);
-      }
+      return response;
     } catch (error) {
       console.error(error);
     }

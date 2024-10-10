@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import { userData } from "../../../../../utils/Data/Data";
 import { Pagination, Modal, Select, Input } from "antd";
 import { Plus, Search, Pencil, Trash2, ChevronUp, Key } from "lucide-react";
-import AdminServices from "../../../../../services/admin/adminServices";
-import { UserContentProps } from "../../../../../types/Dashboard/Contents/UserContentProps";
+import { AdminServices } from "../../../../../services/admin/adminServices";
+import {
+  UserContentProps,
+  UserContentState,
+} from "../../../../../types/Dashboard/Contents/UserContentProps";
 import { Confirm } from "../../../../../utils/ToastData/Toast";
 import formatDateTime from "../../../../../utils/Format/FormatDateTime";
 import Fuse from "fuse.js";
+import { Validate } from "../../../../../utils/Validate/Validate";
 
 const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const userTableData = userData;
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState("");
   const [titleTable, setTitleTable] = useState("Add User");
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<UserContentState[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -20,9 +25,35 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [isAscending, setIsAscending] = useState(true);
 
   const handleCreateUser = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    // Validate input fields
+    if (!firstName || !lastName || !username || !password || !email || !role) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (!Validate.validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!Validate.validatePassword(password)) {
+      setError(
+        "Password must be at least 8 characters long and contain at least one number and one special character."
+      );
+
+      return;
+    }
+
+    if (!Validate.validateUsername(username)) {
+      setError("Username must contain only letters and numbers.");
+      return;
+    }
+
     try {
       await onSubmit(firstName, lastName, username, email, password, role);
       handleCloseModal();
@@ -40,6 +71,18 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     }
   };
 
+  const handleSortUsersName = () => {
+    const sortedUsers = [...users].sort((a, b) => {
+      if (isAscending) {
+        return a.username.localeCompare(b.username);
+      } else {
+        return b.username.localeCompare(a.username);
+      }
+    });
+    setUsers(sortedUsers);
+    setIsAscending(!isAscending);
+  };
+
   const handleDeleteUser = async (email: string) => {
     try {
       await AdminServices.deleteUser(email);
@@ -47,6 +90,22 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSearchUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const fuse = new Fuse(users, {
+      keys: ["username"],
+    });
+
+    if (!value) {
+      fetchAllUsers();
+      return;
+    }
+
+    const results = fuse.search(value);
+    const searchResults = results.map((result) => result.item);
+    setUsers(searchResults);
   };
 
   const handlePageChange = (page: number) => {
@@ -66,11 +125,13 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     setPassword("");
     setEmail("");
     setRole("");
+    setTitleTable("Add User");
+    setError(""); // Clear error message
   };
 
   const handleEditUser = async (email: string) => {
     setShowModal(true);
-    fetchUser(email);
+    await fetchUser(email);
     setTitleTable("Edit User");
   };
 
@@ -79,7 +140,14 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
     try {
       const response = await AdminServices.fetchUser(email);
       const { id } = response;
-      await AdminServices.updateUser(id, firstName, lastName, username, email, role);
+      await AdminServices.updateUser(
+        id,
+        firstName,
+        lastName,
+        username,
+        email,
+        role
+      );
       handleCloseModal();
       fetchAllUsers();
     } catch (error) {
@@ -88,18 +156,18 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   };
 
   const generateRandomPassword = () => {
-    length = 12;
+    const length = 12;
     const charset =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let password = "";
+    let newPassword = "";
 
     for (let i = 0; i < length; i++) {
       const at = Math.floor(Math.random() * charset.length);
-      password += charset.charAt(at);
-      setPassword(password);
+      newPassword += charset.charAt(at);
     }
 
-    return password;
+    setPassword(newPassword);
+    return newPassword;
   };
 
   const fetchAllUsers = async () => {
@@ -141,6 +209,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   useEffect(() => {
     fetchAllUsers();
   }, []);
+
   return (
     <div>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-5">
@@ -166,6 +235,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
           <Input
             type="text"
             placeholder="Search users..."
+            onChange={handleSearchUser}
             className="shadow-md px-2 py-2 pl-10 rounded-md border w-full md:w-64"
           />
           <Search className="absolute left-2 top-2 text-gray-500 w-6 h-6" />
@@ -182,11 +252,12 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
             <h3 className="text-xl font-semibold text-gray-800 mb-5">
               {titleTable}
             </h3>
-            <form className="flex flex-col gap-5" onSubmit={
-              titleTable === "Add User"
-                ? handleCreateUser
-                : handleUpdateUser
-            }>
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={
+                titleTable === "Add User" ? handleCreateUser : handleUpdateUser
+              }
+            >
               <Input
                 placeholder="First Name"
                 name="firstName"
@@ -236,6 +307,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
                 ]}
                 onChange={(value) => setRole(value)}
               />
+              {error && <span className="text-red-500">{error}</span>}
               <div className="flex justify-end items-center">
                 <button
                   type="submit"
@@ -259,7 +331,9 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
               </th>
               <th className="py-3 px-5 text-left font-semibold text-gray-700 flex gap-x-2">
                 Name
-                <ChevronUp className="w-5 h-5 text-gray-500" />
+                <button onClick={handleSortUsersName}>
+                  <ChevronUp className="w-5 h-5 text-gray-500" />
+                </button>
               </th>
               <th className="py-3 px-5 text-left font-semibold text-gray-700">
                 Email

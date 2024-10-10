@@ -120,17 +120,15 @@ class AuthController {
         });
       }
 
+      const payload = {
+        id: existingUser.id,
+        role: existingUser.role,
+      };
+
       // Generate token
-      const token = jwt.sign(
-        {
-          id: existingUser.id,
-          role: existingUser.role,
-        },
-        process.env.JWT_SECRET || "",
-        {
-          expiresIn: process.env.JWT_EXPIRES_IN,
-        }
-      );
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+        expiresIn: "15m",
+      });
 
       // Last Login
       const lastLogin = new Date();

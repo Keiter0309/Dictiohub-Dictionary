@@ -1,15 +1,17 @@
 import axios from "axios";
 import { EAdmin } from "../../enums/Auth/EAuth";
 
-class AdminServices {
+export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
     try {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
         { email, password }
       );
+      // if token expires, the user will be logged out
+      const access_token = response.data.data.access_token;
 
-      return response.data.data;
+      return access_token;
     } catch (error: any) {
       return error.response.data;
     }
@@ -18,7 +20,12 @@ class AdminServices {
   public static async fetchUsers() {
     try {
       const response = await axios.get(
-        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("tokena")}`,
+          },
+        }
       );
       if (response) {
         return response.data.data.users;
@@ -85,7 +92,6 @@ class AdminServices {
         `
         ${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_USER}/${id}`,
         { firstName, lastName, username, email, role }
-
       );
       console.log(response.data);
       return response.data;
@@ -95,4 +101,21 @@ class AdminServices {
   }
 }
 
-export default AdminServices;
+export class AdminWordServices {
+  public static async fetchAllWords() {
+    try {
+      const response = await axios.get(
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("tokena")}`,
+          },
+        }
+      );
+      console.log(response.data.data.words);
+      return response.data.data.words;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
