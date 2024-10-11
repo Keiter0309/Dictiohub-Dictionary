@@ -4,7 +4,7 @@ import AdminDashboardForm from '../../../components/Admin/Home/HomePageForm';
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     useEffect(() => {
-        const token = sessionStorage.getItem("tokena");
+        const token = sessionStorage.getItem("token");
         if (!token) {
             navigate("/admin/login");
         }

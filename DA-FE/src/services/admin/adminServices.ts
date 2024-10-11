@@ -23,10 +23,11 @@ export class AdminServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("tokena")}`,
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
       );
+
       if (response) {
         return response.data.data.users;
       }
@@ -108,7 +109,7 @@ export class AdminWordServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("tokena")}`,
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
       );

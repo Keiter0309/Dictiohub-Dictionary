@@ -264,7 +264,7 @@ export class AdminWordController {
         message: "success",
         data: {
           words: words,
-        },
+        }
       });
     } catch (err) {
       return res.status(500).json({ error: "Error fetching all words" });

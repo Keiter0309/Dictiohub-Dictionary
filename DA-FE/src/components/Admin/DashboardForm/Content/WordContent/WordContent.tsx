@@ -160,6 +160,7 @@ const WordContent: React.FC = () => {
             </tr>
           </thead>
           <tbody>
+            
             <tr className="hover:bg-gray-50">
               <td className="py-3 px-5 text-left">Ability</td>
               <td className="py-3 px-5 text-left whitespace-nowrap">
