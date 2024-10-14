@@ -103,7 +103,7 @@ export class AdminServices {
 }
 
 export class AdminWordServices {
-  public static async fetchAllWords() {
+    public static async fetchAllWords() {
     try {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
@@ -113,8 +113,8 @@ export class AdminWordServices {
           },
         }
       );
-      console.log(response.data.data.words);
-      return response.data.data.words;
+      console.log(response.data);
+      return response.data.data;
     } catch (error) {
       console.error(error);
     }

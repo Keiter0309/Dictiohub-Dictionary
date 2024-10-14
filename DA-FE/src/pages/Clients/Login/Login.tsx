@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthServices from "../../../services/auth/authServices";
 import LoginForm from "../../../components/Client/LoginForm/LoginForm";
-import { Toast } from "../../../utils/ToastData/Toast";
 import { Cookies } from "react-cookie";
+import { message } from "antd";
 
 const Login: React.FC = () => {
   const cookies = new Cookies();
@@ -21,14 +21,12 @@ const Login: React.FC = () => {
   const handleLogin = async (email: string, password: string) => {
     try {
       await AuthServices.login(email, password);
-      showSwal("User logged in successfully", "success");
+      message.success("User logged in successfully");
       navigate("/");
     } catch (err: any) {
-      showSwal(err.message, "error");
+      message.error("Invalid email or password");
     }
   };
-
-  const showSwal = Toast;
 
   return (
     <div className="login-wrapper">

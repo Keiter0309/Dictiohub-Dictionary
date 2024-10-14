@@ -4,7 +4,9 @@ import { Words } from "../../model/Words/Word";
 import { ILogin, IUser } from "../../interface/User";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 export class AdminUserController {
   public static async fetchAllUsers(req: Request, res: Response) {
     try {
@@ -274,42 +276,91 @@ export class AdminWordController {
   public static async createWord(req: Request, res: Response) {
     const {
       word,
-      meaning,
+      meanings,
       definitionText,
       partOfSpeech,
       categoryName,
       exampleText,
+      usageExample,
       audioPath,
       dialect,
       ipaText,
-      usageExample,
       synonyms,
       antonyms,
     } = req.body;
     try {
-      const newWord = await Words.create({
-        word: word,
-        meaning: { meaningText: meaning },
-        definition: {
+      const newWord = await prisma.word.create({
+        data: {
+          word: word,
+        }
+      });
+
+      const newPos = await prisma.partOfSpeech.create({
+        data: {
+          partOfSpeech: partOfSpeech,
+        }
+      })
+
+      const newMeaning = await prisma.meaning.create({
+        data: {
+          wordId: newWord.id,
+          meaningText: meanings,
+        }
+      })
+
+      const newDefinition = await prisma.definition.create({
+        data: {
+          wordId: newWord.id,
+          posId: newPos.id,
           definitionText: definitionText,
           partOfSpeech: partOfSpeech,
           usageExample: usageExample,
-        },
-        category: { categoryName: categoryName },
-        example: { exampleText: exampleText },
-        pronunciation: {
+        }
+      })
+
+      const newCategory = await prisma.category.create({
+        data: {
+          categoryName: categoryName,
+        }
+      })
+
+      const newExample = await prisma.exampleWord.create({
+        data: {
+          wordId: newWord.id,
+          exampleText: exampleText,
+          source: " ",
+        }
+      })
+
+      const newPronunciation = await prisma.pronunciation.create({
+        data: {
+          wordId: newWord.id,
           audioPath: audioPath,
           ipaText: ipaText,
           dialect: dialect,
-        },
-        synonymsantonyms: { synonyms: synonyms, antonyms: antonyms },
-      });
-      return res.status(200).json({
-        status_code: 200,
-        message: "success",
+        }
+      })
+
+      const newSynonymsAntonyms = await prisma.synonymsAntonyms.create({
+        data: {
+          wordId: newWord.id,
+          synonyms: synonyms,
+          antonyms: antonyms,
+        }
+      })
+
+      return res.status(201).json({
+        status_code: 201,
+        message: "Word created successfully",
         data: {
           word: newWord,
-        },
+          meaning: newMeaning,
+          definition: newDefinition,
+          category: newCategory,
+          example: newExample,
+          pronunciation: newPronunciation,
+          synonymsAntonyms: newSynonymsAntonyms,
+        }
       });
     } catch (err) {
       return res.status(500).json({ error: "Error creating word" });

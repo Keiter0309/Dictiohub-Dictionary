@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bookmark, Volume2 } from "lucide-react";
-import { Modal } from "antd";
+import { Modal, message } from "antd";
 import { SearchResultFormProps } from "../../../types/Dashboard/SearchResultFormProps";
 import wordServices from "../../../services/word/wordServices";
-import { Toast } from "../../../utils/ToastData/Toast";
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -42,12 +41,12 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
         catch (err: any) {
           console.error(err);
         }
-        showSwal("Removed from favorites", "success");
+        message.success("Removed from favorites");
       } else {
         const updatedFavorites = [...favorites, word];
         setFavorites(updatedFavorites);
         localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-        showSwal("Added to favorites", "success");
+        message.success("Added to favorites");
         try {
           const response = await wordServices.addFavoriteWord(
             Number(wordId),
@@ -68,8 +67,6 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
       setOpen(true);
     }
   };
-
-  const showSwal = Toast;
 
   const handleOk = () => {
     setModalText("You must be logged in to add to favorites");

@@ -107,10 +107,10 @@ export class Words {
     }
   }
 
-  static async create(data: any) {
+  static async create(word: any) {
     try {
       const newWord = await prisma.word.create({
-        data: data,
+        data: word
       });
       return newWord;
     } catch (error) {

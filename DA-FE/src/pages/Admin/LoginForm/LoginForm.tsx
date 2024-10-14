@@ -2,12 +2,11 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLoginForm from "../../../components/Admin/LoginForm/LoginForm";
 import { AdminServices } from "../../../services/admin/adminServices"; // Adjusted import
-import { Toast } from "../../../utils/ToastData/Toast";
+import { message } from "antd";
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
 
-  const showSwal = Toast;
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -19,7 +18,7 @@ const AdminLogin: React.FC = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       sessionStorage.removeItem("token");
-      showSwal("Session expired, please login again", "error");
+      message.warning("Session expired. Please login again.");
       navigate("/admin/login");
     }, 900000); // 15 minutes
 
@@ -33,10 +32,10 @@ const AdminLogin: React.FC = () => {
         sessionStorage.setItem("token", accessToken);
         navigate("/admin/dashboard");
       } else {
-        showSwal("Invalid login credentials", "error");
+        message.error("Invalid email or password");
       }
     } catch (err: any) {
-      showSwal("An error occurred during login", "error");
+      message.error("Invalid email or password");
       console.error(err.message);
     }
   };

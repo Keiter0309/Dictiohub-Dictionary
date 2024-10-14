@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import SignupForm from "../../../components/Client/SignupForm/SignupForm";
 import AuthServices from "../../../services/auth/authServices";
-import { Spin } from "antd";
+import { message, Spin } from "antd";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
-import { Toast } from "../../../utils/ToastData/Toast";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ const Signup: React.FC = () => {
         confirmPassword
       );
 
-      showSwal("User registered successfully", "success");
+      message.success("Account created successfully. Please login.");
       navigate("/login");
 
       // Clear form fields
@@ -45,13 +44,11 @@ const Signup: React.FC = () => {
         formRef.current.resetFields();
       }
     } catch (err: any) {
-      showSwal(err.message, "error");
+      message.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  const showSwal = Toast;
 
   return (
     <div className="signup-wrapper">

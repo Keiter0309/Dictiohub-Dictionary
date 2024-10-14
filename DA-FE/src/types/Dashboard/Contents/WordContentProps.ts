@@ -8,6 +8,7 @@ export interface WordContentProps {
 }
 
 export interface WordContentState {
+    
     word: string;
     meaning: string;
     example: string;

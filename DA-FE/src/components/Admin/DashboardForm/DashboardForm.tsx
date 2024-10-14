@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./DashboardForm-module.css";
 import { sideBarData, statisticsData } from "../../../utils/Data/Data";
 import CountUp from "react-countup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen,
   User,
@@ -23,8 +23,10 @@ import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
 import SettingContent from "./Content/SettingContent/SettingContent";
 import UserContentForm from "./Content/UserContent/UserContent";
 import { AdminServices } from "../../../services/admin/adminServices";
+import { message } from "antd";
 
 const SidebarForm: React.FC = () => {
+  const navigate = useNavigate();
   // Data from utils/Data.ts
   const sidebarItems = sideBarData;
   const statisticsItems = statisticsData;
@@ -48,6 +50,16 @@ const SidebarForm: React.FC = () => {
   const handleMobileClick = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      sessionStorage.removeItem("token");
+      message.error("Session expired, please login again");
+      navigate("/admin/login");
+    }, 900000); // 15 minutes
+
+    return () => clearTimeout(timeout);
+  }, [navigate]);
 
   const handleCreateUser = async (
     firstName: string,
