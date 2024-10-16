@@ -366,6 +366,22 @@ export class AdminWordController {
       return res.status(500).json({ error: "Error creating word" });
     }
   }
+
+  public static async deleteWord(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+    try {
+      const deletedWord = await Words.delete(id);
+      return res.status(200).json({
+        status_code: 200,
+        message: "Word deleted successfully",
+        data: {
+          word: deletedWord,
+        }
+      })
+    } catch (err) {
+      res.status(500).json({ error: "Error deleting word" });
+    }
+  }
 }
 
 export class AdminAuthController {

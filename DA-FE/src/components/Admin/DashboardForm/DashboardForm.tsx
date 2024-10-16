@@ -89,7 +89,7 @@ const SidebarForm: React.FC = () => {
 
   const handleCreateWord = async (
     word: string,
-    meaning: string,
+    meanings: string,
     definitionText: string,
     partOfSpeech: string,
     categoryName: string,
@@ -104,7 +104,7 @@ const SidebarForm: React.FC = () => {
     try {
       const response = await AdminWordServices.createWord(
         word,
-        meaning,
+        meanings,
         definitionText,
         partOfSpeech,
         categoryName,
@@ -118,8 +118,8 @@ const SidebarForm: React.FC = () => {
       );
       console.log(response)
       return response;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      throw new Error(error);
     }
   };
 

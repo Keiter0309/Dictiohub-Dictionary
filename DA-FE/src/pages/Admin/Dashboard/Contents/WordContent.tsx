@@ -5,7 +5,7 @@ import { AdminWordServices } from '../../../../services/admin/adminServices';
 const WordContent: React.FC = () => {
     const handleCreateWord = async (
         word: string,
-        meaning: string,
+        meanings: string,
         definitionText: string,
         partOfSpeech: string,
         categoryName: string,
@@ -20,7 +20,7 @@ const WordContent: React.FC = () => {
         try {
             const response = await AdminWordServices.createWord(
                 word,
-                meaning,
+                meanings,
                 definitionText,
                 partOfSpeech,
                 categoryName,

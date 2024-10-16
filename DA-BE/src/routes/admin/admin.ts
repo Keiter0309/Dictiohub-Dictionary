@@ -17,3 +17,4 @@ adminRoute.get(EAdmin.FETCH_USERS, authenticateToken, AdminUserController.fetchA
 // Word management routes
 adminRoute.get(EAdmin.FETCH_WORDS, authenticateToken, AdminWordController.fetchAllWords);
 adminRoute.post(EAdmin.CREATE_WORD, AdminWordController.createWord)
+adminRoute.delete(EAdmin.DELETE_WORD, AdminWordController.deleteWord);

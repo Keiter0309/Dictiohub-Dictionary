@@ -122,7 +122,7 @@ export class AdminWordServices {
 
   public static async createWord(
     word: string,
-    meaning: string,
+    meanings: string,
     definitionText: string,
     partOfSpeech: string,
     categoryName: string,
@@ -139,7 +139,7 @@ export class AdminWordServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`,
         {
           word,
-          meaning,
+          meanings,
           definitionText,
           partOfSpeech,
           categoryName,
@@ -156,6 +156,18 @@ export class AdminWordServices {
       return response.data;
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  public static async deleteWord(id: number) {
+    try {
+      const response = await axios.delete(
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_WORD}/${id}`
+      )
+      
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 }

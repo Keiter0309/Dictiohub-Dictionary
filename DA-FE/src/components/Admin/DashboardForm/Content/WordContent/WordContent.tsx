@@ -13,19 +13,20 @@ import {
 } from "../../../../../types/Dashboard/Contents/WordRowProps";
 import { wordData } from "../../../../../utils/Data/Data";
 import { WordContentProps } from "../../../../../types/Dashboard/Contents/WordContentProps";
+import { Confirm } from "../../../../../utils/ToastData/Toast";
 
 const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAscending, setIsAscending] = useState(true);
   const [words, setWords] = useState<Word[]>([]);
-  const [meanings, setMeanings] = useState<Meaning[]>([]);
+  const [meaning, setMeaning] = useState<Meaning[]>([]);
   const [definitions, setDefinitions] = useState<Definition[]>([]);
   const [exampleWords, setExampleWords] = useState<ExampleWord[]>([]);
   const [synonymsAntonyms, setSynonymAntonyms] = useState<SynonymAntonym[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [word, setWord] = useState("");
-  const [meaning, setMeaning] = useState("");
+  const [meanings, setMeanings] = useState("");
   const [definitionText, setDefinitionText] = useState("");
   const [partOfSpeech, setPartOfSpeech] = useState("");
   const [categoryName, setCategoryName] = useState("");
@@ -59,7 +60,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           Array.isArray(synonymsAntonyms)
         ) {
           setWords(words);
-          setMeanings(meanings);
+          setMeaning(meaning);
           setDefinitions(definitions);
           setExampleWords(exampleWords);
           setSynonymAntonyms(synonymsAntonyms);
@@ -82,7 +83,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   };
 
   const combinedData = words.map((word) => {
-    const meaningText = meanings
+    const meaningText = meaning
       .filter((m) => m.wordId === word.id)
       .map((m) => m.meaningText);
     const definitionText = definitions
@@ -119,10 +120,10 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault
+    event.preventDefault();
     await onSubmit(
       word,
-      meaning,
+      meanings,
       definitionText,
       partOfSpeech,
       categoryName,
@@ -134,7 +135,38 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       synonyms,
       antonyms
     );
+
+    setWord("");
+    setMeanings("");
+    setDefinitionText("");
+    setPartOfSpeech("");
+    setCategoryName("");
+    setExampleText("");
+    setAudioPath("");
+    setDialect("");
+    setIpaText("");
+    setUsageExample("");
+    setSynonyms("");
+    setAntonyms("");
   };
+
+  const showConfirmSwal = async (id: number) => {
+    const result = await Confirm(`Are you sure you want to delete this ${word}?`, "error");
+
+    if (result.isConfirmed) {
+      handleDeleteWord(id);
+    }
+  }
+
+  const handleDeleteWord = async (id: number) => {
+    try {
+      const response = await AdminWordServices.deleteWord(id);
+
+      return response;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -209,8 +241,8 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 rows={2}
                 placeholder="Meaning"
                 name="meaning"
-                value={meaning}
-                onChange={(e) => setMeaning(e.target.value)}
+                value={meanings}
+                onChange={(e) => setMeanings(e.target.value)}
               />
               <Input
                 placeholder="Definition"
@@ -267,6 +299,13 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 typeof="file"
                 value={audioPath}
                 onChange={(e) => setAudioPath(e.target.value)}
+              />
+
+              <Input
+                placeholder="Part of Speech"
+                name="partOfSpeech"
+                value={partOfSpeech}
+                onChange={(e) => setPartOfSpeech(e.target.value)}
               />
 
               <Select
