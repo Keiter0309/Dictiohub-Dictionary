@@ -12,8 +12,9 @@ import {
   Meaning,
 } from "../../../../../types/Dashboard/Contents/WordRowProps";
 import { wordData } from "../../../../../utils/Data/Data";
+import { WordContentProps } from "../../../../../types/Dashboard/Contents/WordContentProps";
 
-const WordContent: React.FC = () => {
+const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAscending, setIsAscending] = useState(true);
   const [words, setWords] = useState<Word[]>([]);
@@ -23,6 +24,18 @@ const WordContent: React.FC = () => {
   const [synonymsAntonyms, setSynonymAntonyms] = useState<SynonymAntonym[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [word, setWord] = useState("");
+  const [meaning, setMeaning] = useState("");
+  const [definitionText, setDefinitionText] = useState("");
+  const [partOfSpeech, setPartOfSpeech] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [exampleText, setExampleText] = useState("");
+  const [audioPath, setAudioPath] = useState("");
+  const [dialect, setDialect] = useState("");
+  const [ipaText, setIpaText] = useState("");
+  const [usageExample, setUsageExample] = useState("");
+  const [synonyms, setSynonyms] = useState("");
+  const [antonyms, setAntonyms] = useState("");
   const { TextArea } = Input;
 
   const fetchAllWords = async () => {
@@ -105,6 +118,24 @@ const WordContent: React.FC = () => {
     setIsAscending(!isAscending);
   };
 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault
+    await onSubmit(
+      word,
+      meaning,
+      definitionText,
+      partOfSpeech,
+      categoryName,
+      exampleText,
+      audioPath,
+      dialect,
+      ipaText,
+      usageExample,
+      synonyms,
+      antonyms
+    );
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     console.log(page);
@@ -163,19 +194,84 @@ const WordContent: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-5">
               Add Word
             </h3>
-            <form action="" className="flex flex-col gap-5">
-              <Input placeholder="Word" name="word" />
-              <TextArea rows={2} placeholder="Meaning" name="meaning" />
-              <Input placeholder="Definition" name="definitionText" />
-              <Input placeholder="Example" name="exampleText" />
-              <Input placeholder="Synonyms" name="synonyms" inputMode="text" />
-              <Input placeholder="Antonyms" name="antonyms" />
-              <Input placeholder="IPA" name="ipaText" />
-              <Input placeholder="Dialect" name="dialect" />
-              <TextArea placeholder="Usage example" name="usageExample" />
-              <Input placeholder="Audio Path" name="audioPath" typeof="file"/>
+            <form
+              action=""
+              className="flex flex-col gap-5"
+              onSubmit={handleSubmit}
+            >
+              <Input
+                placeholder="Word"
+                name="word"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+              />
+              <TextArea
+                rows={2}
+                placeholder="Meaning"
+                name="meaning"
+                value={meaning}
+                onChange={(e) => setMeaning(e.target.value)}
+              />
+              <Input
+                placeholder="Definition"
+                name="definitionText"
+                value={definitionText}
+                onChange={(e) => setDefinitionText(e.target.value)}
+              />
+              <Input
+                placeholder="Example"
+                name="exampleText"
+                value={exampleText}
+                onChange={(e) => setExampleText(e.target.value)}
+              />
+              <Input
+                placeholder="Synonyms"
+                name="synonyms"
+                inputMode="text"
+                value={synonyms}
+                onChange={(e) => setSynonyms(e.target.value)}
+              />
+              <Input
+                placeholder="Antonyms"
+                name="antonyms"
+                value={antonyms}
+                onChange={(e) => setAntonyms(e.target.value)}
+              />
+              <Input
+                placeholder="IPA"
+                name="ipaText"
+                value={ipaText}
+                onChange={(e) => setIpaText(e.target.value)}
+              />
+              <Input
+                placeholder="Dialect"
+                name="dialect"
+                value={dialect}
+                onChange={(e) => setDialect(e.target.value)}
+              />
+              <Input
+                placeholder="Category"
+                name="categoryName"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
+              <TextArea
+                placeholder="Usage example"
+                name="usageExample"
+                value={usageExample}
+                onChange={(e) => setUsageExample(e.target.value)}
+              />
+              <Input
+                placeholder="Audio Path"
+                name="audioPath"
+                typeof="file"
+                value={audioPath}
+                onChange={(e) => setAudioPath(e.target.value)}
+              />
 
               <Select
+                value={partOfSpeech}
+                onChange={(value) => setPartOfSpeech(value)}
                 placeholder="Select a Part of Speech"
                 mode="multiple"
                 className="w-full"
@@ -264,4 +360,4 @@ const WordContent: React.FC = () => {
   );
 };
 
-export default WordContent;
+export default WordContentForm;

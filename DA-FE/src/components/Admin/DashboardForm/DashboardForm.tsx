@@ -22,7 +22,7 @@ import CategoriesContent from "./Content/CategoriesContent/CategoriesContent";
 import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
 import SettingContent from "./Content/SettingContent/SettingContent";
 import UserContentForm from "./Content/UserContent/UserContent";
-import { AdminServices } from "../../../services/admin/adminServices";
+import { AdminServices, AdminWordServices } from "../../../services/admin/adminServices";
 import { message } from "antd";
 
 const SidebarForm: React.FC = () => {
@@ -82,6 +82,42 @@ const SidebarForm: React.FC = () => {
       if (response) {
         console.log(response);
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreateWord = async (
+    word: string,
+    meaning: string,
+    definitionText: string,
+    partOfSpeech: string,
+    categoryName: string,
+    exampleText: string,
+    audioPath: string,
+    dialect: string,
+    ipaText: string,
+    usageExample: string,
+    synonyms: string,
+    antonyms: string
+  ) => {
+    try {
+      const response = await AdminWordServices.createWord(
+        word,
+        meaning,
+        definitionText,
+        partOfSpeech,
+        categoryName,
+        exampleText,
+        audioPath,
+        dialect,
+        ipaText,
+        usageExample,
+        synonyms,
+        antonyms
+      );
+      console.log(response)
+      return response;
     } catch (error) {
       console.error(error);
     }
@@ -285,7 +321,7 @@ const SidebarForm: React.FC = () => {
 
         {active === "Users" && <UserContentForm onSubmit={handleCreateUser} />}
 
-        {active === "Words" && <WordContent />}
+        {active === "Words" && <WordContent onSubmit={handleCreateWord} />}
 
         {active === "Categories" && <CategoriesContent />}
 

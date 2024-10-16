@@ -103,7 +103,7 @@ export class AdminServices {
 }
 
 export class AdminWordServices {
-    public static async fetchAllWords() {
+  public static async fetchAllWords() {
     try {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
@@ -115,6 +115,45 @@ export class AdminWordServices {
       );
       console.log(response.data);
       return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async createWord(
+    word: string,
+    meaning: string,
+    definitionText: string,
+    partOfSpeech: string,
+    categoryName: string,
+    exampleText: string,
+    audioPath: string,
+    dialect: string,
+    ipaText: string,
+    usageExample: string,
+    synonyms: string,
+    antonyms: string
+  ) {
+    try {
+      const response = await axios.post(
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`,
+        {
+          word,
+          meaning,
+          definitionText,
+          partOfSpeech,
+          categoryName,
+          exampleText,
+          audioPath,
+          dialect,
+          ipaText,
+          usageExample,
+          synonyms,
+          antonyms,
+        }
+      );
+
+      return response.data;
     } catch (error) {
       console.error(error);
     }
