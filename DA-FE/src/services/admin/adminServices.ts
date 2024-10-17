@@ -163,11 +163,20 @@ export class AdminWordServices {
     try {
       const response = await axios.delete(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_WORD}/${id}`
-      )
-      
+      );
+  
       return response.data;
     } catch (error: any) {
-      throw new Error(error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('Error request:', error.request);
+      } else {
+        console.error('Error message:', error.message);
+      }
+      throw new Error(`Failed to delete word: ${error.message}`);
     }
   }
 }

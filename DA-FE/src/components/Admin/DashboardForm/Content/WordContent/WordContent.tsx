@@ -13,7 +13,6 @@ import {
 } from "../../../../../types/Dashboard/Contents/WordRowProps";
 import { wordData } from "../../../../../utils/Data/Data";
 import { WordContentProps } from "../../../../../types/Dashboard/Contents/WordContentProps";
-import { Confirm } from "../../../../../utils/ToastData/Toast";
 
 const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -149,24 +148,6 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     setSynonyms("");
     setAntonyms("");
   };
-
-  const showConfirmSwal = async (id: number) => {
-    const result = await Confirm(`Are you sure you want to delete this ${word}?`, "error");
-
-    if (result.isConfirmed) {
-      handleDeleteWord(id);
-    }
-  }
-
-  const handleDeleteWord = async (id: number) => {
-    try {
-      const response = await AdminWordServices.deleteWord(id);
-
-      return response;
-    } catch (error: any) {
-      throw new Error(error);
-    }
-  }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

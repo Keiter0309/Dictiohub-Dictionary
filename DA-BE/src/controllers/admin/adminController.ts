@@ -369,6 +369,7 @@ export class AdminWordController {
 
   public static async deleteWord(req: Request, res: Response) {
     const id = parseInt(req.params.id);
+    console.log(id)
     try {
       const deletedWord = await Words.delete(id);
       return res.status(200).json({
@@ -379,6 +380,8 @@ export class AdminWordController {
         }
       })
     } catch (err) {
+      // Debugging
+      console.log(err);
       res.status(500).json({ error: "Error deleting word" });
     }
   }

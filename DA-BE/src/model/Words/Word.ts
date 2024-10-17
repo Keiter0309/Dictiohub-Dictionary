@@ -136,12 +136,20 @@ export class Words {
 
   static async delete(id: number) {
     try {
-      const deletedWord = await prisma.word.delete({
-        where: {
-          id: id,
-        },
+      await prisma.$transaction(async (prisma) => {
+        // Delete all related records first
+        await prisma.exampleWord.deleteMany({ where: { wordId: id } });
+        await prisma.pronunciation.deleteMany({ where: { wordId: id } });
+        await prisma.definition.deleteMany({ where: { wordId: id } });
+        await prisma.wordCategory.deleteMany({ where: { wordId: id } });
+        await prisma.synonymsAntonyms.deleteMany({ where: { wordId: id } });
+        await prisma.meaning.deleteMany({ where: { wordId: id } });
+
+        // Delete the word
+        await prisma.word.delete({ where: { id: id } });
       });
-      return deletedWord;
+
+      return { message: "Word and related records deleted successfully" };
     } catch (error) {
       console.error("Error deleting word:", error);
       throw new Error("Error deleting word");
