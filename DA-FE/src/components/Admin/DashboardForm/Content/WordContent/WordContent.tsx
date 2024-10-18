@@ -363,7 +363,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           </thead>
           <tbody>
             {combinedData.map((item, index) => (
-              <WordRow key={item.id} item={item} index={index + 1} />
+              <WordRow key={item.id} item={item} index={index + 1} fetchAllWords={fetchAllWords}/>
             ))}
           </tbody>
         </table>

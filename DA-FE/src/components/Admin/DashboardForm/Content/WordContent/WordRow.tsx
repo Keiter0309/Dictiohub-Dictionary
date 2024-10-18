@@ -4,15 +4,11 @@ import { WordRowComponentProps } from "../../../../../types/Dashboard/Contents/W
 import { Confirm } from "../../../../../utils/ToastData/Toast";
 import { AdminWordServices } from "../../../../../services/admin/adminServices";
 
-const WordRow: React.FC<WordRowComponentProps> = ({ item, index }) => {
-//   const fetchAllWords = async () => {
-//     try {
-//       await AdminWordServices.fetchAllWords();
-//     } catch (error: any) {
-//       throw new Error(error);
-//     }
-//   };
+interface WordRowProps extends WordRowComponentProps {
+    fetchAllWords: () => void;
+}
 
+const WordRow: React.FC<WordRowProps> = ({ item, index, fetchAllWords }) => {
   const showConfirmSwal = async (id: number) => {
     console.log("id", id);
     const result = await Confirm(
@@ -28,6 +24,7 @@ const WordRow: React.FC<WordRowComponentProps> = ({ item, index }) => {
   const handleDeleteWord = async (id: number) => {
     try {
       const response = await AdminWordServices.deleteWord(id);
+      fetchAllWords();
       if (response.status === 200) {
         console.log("Word deleted successfully");
       } else {
