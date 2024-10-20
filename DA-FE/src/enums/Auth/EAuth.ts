@@ -18,7 +18,7 @@ export enum EAdmin {
 
   // Words management endpoints
   ADMIN_FETCH_WORDS = "api/v1/admin/words",
-  ADMIN_FETCH_WORD = "api/v1/admin/word",
+  ADMIN_FETCH_WORD = "api/v1/admin/words",
   ADMIN_CREATE_WORD = "api/v1/admin/words/create",
   ADMIN_UPDATE_WORD = "api/v1/admin/words/update",
   ADMIN_DELETE_WORD = "api/v1/admin/words/delete",

@@ -12,7 +12,6 @@ import { sendMail } from '../../utils/mailer';
 import { randomOtpDigit } from '../../utils/randomOtpDigit';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { access } from 'fs';
 
 class AuthController {
   public async register(req: Request, res: Response) {
@@ -128,7 +127,7 @@ class AuthController {
 
       // Generate token
       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: '15m',
+        expiresIn: '1d',
       });
 
       // Last Login

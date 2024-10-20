@@ -2,6 +2,7 @@ export interface WordRowProps {
   item: Word & {
     definitionText?: string[];
     meaningText?: string[];
+    partOfSpeech?: string[];
     usageExample?: string[];
     synonyms?: string;
     antonyms?: string;
@@ -18,7 +19,7 @@ export interface Definition {
   id: number;
   wordId: number;
   postId: number;
-  partOfSpeech: string;
+  partOfSpeech: string[];
   usageExample: string;
   definitionText: string;
 }

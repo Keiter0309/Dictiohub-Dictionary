@@ -7,7 +7,6 @@ class WordServices {
       
         `${EWord.WORD_SERVER_HOST}/${EWord.WORD_SEARCH}/?word=${word}`
       );
-      console.log(`${EWord.WORD_SERVER_HOST}/${EWord.WORD_SEARCH}`)
       const wordId = response.data.id;
       localStorage.setItem('ord', wordId)
       return response.data;

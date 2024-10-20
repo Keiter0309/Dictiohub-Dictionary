@@ -6,8 +6,7 @@ import { message } from "antd";
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
-
-
+  
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {

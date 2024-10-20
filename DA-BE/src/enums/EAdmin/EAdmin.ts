@@ -8,9 +8,9 @@ export enum EAdmin {
     LOGIN = "/api/v1/admin/login",
     
     // Word management urls
-    FETCH_WORDS = "/api/v1/admin/words",
     FETCH_WORD = "/api/v1/admin/words/:id",
     CREATE_WORD = "/api/v1/admin/words/create",
     DELETE_WORD = "/api/v1/admin/words/delete/:id",
     UPDATE_WORD = "/api/v1/admin/words/update/:id",
+    FETCH_WORDS = "/api/v1/admin/words",
 }

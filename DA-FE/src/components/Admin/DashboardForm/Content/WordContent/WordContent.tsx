@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Pagination, Input, Modal, Select } from "antd";
-import { Search, Plus, ChevronUp } from "lucide-react";
-import { AdminWordServices } from "../../../../../services/admin/adminServices";
-import WordRow from "./WordRow";
+import React, { useState, useEffect } from 'react';
+import { Pagination, Input, Modal, Select } from 'antd';
+import { Search, Plus, ChevronUp } from 'lucide-react';
+import { AdminWordServices } from '../../../../../services/admin/adminServices';
+import WordRow from './WordRow';
 import {
   Word,
   Definition,
@@ -10,9 +10,9 @@ import {
   SynonymAntonym,
   Pronunciation,
   Meaning,
-} from "../../../../../types/Dashboard/Contents/WordRowProps";
-import { wordData } from "../../../../../utils/Data/Data";
-import { WordContentProps } from "../../../../../types/Dashboard/Contents/WordContentProps";
+} from '../../../../../types/Dashboard/Contents/WordRowProps';
+import { wordData } from '../../../../../utils/Data/Data';
+import { WordContentProps } from '../../../../../types/Dashboard/Contents/WordContentProps';
 
 const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,18 +24,21 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [synonymsAntonyms, setSynonymAntonyms] = useState<SynonymAntonym[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [word, setWord] = useState("");
-  const [meanings, setMeanings] = useState("");
-  const [definitionText, setDefinitionText] = useState("");
-  const [partOfSpeech, setPartOfSpeech] = useState("");
-  const [categoryName, setCategoryName] = useState("");
-  const [exampleText, setExampleText] = useState("");
-  const [audioPath, setAudioPath] = useState("");
-  const [dialect, setDialect] = useState("");
-  const [ipaText, setIpaText] = useState("");
-  const [usageExample, setUsageExample] = useState("");
-  const [synonyms, setSynonyms] = useState("");
-  const [antonyms, setAntonyms] = useState("");
+  const [titleTable, setTitleTable] = useState('Add Word');
+  const [word, setWord] = useState({
+    word: '',
+    meanings: '',
+    definitionText: '',
+    partOfSpeech: '',
+    categoryName: '',
+    exampleText: '',
+    audioPath: '',
+    dialect: '',
+    ipaText: '',
+    usageExample: '',
+    synonyms: '',
+    antonyms: '',
+  });
   const { TextArea } = Input;
 
   const fetchAllWords = async () => {
@@ -52,32 +55,58 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
         } = response.words;
         if (
           Array.isArray(words) &&
-          Array.isArray(meanings) &&
+          Array.isArray(meaning) &&
           Array.isArray(definitions) &&
           Array.isArray(exampleWords) &&
           Array.isArray(pronunciations) &&
           Array.isArray(synonymsAntonyms)
         ) {
           setWords(words);
-          setMeaning(meaning);
+          setMeaning(meanings);
           setDefinitions(definitions);
           setExampleWords(exampleWords);
           setSynonymAntonyms(synonymsAntonyms);
           setPronunciations(pronunciations);
         } else {
           console.error(
-            "API response does not contain valid arrays:",
-            response
+            'API response does not contain valid arrays:',
+            response,
           );
         }
       } else {
         console.error(
-          "API response does not contain a valid words object:",
-          response
+          'API response does not contain a valid words object:',
+          response,
         );
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const fetchWord = async (id: number) => {
+    try {
+      const response = await AdminWordServices.fetchWord(id);
+      setWord({
+        word: response.word,
+        meanings: response.meanings,
+        definitionText: response.definitionText,
+        partOfSpeech: response.partOfSpeech,
+        categoryName: response.categoryName,
+        exampleText: response.exampleText,
+        audioPath: response.audioPath,
+        dialect: response.dialect,
+        ipaText: response.ipaText,
+        usageExample: response.usageExample,
+        synonyms: response.synonyms,
+        antonyms: response.antonyms,
+      });
+
+      console.log('Word:', response);
+
+      return response;
+    } catch (error: any) {
+      throw new Error(`Failed to fetch word: ${error.message}`);
     }
   };
 
@@ -97,12 +126,16 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       ...word,
       meaningText: meaningText,
       definitionText: definitionText,
+      partOfSpeech: definitions
+        .filter((def) => def.wordId === word.id)
+        .map((def) => def.partOfSpeech)
+        .flat(),
       usageExample: examples,
-      synonyms: synonymAntonym ? synonymAntonym.synonyms : "",
-      antonyms: synonymAntonym ? synonymAntonym.antonyms : "",
-      ipa: pronunciation ? pronunciation.ipaText : "",
-      dialect: pronunciation ? pronunciation.dialect : "",
-      audioPath: pronunciation ? pronunciation.audioPath : "",
+      synonyms: synonymAntonym ? synonymAntonym.synonyms : '',
+      antonyms: synonymAntonym ? synonymAntonym.antonyms : '',
+      ipa: pronunciation ? pronunciation.ipaText : '',
+      dialect: pronunciation ? pronunciation.dialect : '',
+      audioPath: pronunciation ? pronunciation.audioPath : '',
     };
   });
 
@@ -121,37 +154,38 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     await onSubmit(
-      word,
-      meanings,
-      definitionText,
-      partOfSpeech,
-      categoryName,
-      exampleText,
-      audioPath,
-      dialect,
-      ipaText,
-      usageExample,
-      synonyms,
-      antonyms
+      word.word,
+      word.meanings,
+      word.definitionText,
+      word.partOfSpeech,
+      word.categoryName,
+      word.exampleText,
+      word.audioPath,
+      word.dialect,
+      word.ipaText,
+      word.usageExample,
+      word.synonyms,
+      word.antonyms,
     );
 
-    setWord("");
-    setMeanings("");
-    setDefinitionText("");
-    setPartOfSpeech("");
-    setCategoryName("");
-    setExampleText("");
-    setAudioPath("");
-    setDialect("");
-    setIpaText("");
-    setUsageExample("");
-    setSynonyms("");
-    setAntonyms("");
+    setWord({
+      word: '',
+      meanings: '',
+      definitionText: '',
+      partOfSpeech: '',
+      categoryName: '',
+      exampleText: '',
+      audioPath: '',
+      dialect: '',
+      ipaText: '',
+      usageExample: '',
+      synonyms: '',
+      antonyms: '',
+    });
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log(page);
   };
 
   const handleShowModal = () => {
@@ -160,6 +194,28 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setWord({
+      word: '',
+      meanings: '',
+      definitionText: '',
+      partOfSpeech: '',
+      categoryName: '',
+      exampleText: '',
+      audioPath: '',
+      dialect: '',
+      ipaText: '',
+      usageExample: '',
+      synonyms: '',
+      antonyms: '',
+    });
+
+    setTitleTable('Add Word');
+  };
+
+  const handleEditWord = async (id: number) => {
+    await fetchWord(id);
+    setShowModal(true);
+    setTitleTable('Edit Word');
   };
 
   useEffect(() => {
@@ -169,18 +225,18 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   return (
     <div>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-5">
-        {wordData.map((word) => (
+        {wordData.map((wordData) => (
           <div
-            key={word.id}
+            key={wordData.id}
             className="bg-white p-5 rounded-md shadow-lg col-span-1 md:w-full transition-all duration-200 ease-in-out"
           >
             <div className="text-xl font-semibold text-gray-800 mb-10">
               <div className="flex justify-between">
-                <span className="whitespace-nowrap">{word.title}</span>
-                {word.icon}
+                <span className="whitespace-nowrap">{wordData.title}</span>
+                {wordData.icon}
               </div>
             </div>
-            <p className="text-2xl text-gray-800 font-semibold">{word.value}</p>
+            <p className="text-2xl text-gray-800 font-semibold">{wordData.value}</p>
           </div>
         ))}
       </div>
@@ -205,7 +261,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
         <Modal open={showModal} onCancel={handleCloseModal} footer={null}>
           <div className="p-5">
             <h3 className="text-xl font-semibold text-gray-800 mb-5">
-              Add Word
+              {titleTable}
             </h3>
             <form
               action=""
@@ -215,103 +271,113 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
               <Input
                 placeholder="Word"
                 name="word"
-                value={word}
-                onChange={(e) => setWord(e.target.value)}
+                value={word.word}
+                onChange={(e) => setWord({ ...word, word: e.target.value })}
               />
               <TextArea
                 rows={2}
                 placeholder="Meaning"
                 name="meaning"
-                value={meanings}
-                onChange={(e) => setMeanings(e.target.value)}
+                value={word.meanings}
+                onChange={(e) => setWord({ ...word, meanings: e.target.value })}
               />
               <Input
                 placeholder="Definition"
                 name="definitionText"
-                value={definitionText}
-                onChange={(e) => setDefinitionText(e.target.value)}
+                value={word.definitionText}
+                onChange={(e) =>
+                  setWord({ ...word, definitionText: e.target.value })
+                }
               />
               <Input
                 placeholder="Example"
                 name="exampleText"
-                value={exampleText}
-                onChange={(e) => setExampleText(e.target.value)}
+                value={word.exampleText}
+                onChange={(e) =>
+                  setWord({ ...word, exampleText: e.target.value })
+                }
               />
               <Input
                 placeholder="Synonyms"
                 name="synonyms"
                 inputMode="text"
-                value={synonyms}
-                onChange={(e) => setSynonyms(e.target.value)}
+                value={word.synonyms}
+                onChange={(e) => setWord({ ...word, synonyms: e.target.value })}
               />
               <Input
                 placeholder="Antonyms"
                 name="antonyms"
-                value={antonyms}
-                onChange={(e) => setAntonyms(e.target.value)}
+                value={word.antonyms}
+                onChange={(e) => setWord({ ...word, antonyms: e.target.value })}
               />
               <Input
                 placeholder="IPA"
                 name="ipaText"
-                value={ipaText}
-                onChange={(e) => setIpaText(e.target.value)}
+                value={word.ipaText}
+                onChange={(e) => setWord({ ...word, ipaText: e.target.value })}
               />
               <Input
                 placeholder="Dialect"
                 name="dialect"
-                value={dialect}
-                onChange={(e) => setDialect(e.target.value)}
+                value={word.dialect}
+                onChange={(e) => setWord({ ...word, dialect: e.target.value })}
               />
               <Input
                 placeholder="Category"
                 name="categoryName"
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
+                value={word.categoryName}
+                onChange={(e) =>
+                  setWord({ ...word, categoryName: e.target.value })
+                }
               />
               <TextArea
                 placeholder="Usage example"
                 name="usageExample"
-                value={usageExample}
-                onChange={(e) => setUsageExample(e.target.value)}
+                value={word.usageExample}
+                onChange={(e) =>
+                  setWord({ ...word, usageExample: e.target.value })
+                }
               />
               <Input
                 placeholder="Audio Path"
                 name="audioPath"
                 typeof="file"
-                value={audioPath}
-                onChange={(e) => setAudioPath(e.target.value)}
+                value={word.audioPath}
+                onChange={(e) =>
+                  setWord({ ...word, audioPath: e.target.value })
+                }
               />
 
-              <Input
-                placeholder="Part of Speech"
-                name="partOfSpeech"
-                value={partOfSpeech}
-                onChange={(e) => setPartOfSpeech(e.target.value)}
-              />
-
-              <Select
-                value={partOfSpeech}
-                onChange={(value) => setPartOfSpeech(value)}
+              {/* <Select
+                id="partOfSpeech"
+                value={
+                  Array.isArray(word.partOfSpeech)
+                    ? word.partOfSpeech
+                    : [word.partOfSpeech]
+                }
+                onChange={(value) =>
+                  setWord({ ...word, partOfSpeech: value.join(', ') })
+                }
                 placeholder="Select a Part of Speech"
                 mode="multiple"
                 className="w-full"
                 options={[
-                  { value: "noun", label: "Noun" },
-                  { value: "verb", label: "Verb" },
-                  { value: "adjective", label: "Adjective" },
-                  { value: "adverb", label: "Adverb" },
-                  { value: "pronoun", label: "Pronoun" },
-                  { value: "preposition", label: "Preposition" },
-                  { value: "conjunction", label: "Conjunction" },
-                  { value: "interjection", label: "Interjection" },
+                  { value: 'noun', label: 'Noun' },
+                  { value: 'verb', label: 'Verb' },
+                  { value: 'adjective', label: 'Adjective' },
+                  { value: 'adverb', label: 'Adverb' },
+                  { value: 'pronoun', label: 'Pronoun' },
+                  { value: 'preposition', label: 'Preposition' },
+                  { value: 'conjunction', label: 'Conjunction' },
+                  { value: 'interjection', label: 'Interjection' },
                 ]}
-              />
+              /> */}
               <div className="flex justify-end items-center">
                 <button
                   type="submit"
                   className="p-2 rounded-md shadow-sm bg-blue-500 hover:bg-indigo-500 transition-all duration-300 text-white w-24"
                 >
-                  Add Word
+                  Submit
                 </button>
               </div>
             </form>
@@ -342,6 +408,9 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 Example
               </th>
               <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                Part Of Speech
+              </th>
+              <th className="py-3 px-5 text-left font-semibold text-gray-700">
                 Synonyms
               </th>
               <th className="py-3 px-5 text-left font-semibold text-gray-700">
@@ -363,7 +432,14 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           </thead>
           <tbody>
             {combinedData.map((item, index) => (
-              <WordRow key={item.id} item={item} index={index + 1} fetchAllWords={fetchAllWords}/>
+              <WordRow
+                key={`${item.id}-${index}`} 
+                item={item}
+                index={index + 1}
+                fetchAllWords={fetchAllWords}
+                handleEditWord={handleEditWord}
+                fetchWord={fetchWord}
+              />
             ))}
           </tbody>
         </table>

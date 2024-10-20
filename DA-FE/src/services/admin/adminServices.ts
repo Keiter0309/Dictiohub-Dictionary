@@ -109,7 +109,6 @@ export class AdminServices {
         ${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_USER}/${id}`,
         { firstName, lastName, username, email, role },
       );
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -128,10 +127,26 @@ export class AdminWordServices {
           },
         },
       );
-      console.log(response.data);
       return response.data.data;
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  public static async fetchWord(id: number) {
+    try {
+      const response = await axios.get(
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORD}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Failed to fetch word: ${error.message}`);
     }
   }
 
@@ -139,7 +154,7 @@ export class AdminWordServices {
     word: string,
     meanings: string,
     definitionText: string,
-    partOfSpeech: string,
+    partOfSpeech: string[],
     categoryName: string,
     exampleText: string,
     audioPath: string,
@@ -182,15 +197,6 @@ export class AdminWordServices {
 
       return response.data;
     } catch (error: any) {
-      if (error.response) {
-        console.error('Error response:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-      } else {
-        console.error('Error message:', error.message);
-      }
       throw new Error(`Failed to delete word: ${error.message}`);
     }
   }

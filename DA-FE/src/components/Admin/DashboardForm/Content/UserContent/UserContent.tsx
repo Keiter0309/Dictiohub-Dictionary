@@ -1,69 +1,87 @@
-import React, { useEffect, useState } from "react";
-import { userData } from "../../../../../utils/Data/Data";
-import { Pagination, Modal, Select, Input } from "antd";
-import { Plus, Search, Pencil, Trash2, ChevronUp, Key } from "lucide-react";
-import { AdminServices } from "../../../../../services/admin/adminServices";
+import React, { useEffect, useState } from 'react';
+import { userData } from '../../../../../utils/Data/Data';
+import { Pagination, Modal, Select, Input } from 'antd';
+import { Plus, Search, Pencil, Trash2, ChevronUp, Key } from 'lucide-react';
+import { AdminServices } from '../../../../../services/admin/adminServices';
 import {
   UserContentProps,
   UserContentState,
-} from "../../../../../types/Dashboard/Contents/UserContentProps";
-import { Confirm } from "../../../../../utils/ToastData/Toast";
-import formatDateTime from "../../../../../utils/Format/FormatDateTime";
-import Fuse from "fuse.js";
-import { Validate } from "../../../../../utils/Validate/Validate";
+} from '../../../../../types/Dashboard/Contents/UserContentProps';
+import { Confirm } from '../../../../../utils/ToastData/Toast';
+import formatDateTime from '../../../../../utils/Format/FormatDateTime';
+import Fuse from 'fuse.js';
+import { Validate } from '../../../../../utils/Validate/Validate';
 
 const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const userTableData = userData;
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState("");
-  const [titleTable, setTitleTable] = useState("Add User");
+  const [error, setError] = useState('');
+  const [titleTable, setTitleTable] = useState('Add User');
   const [users, setUsers] = useState<UserContentState[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    password: '',
+    email: '',
+    role: '',
+  });
   const [isAscending, setIsAscending] = useState(true);
 
   const handleCreateUser = async (event: React.FormEvent) => {
     event.preventDefault();
 
     // Validate input fields
-    if (!firstName || !lastName || !username || !password || !email || !role) {
-      setError("Please fill in all fields.");
+    if (
+      !user.firstName ||
+      !user.lastName ||
+      !user.username ||
+      !user.password ||
+      !user.email ||
+      !user.role
+    ) {
+      setError('Please fill in all fields.');
       return;
     }
 
-    if (!Validate.validateEmail(email)) {
-      setError("Please enter a valid email address.");
+    if (!Validate.validateEmail(user.email)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
-    if (!Validate.validatePassword(password)) {
+    if (!Validate.validatePassword(user.password)) {
       setError(
-        "Password must be at least 8 characters long and contain at least one number and one special character."
+        'Password must be at least 8 characters long and contain at least one number and one special character.',
       );
 
       return;
     }
 
-    if (!Validate.validateUsername(username)) {
-      setError("Username must contain only letters and numbers.");
+    if (!Validate.validateUsername(user.username)) {
+      setError('Username must contain only letters and numbers.');
       return;
     }
 
     try {
-      await onSubmit(firstName, lastName, username, email, password, role);
+      await onSubmit(
+        user.firstName,
+        user.lastName,
+        user.username,
+        user.email,
+        user.password,
+        user.role,
+      );
       handleCloseModal();
       // Clear input fields
-      setFirstName("");
-      setLastName("");
-      setUsername("");
-      setPassword("");
-      setEmail("");
-      setRole("");
+      setUser({
+        firstName: '',
+        lastName: '',
+        username: '',
+        password: '',
+        email: '',
+        role: '',
+      });
       // Fetch all users
       fetchAllUsers();
     } catch (error) {
@@ -95,7 +113,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const handleSearchUser = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     const fuse = new Fuse(users, {
-      keys: ["username"],
+      keys: ['username'],
     });
 
     if (!value) {
@@ -110,7 +128,6 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log(page);
   };
 
   const handleShowModal = () => {
@@ -119,54 +136,56 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setFirstName("");
-    setLastName("");
-    setUsername("");
-    setPassword("");
-    setEmail("");
-    setRole("");
-    setTitleTable("Add User");
-    setError(""); // Clear error message
+    setUser({
+      firstName: '',
+      lastName: '',
+      username: '',
+      password: '',
+      email: '',
+      role: '',
+    });
+    setTitleTable('Add User');
+    setError(''); 
   };
 
   const handleEditUser = async (email: string) => {
     setShowModal(true);
     await fetchUser(email);
-    setTitleTable("Edit User");
+    setTitleTable('Edit User');
   };
 
   const handleUpdateUser = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await AdminServices.fetchUser(email);
+      const response = await AdminServices.fetchUser(user.email);
       const { id } = response;
       await AdminServices.updateUser(
         id,
-        firstName,
-        lastName,
-        username,
-        email,
-        role
+        user.firstName,
+        user.lastName,
+        user.username,
+        user.email,
+        user.role,
       );
       handleCloseModal();
       fetchAllUsers();
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error('Error updating user:', error);
     }
   };
 
   const generateRandomPassword = () => {
     const length = 12;
     const charset =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let newPassword = "";
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let newPassword = '';
 
     for (let i = 0; i < length; i++) {
       const at = Math.floor(Math.random() * charset.length);
       newPassword += charset.charAt(at);
     }
 
-    setPassword(newPassword);
+    setUser({ ...user, password: newPassword });
     return newPassword;
   };
 
@@ -176,7 +195,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
       setUsers(response);
       return response;
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error('Error fetching users:', error);
       throw error;
     }
   };
@@ -184,14 +203,17 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const fetchUser = async (email: string) => {
     try {
       const response = await AdminServices.fetchUser(email);
-      setFirstName(response.firstName);
-      setLastName(response.lastName);
-      setUsername(response.username);
-      setEmail(response.email);
-      setRole(response.role);
+      setUser({
+        firstName: response.firstName,
+        lastName: response.lastName,
+        username: response.username,
+        password: '',
+        email: response.email,
+        role: response.role,
+      });
       return response;
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error('Error fetching user:', error);
       throw error;
     }
   };
@@ -199,7 +221,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const showConfirmSwal = async (email: string) => {
     const result = await Confirm(
       `Are you sure you want to delete ${email}?`,
-      "error"
+      'error',
     );
     if (result.isConfirmed) {
       handleDeleteUser(email);
@@ -255,38 +277,40 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
             <form
               className="flex flex-col gap-5"
               onSubmit={
-                titleTable === "Add User" ? handleCreateUser : handleUpdateUser
+                titleTable === 'Add User' ? handleCreateUser : handleUpdateUser
               }
             >
               <Input
                 placeholder="First Name"
                 name="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={user.firstName}
+                onChange={(e) =>
+                  setUser({ ...user, firstName: e.target.value })
+                }
               />
               <Input
                 placeholder="Last Name"
                 name="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={user.lastName}
+                onChange={(e) => setUser({ ...user, lastName: e.target.value })}
               />
               <Input
                 placeholder="Username"
                 name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={user.username}
+                onChange={(e) => setUser({ ...user, username: e.target.value })}
               />
               <Input
                 placeholder="Email"
                 name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
               />
               <Input.Password
                 placeholder="Password"
                 name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
               />
               <button
                 type="button"
@@ -299,13 +323,13 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
               <Select
                 placeholder="Select a role"
                 className="w-full"
-                value={role || "Select a role"}
+                value={user.role || 'Select a role'}
                 options={[
-                  { value: "admin", label: "Admin" },
-                  { value: "editor", label: "Editor" },
-                  { value: "viewer", label: "Viewer" },
+                  { value: 'admin', label: 'Admin' },
+                  { value: 'editor', label: 'Editor' },
+                  { value: 'viewer', label: 'Viewer' },
                 ]}
-                onChange={(value) => setRole(value)}
+                onChange={(value) => setUser({ ...user, role: value })}
               />
               {error && <span className="text-red-500">{error}</span>}
               <div className="flex justify-end items-center">

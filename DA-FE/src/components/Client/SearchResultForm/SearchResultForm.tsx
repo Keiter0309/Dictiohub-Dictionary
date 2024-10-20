@@ -1,67 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Bookmark, Volume2 } from "lucide-react";
-import { Modal, message } from "antd";
-import { SearchResultFormProps } from "../../../types/Dashboard/SearchResultFormProps";
-import wordServices from "../../../services/word/wordServices";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bookmark, Volume2 } from 'lucide-react';
+import { Modal, message } from 'antd';
+import { SearchResultFormProps } from '../../../types/Dashboard/SearchResultFormProps';
+import wordServices from '../../../services/word/wordServices';
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState(
-    "You must be logged in to add to favorites"
+    'You must be logged in to add to favorites',
   );
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedFavorites = localStorage.getItem("favorites");
+    const storedFavorites = localStorage.getItem('favorites');
     if (storedFavorites) {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
 
   const handleFavorite = async (word: string) => {
-    const token = sessionStorage.getItem("token");
-    const userId = localStorage.getItem("id");
-    const wordId = localStorage.getItem("ord");
+    const token = sessionStorage.getItem('token');
+    const userId = localStorage.getItem('id');
+    const wordId = localStorage.getItem('ord');
     if (token) {
       if (favorites.includes(word)) {
         const updatedFavorites = favorites.filter((fav) => fav !== word);
         setFavorites(updatedFavorites);
-        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
         try {
-          const response = await wordServices.removeFavoriteWord(
-            Number(wordId),
-            Number(userId)
-          );
-          console.log(response);
-          localStorage.removeItem("ord");
-        }
-        catch (err: any) {
+          await wordServices.removeFavoriteWord(Number(wordId), Number(userId));
+          localStorage.removeItem('ord');
+        } catch (err: any) {
           console.error(err);
         }
-        message.success("Removed from favorites");
+        message.success('Removed from favorites');
       } else {
         const updatedFavorites = [...favorites, word];
         setFavorites(updatedFavorites);
-        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-        message.success("Added to favorites");
+        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        message.success('Added to favorites');
         try {
-          const response = await wordServices.addFavoriteWord(
-            Number(wordId),
-            Number(userId)
-          );
-          console.log(response);
-          localStorage.removeItem("ord");
+          await wordServices.addFavoriteWord(Number(wordId), Number(userId));
+          localStorage.removeItem('ord');
         } catch (err: any) {
           console.error(err);
         }
 
         // Save to params
         const params = new URLSearchParams();
-        params.append("word", word);
-        console.log(params.toString());
+        params.append('word', word);
       }
     } else {
       setOpen(true);
@@ -69,12 +59,12 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   };
 
   const handleOk = () => {
-    setModalText("You must be logged in to add to favorites");
+    setModalText('You must be logged in to add to favorites');
     setConfirmLoading(true);
     setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
-      navigate("/login");
+      navigate('/login');
     }, 1000);
   };
 
@@ -98,8 +88,8 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
               <Bookmark
                 className={`h-6 w-6 ${
                   favorites.includes(result.word)
-                    ? "text-blue-600"
-                    : "text-gray-600"
+                    ? 'text-blue-600'
+                    : 'text-gray-600'
                 }`}
               />
             </button>
@@ -166,7 +156,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
           <ul className="list-disc list-inside">
             {result.synonymsAntonymsWords.map((synAnt: any, index: number) => (
               <li key={index} className="text-gray-800">
-                <strong>Synonym:</strong> {synAnt.synonyms} /{" "}
+                <strong>Synonym:</strong> {synAnt.synonyms} /{' '}
                 <strong>Antonym:</strong> {synAnt.antonyms}
               </li>
             ))}

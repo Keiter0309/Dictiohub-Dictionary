@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import "./DashboardForm-module.css";
-import { sideBarData, statisticsData } from "../../../utils/Data/Data";
-import CountUp from "react-countup";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect } from 'react';
+import './DashboardForm-module.css';
+import { sideBarData, statisticsData } from '../../../utils/Data/Data';
+import CountUp from 'react-countup';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   User,
@@ -16,14 +16,17 @@ import {
   TrendingUp,
   Clock,
   ChartLine,
-} from "lucide-react";
-import WordContent from "./Content/WordContent/WordContent";
-import CategoriesContent from "./Content/CategoriesContent/CategoriesContent";
-import FavoritesContent from "./Content/FavoritesContent/FavoritesContent";
-import SettingContent from "./Content/SettingContent/SettingContent";
-import UserContentForm from "./Content/UserContent/UserContent";
-import { AdminServices, AdminWordServices } from "../../../services/admin/adminServices";
-import { message } from "antd";
+} from 'lucide-react';
+import WordContent from './Content/WordContent/WordContent';
+import CategoriesContent from './Content/CategoriesContent/CategoriesContent';
+import FavoritesContent from './Content/FavoritesContent/FavoritesContent';
+import SettingContent from './Content/SettingContent/SettingContent';
+import UserContentForm from './Content/UserContent/UserContent';
+import {
+  AdminServices,
+  AdminWordServices,
+} from '../../../services/admin/adminServices';
+import { message } from 'antd';
 
 const SidebarForm: React.FC = () => {
   const navigate = useNavigate();
@@ -33,13 +36,13 @@ const SidebarForm: React.FC = () => {
 
   // Active tab state
   const [active, setActive] = React.useState(
-    localStorage.getItem("active") || "Dashboard"
+    localStorage.getItem('active') || 'Dashboard',
   );
   const [open, setOpen] = React.useState(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   useEffect(() => {
-    localStorage.setItem("active", active);
+    localStorage.setItem('active', active);
   }, [active]);
 
   // Click event handlers
@@ -53,9 +56,9 @@ const SidebarForm: React.FC = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      sessionStorage.removeItem("token");
-      message.error("Session expired, please login again");
-      navigate("/admin/login");
+      sessionStorage.removeItem('token');
+      message.error('Session expired, please login again');
+      navigate('/admin/login');
     }, 900000); // 15 minutes
 
     return () => clearTimeout(timeout);
@@ -67,21 +70,17 @@ const SidebarForm: React.FC = () => {
     username: string,
     email: string,
     password: string,
-    role: string
+    role: string,
   ) => {
     try {
-      const response = await AdminServices.createUser(
+      await AdminServices.createUser(
         firstName,
         lastName,
         username,
         email,
         password,
-        role
+        role,
       );
-
-      if (response) {
-        console.log(response);
-      }
     } catch (error) {
       console.error(error);
     }
@@ -99,10 +98,10 @@ const SidebarForm: React.FC = () => {
     ipaText: string,
     usageExample: string,
     synonyms: string,
-    antonyms: string
+    antonyms: string,
   ) => {
     try {
-      const response = await AdminWordServices.createWord(
+       const response = await AdminWordServices.createWord(
         word,
         meanings,
         definitionText,
@@ -114,9 +113,8 @@ const SidebarForm: React.FC = () => {
         ipaText,
         usageExample,
         synonyms,
-        antonyms
+        antonyms,
       );
-      console.log(response)
       return response;
     } catch (error: any) {
       throw new Error(error);
@@ -132,9 +130,9 @@ const SidebarForm: React.FC = () => {
       <aside
         id="container_sidebar"
         className={`bg-white shadow-md transition-all duration-300 ease-in-out group ${
-          open ? "w-64 open" : "w-20 hover:w-64 group-hover:w-64"
+          open ? 'w-64 open' : 'w-20 hover:w-64 group-hover:w-64'
         } fixed md:relative inset-0 z-50 md:z-auto ${
-          mobileOpen ? "translate-x-0" : "md:translate-x-0 -translate-x-full"
+          mobileOpen ? 'translate-x-0' : 'md:translate-x-0 -translate-x-full'
         }`}
       >
         <div className="p-4">
@@ -159,8 +157,8 @@ const SidebarForm: React.FC = () => {
                   to="#"
                   className={`flex items-center justify-between py-2 px-[0.75rem] rounded-lg ${
                     active === item.name
-                      ? "bg-blue-500 text-white duration-200 ease-in-out"
-                      : "text-gray-700 hover:bg-slate-100 duration-200"
+                      ? 'bg-blue-500 text-white duration-200 ease-in-out'
+                      : 'text-gray-700 hover:bg-slate-100 duration-200'
                   }`}
                   onClick={() => {
                     setActive(item.name);
@@ -189,7 +187,7 @@ const SidebarForm: React.FC = () => {
       {/* Main content */}
       <main
         className={`flex-1 overflow-y-auto py-5 px-8 transition-all duration-300 transform ${
-          !open ? "ml-20" : "ml-0"
+          !open ? 'ml-20' : 'ml-0'
         }`}
       >
         <div className="transition-all duration-200 bg-white py-5 rounded-md mb-8 shadow-lg">
@@ -218,7 +216,7 @@ const SidebarForm: React.FC = () => {
         </div>
 
         {/* Dashboard content */}
-        {active === "Dashboard" && (
+        {active === 'Dashboard' && (
           <div>
             <div className="grid md:grid-cols-3 gap-5 grid-cols-1 transition-all duration-200 ease-in-out">
               <div className="bg-white p-5 rounded-md shadow-lg col-span-1 md:w-full transition-transform duration-200 ease-in-out">
@@ -319,21 +317,21 @@ const SidebarForm: React.FC = () => {
           </div>
         )}
 
-        {active === "Users" && <UserContentForm onSubmit={handleCreateUser} />}
+        {active === 'Users' && <UserContentForm onSubmit={handleCreateUser} />}
 
-        {active === "Words" && <WordContent onSubmit={handleCreateWord} />}
+        {active === 'Words' && <WordContent onSubmit={handleCreateWord} />}
 
-        {active === "Categories" && <CategoriesContent />}
+        {active === 'Categories' && <CategoriesContent />}
 
-        {active === "Favorites" && <FavoritesContent />}
+        {active === 'Favorites' && <FavoritesContent />}
 
-        {active === "Settings" && <SettingContent />}
+        {active === 'Settings' && <SettingContent />}
       </main>
 
       {/* Overlay for mobile sidebar */}
       <div
         className={`fixed inset-0 bg-black transition-opacity ${
-          mobileOpen ? "opacity-50" : "opacity-0 pointer-events-none"
+          mobileOpen ? 'opacity-50' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setMobileOpen(false)}
       ></div>

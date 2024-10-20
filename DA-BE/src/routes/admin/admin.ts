@@ -15,6 +15,7 @@ adminRoute.delete(EAdmin.DELETE_USER, AdminUserController.deleteUser);
 adminRoute.get(EAdmin.FETCH_USERS, authenticateToken, AdminUserController.fetchAllUsers);
 
 // Word management routes
+adminRoute.get(EAdmin.FETCH_WORD, AdminWordController.fetchWord);
 adminRoute.get(EAdmin.FETCH_WORDS, authenticateToken, AdminWordController.fetchAllWords);
 adminRoute.post(EAdmin.CREATE_WORD, AdminWordController.createWord)
 adminRoute.delete(EAdmin.DELETE_WORD, AdminWordController.deleteWord);
