@@ -205,4 +205,21 @@ export class User {
       );
     });
   }
+
+  // Update last IP
+  static updateLastIP(email: string, lastIP: string) {
+    return new Promise((resolve, reject)=>{
+      db.query(
+        "UPDATE user SET lastIP = ? WHERE email = ?",
+        [lastIP, email],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      )
+    })
+  }
 }

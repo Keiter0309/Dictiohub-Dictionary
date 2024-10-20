@@ -145,7 +145,13 @@ export class AdminUserController {
       }
 
       // Update the user
-      const updatedUser = (await User.update(id, {firstName, lastName, username, email, role })) as IUser;
+      const updatedUser = (await User.update(id, {
+        firstName,
+        lastName,
+        username,
+        email,
+        role,
+      })) as IUser;
 
       return res.status(200).json({
         status_code: 200,
@@ -159,7 +165,7 @@ export class AdminUserController {
         },
       });
     } catch (err) {
-      console.error('Error updating user:', err);
+      console.error("Error updating user:", err);
       return res.status(500).json({
         status_code: 500,
         message: "Error updating user",
@@ -266,7 +272,7 @@ export class AdminWordController {
         message: "success",
         data: {
           words: words,
-        }
+        },
       });
     } catch (err) {
       return res.status(500).json({ error: "Error fetching all words" });
@@ -292,21 +298,22 @@ export class AdminWordController {
       const newWord = await prisma.word.create({
         data: {
           word: word,
-        }
+        },
       });
 
       const newPos = await prisma.partOfSpeech.create({
         data: {
+          definitionId: newWord.id,
           partOfSpeech: partOfSpeech,
-        }
-      })
+        },
+      });
 
       const newMeaning = await prisma.meaning.create({
         data: {
           wordId: newWord.id,
           meaningText: meanings,
-        }
-      })
+        },
+      });
 
       const newDefinition = await prisma.definition.create({
         data: {
@@ -315,22 +322,22 @@ export class AdminWordController {
           definitionText: definitionText,
           partOfSpeech: partOfSpeech,
           usageExample: usageExample,
-        }
-      })
+        },
+      });
 
       const newCategory = await prisma.category.create({
         data: {
           categoryName: categoryName,
-        }
-      })
+        },
+      });
 
       const newExample = await prisma.exampleWord.create({
         data: {
           wordId: newWord.id,
           exampleText: exampleText,
           source: " ",
-        }
-      })
+        },
+      });
 
       const newPronunciation = await prisma.pronunciation.create({
         data: {
@@ -338,16 +345,16 @@ export class AdminWordController {
           audioPath: audioPath,
           ipaText: ipaText,
           dialect: dialect,
-        }
-      })
+        },
+      });
 
       const newSynonymsAntonyms = await prisma.synonymsAntonyms.create({
         data: {
           wordId: newWord.id,
           synonyms: synonyms,
           antonyms: antonyms,
-        }
-      })
+        },
+      });
 
       return res.status(201).json({
         status_code: 201,
@@ -360,7 +367,7 @@ export class AdminWordController {
           example: newExample,
           pronunciation: newPronunciation,
           synonymsAntonyms: newSynonymsAntonyms,
-        }
+        },
       });
     } catch (err) {
       return res.status(500).json({ error: "Error creating word" });
@@ -369,7 +376,7 @@ export class AdminWordController {
 
   public static async deleteWord(req: Request, res: Response) {
     const id = parseInt(req.params.id);
-    console.log(id)
+    console.log(id);
     try {
       const deletedWord = await Words.delete(id);
       return res.status(200).json({
@@ -377,12 +384,102 @@ export class AdminWordController {
         message: "Word deleted successfully",
         data: {
           word: deletedWord,
-        }
-      })
+        },
+      });
     } catch (err) {
       // Debugging
       console.log(err);
       res.status(500).json({ error: "Error deleting word" });
+    }
+  }
+
+  public static async updateWord(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+    const {
+      word,
+      meanings,
+      definitionText,
+      partOfSpeech,
+      categoryName,
+      exampleText,
+      usageExample,
+      audioPath,
+      dialect,
+      ipaText,
+      synonyms,
+      antonyms,
+    } = req.body;
+
+    // Validate input
+    if (!word || !meanings || !definitionText || !partOfSpeech || !categoryName || !exampleText || !usageExample || !audioPath || !dialect || !ipaText || !synonyms || !antonyms) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "All fields are required",
+      });
+    }
+
+    try {
+      await prisma.$transaction(async (prisma) => {
+        // Update the word
+        const updatedWord = await prisma.word.update({
+          where: { id },
+          data: { word },
+        });
+
+        // Update meanings
+        await prisma.meaning.updateMany({
+          where: { wordId: id },
+          data: { meaningText: meanings },
+        });
+
+        // Update part of speech
+        await prisma.partOfSpeech.updateMany({
+          where: { definitionId: id },
+          data: { partOfSpeech },
+        });
+
+        // Update definitions
+        await prisma.definition.updateMany({
+          where: { wordId: id },
+          data: { definitionText, usageExample },
+        });
+
+        // Update categories
+        await prisma.wordCategory.updateMany({
+          where: { wordId: id },
+          data: { categoryName },
+        });
+
+        // Update example words
+        await prisma.exampleWord.updateMany({
+          where: { wordId: id },
+          data: { exampleText },
+        });
+
+        // Update pronunciations
+        await prisma.pronunciation.updateMany({
+          where: { wordId: id },
+          data: { audioPath, dialect, ipaText },
+        });
+
+        // Update synonyms and antonyms
+        await prisma.synonymsAntonyms.updateMany({
+          where: { wordId: id },
+          data: { synonyms, antonyms },
+        });
+
+        return res.status(200).json({
+          status_code: 200,
+          message: "Word updated successfully",
+          data: { word: updatedWord },
+        });
+      });
+    } catch (err) {
+      console.error('Error updating word:', err);
+      return res.status(500).json({
+        status_code: 500,
+        message: "Error updating word",
+      });
     }
   }
 }
@@ -408,11 +505,12 @@ export class AdminAuthController {
 
       const payload = {
         id: user.id,
+        email: user.email,
         role: user.role,
-      }
+      };
 
       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: "15m",
+        expiresIn: "1 day",
       });
 
       // last login

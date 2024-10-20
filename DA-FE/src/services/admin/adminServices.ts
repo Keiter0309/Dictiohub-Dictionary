@@ -1,15 +1,30 @@
-import axios from "axios";
-import { EAdmin } from "../../enums/Auth/EAuth";
+import axios from 'axios';
+import { EAdmin } from '../../enums/Auth/EAuth';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
     try {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
-        { email, password }
+        { email, password },
       );
+
       // if token expires, the user will be logged out
       const access_token = response.data.data.access_token;
+
+      // Get ip address
+      const ip = await axios.get('https://api.ipify.org?format=json');
+
+      // Return ip address to the server
+      axios.post(
+        `${EAdmin.ADMIN_CLIENT_HOST}/api/v1/admins/get-ip`,
+        { ip: ip.data.ip },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        },
+      );
 
       return access_token;
     } catch (error: any) {
@@ -23,9 +38,9 @@ export class AdminServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (response) {
@@ -39,7 +54,7 @@ export class AdminServices {
   public static async fetchUser(email: string) {
     try {
       const response = await axios.get(
-        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USER}/${email}`
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USER}/${email}`,
       );
 
       return response.data.data;
@@ -54,12 +69,12 @@ export class AdminServices {
     username: string,
     email: string,
     password: string,
-    role: string
+    role: string,
   ) {
     try {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_USER}`,
-        { firstName, lastName, username, email, password, role }
+        { firstName, lastName, username, email, password, role },
       );
 
       return response.data;
@@ -71,7 +86,7 @@ export class AdminServices {
   public static async deleteUser(email: string) {
     try {
       const response = await axios.delete(
-        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_USER}/${email}`
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_USER}/${email}`,
       );
 
       return response.data.data;
@@ -86,13 +101,13 @@ export class AdminServices {
     lastName: string,
     username: string,
     email: string,
-    role: string
+    role: string,
   ) {
     try {
       const response = await axios.put(
         `
         ${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_USER}/${id}`,
-        { firstName, lastName, username, email, role }
+        { firstName, lastName, username, email, role },
       );
       console.log(response.data);
       return response.data;
@@ -109,9 +124,9 @@ export class AdminWordServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
           },
-        }
+        },
       );
       console.log(response.data);
       return response.data.data;
@@ -132,7 +147,7 @@ export class AdminWordServices {
     ipaText: string,
     usageExample: string,
     synonyms: string,
-    antonyms: string
+    antonyms: string,
   ) {
     try {
       const response = await axios.post(
@@ -150,7 +165,7 @@ export class AdminWordServices {
           usageExample,
           synonyms,
           antonyms,
-        }
+        },
       );
 
       return response.data;
@@ -162,9 +177,9 @@ export class AdminWordServices {
   public static async deleteWord(id: number) {
     try {
       const response = await axios.delete(
-        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_WORD}/${id}`
+        `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_WORD}/${id}`,
       );
-  
+
       return response.data;
     } catch (error: any) {
       if (error.response) {

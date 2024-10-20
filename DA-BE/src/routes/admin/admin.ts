@@ -18,3 +18,4 @@ adminRoute.get(EAdmin.FETCH_USERS, authenticateToken, AdminUserController.fetchA
 adminRoute.get(EAdmin.FETCH_WORDS, authenticateToken, AdminWordController.fetchAllWords);
 adminRoute.post(EAdmin.CREATE_WORD, AdminWordController.createWord)
 adminRoute.delete(EAdmin.DELETE_WORD, AdminWordController.deleteWord);
+adminRoute.put(EAdmin.UPDATE_WORD, AdminWordController.updateWord);

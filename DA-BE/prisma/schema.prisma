@@ -90,6 +90,7 @@ model Pronunciation {
 
 model PartOfSpeech {
   id           Int    @id @default(autoincrement())
+  definitionId Int
   partOfSpeech String
 
   // Relations
@@ -113,7 +114,6 @@ model Definition {
   word Word         @relation(fields: [wordId], references: [id])
   pos  PartOfSpeech @relation(fields: [posId], references: [id])
 }
-
 model Category {
   id           Int       @id @default(autoincrement())
   categoryName String
