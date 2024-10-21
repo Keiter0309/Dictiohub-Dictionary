@@ -143,7 +143,7 @@ export class AdminWordServices {
           },
         },
       );
-
+      console.log(response.data)
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to fetch word: ${error.message}`);

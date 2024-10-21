@@ -87,22 +87,20 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const fetchWord = async (id: number) => {
     try {
       const response = await AdminWordServices.fetchWord(id);
-      setWord({
-        word: response.word,
-        meanings: response.meanings,
-        definitionText: response.definitionText,
-        partOfSpeech: response.partOfSpeech,
-        categoryName: response.categoryName,
-        exampleText: response.exampleText,
-        audioPath: response.audioPath,
-        dialect: response.dialect,
-        ipaText: response.ipaText,
-        usageExample: response.usageExample,
-        synonyms: response.synonyms,
-        antonyms: response.antonyms,
-      });
-
-      console.log('Word:', response);
+      (setWord({
+        word: response.data.word,
+        meanings: response.data.meaning[0].meaningText,
+        definitionText: response.data.definitions[0].definitionText,
+        partOfSpeech: response.data.definitions[0].partOfSpeech,
+        categoryName: response.data.category,
+        exampleText: response.data.exampleWords[0].exampleText,
+        audioPath: response.data.pronunciations[0].audioPath,
+        dialect: response.data.pronunciations[0].dialect,
+        ipaText: response.data.pronunciations[0].ipaText,
+        usageExample: response.data.definitions[0].usageExample,
+        synonyms: response.data.synonyms[0].synonyms,
+        antonyms: response.data.antonyms[0].antonyms,
+      }));
 
       return response;
     } catch (error: any) {
@@ -348,7 +346,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 }
               />
 
-              {/* <Select
+              <Select
                 id="partOfSpeech"
                 value={
                   Array.isArray(word.partOfSpeech)
@@ -371,7 +369,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                   { value: 'conjunction', label: 'Conjunction' },
                   { value: 'interjection', label: 'Interjection' },
                 ]}
-              /> */}
+              />
               <div className="flex justify-end items-center">
                 <button
                   type="submit"

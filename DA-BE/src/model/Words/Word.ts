@@ -103,6 +103,14 @@ export class Words {
         },
       });
 
+      const wordCategories = await prisma.wordCategory.findMany({
+        where: {
+          wordId: words.id,
+        },
+      });
+
+      const category = wordCategories.map((category) => category.categoryName);
+
       return {
         ...words,
         exampleWords,
@@ -111,6 +119,7 @@ export class Words {
         synonyms,
         antonyms,
         meaning,
+        category,
       };
     } catch (error) {
       console.error('Error fetching word by id:', error);
