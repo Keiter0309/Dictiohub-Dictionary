@@ -418,20 +418,67 @@ export class AdminWordController {
 
   public static async deleteWord(req: Request, res: Response) {
     const id = parseInt(req.params.id);
-    console.log(id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid word ID' });
+    }
+
     try {
-      const deletedWord = await Words.delete(id);
+      const existingWord = await prisma.word.findUnique({
+        where: { id: id },
+      });
+
+      if (!existingWord) {
+        return res.status(404).json({ error: 'Word not found' });
+      }
+
+      await prisma.$transaction(async (prisma) => {
+        await prisma.meaning.deleteMany({
+          where: { wordId: id },
+        });
+
+        await prisma.definition.deleteMany({
+          where: { wordId: id },
+        });
+
+        await prisma.partOfSpeech.deleteMany({
+          where: { id: id, definitionId: id },
+        });
+
+        const categoryNames = await prisma.wordCategory.findMany({
+          where: { wordId: id },
+          select: { categoryName: true },
+        });
+
+        await prisma.category.deleteMany({
+          where: {
+            categoryName: { in: categoryNames.map((c) => c.categoryName) },
+          },
+        });
+
+        await prisma.exampleWord.deleteMany({
+          where: { wordId: id },
+        });
+
+        await prisma.pronunciation.deleteMany({
+          where: { wordId: id },
+        });
+
+        await prisma.synonymsAntonyms.deleteMany({
+          where: { wordId: id },
+        });
+
+        await prisma.word.delete({
+          where: { id: id },
+        });
+      });
+
       return res.status(200).json({
         status_code: 200,
         message: 'Word deleted successfully',
-        data: {
-          word: deletedWord,
-        },
       });
     } catch (err) {
-      // Debugging
-      console.log(err);
-      res.status(500).json({ error: 'Error deleting word' });
+      console.error(err);
+      return res.status(500).json({ error: 'Error deleting word' });
     }
   }
 

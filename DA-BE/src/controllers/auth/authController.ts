@@ -134,10 +134,8 @@ class AuthController {
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      const ipAddress = req.ip
-
-      // Save login ip
-      await User.updateLastIP(email, ipAddress as string);      
+      const cookie = req.cookies;
+      console.log(cookie)
 
       return res.status(200).json({
         status_code: 200,
