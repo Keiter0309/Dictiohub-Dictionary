@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { EAdmin } from '../../enums/Auth/EAuth';
+import { Cookies } from 'react-cookie';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
@@ -33,6 +34,7 @@ export class AdminServices {
   }
 
   public static async fetchUsers() {
+    const cookie = new Cookies();
     try {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,

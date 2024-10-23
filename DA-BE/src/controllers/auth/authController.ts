@@ -134,8 +134,11 @@ class AuthController {
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      const cookie = req.cookies;
-      console.log(cookie)
+      res.cookie('uToken', token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'strict',
+      });
 
       return res.status(200).json({
         status_code: 200,
@@ -194,7 +197,7 @@ class AuthController {
         mailOptions.html,
       );
 
-      return res.status(200).json({
+      return res.status(200).json({ 
         message: 'OTP sent to email',
       });
     } catch (err) {
