@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { EAdmin } from '../../enums/Auth/EAuth';
-import { Cookies } from 'react-cookie';
+import { GetCookie } from '../../utils/GetCookie/getCookie.utils';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
+    const aToken = GetCookie.getCookie('aToken');
+    console.log('aToken:', aToken);
     try {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
@@ -13,20 +15,6 @@ export class AdminServices {
       // if token expires, the user will be logged out
       const access_token = response.data.data.access_token;
 
-      // Get ip address
-      const ip = await axios.get('https://api.ipify.org?format=json');
-
-      // Return ip address to the server
-      axios.post(
-        `${EAdmin.ADMIN_CLIENT_HOST}/api/v1/admins/get-ip`,
-        { ip: ip.data.ip },
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        },
-      );
-
       return access_token;
     } catch (error: any) {
       return error.response.data;
@@ -34,7 +22,7 @@ export class AdminServices {
   }
 
   public static async fetchUsers() {
-    const cookie = new Cookies();
+    // const cookie = new Cookies();
     try {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
@@ -145,7 +133,7 @@ export class AdminWordServices {
           },
         },
       );
-      console.log(response.data)
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to fetch word: ${error.message}`);

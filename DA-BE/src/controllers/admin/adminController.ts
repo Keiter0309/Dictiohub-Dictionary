@@ -622,9 +622,9 @@ export class AdminAuthController {
       res.cookie('aToken', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000,
-      })
+      });
 
       return res.status(200).json({
         status_code: 200,
