@@ -155,7 +155,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       word.word,
       word.meanings,
       word.definitionText,
-      word.partOfSpeech,
+      word.partOfSpeech[0].split(','),
       word.categoryName,
       word.exampleText,
       word.audioPath,

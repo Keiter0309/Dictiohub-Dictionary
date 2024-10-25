@@ -6,7 +6,7 @@ export interface SearchResultFormProps {
     pronunciation: string;
     meaning: string;
     dialect: string;
-    definitionWords: {
+    definitions: {
       definitionText: string;
       usageExample: string;
       partOfSpeech: string;
@@ -14,15 +14,17 @@ export interface SearchResultFormProps {
     exampleWords: {
       exampleText: string;
     }[];
-    pronunciationWords: {
+    pronunciations: {
       ipaText: string;
       dialect: string;
     }[];
-    synonymsAntonymsWords: {
+    synonyms: {
       synonyms: string;
+    }[];
+    antonyms: {
       antonyms: string;
     }[];
-    meaningWords: {
+    meanings: {
       meaningText: string;
     }[];
   };

@@ -24,7 +24,7 @@ export class Words {
       const definitions = await prisma.definition.findMany();
       const wordCategories = await prisma.wordCategory.findMany();
       const synonymsAntonyms = await prisma.synonymsAntonyms.findMany();
-      const meanings = await prisma.meaning.findMany();
+      const meaning = await prisma.meaning.findMany();
 
       return {
         words,
@@ -33,7 +33,7 @@ export class Words {
         definitions,
         wordCategories,
         synonymsAntonyms,
-        meanings,
+        meaning,
       };
     } catch (error) {
       console.error('Error fetching all words:', error);
@@ -97,7 +97,7 @@ export class Words {
         },
       });
 
-      const meaning = await prisma.meaning.findMany({
+      const meanings = await prisma.meaning.findMany({
         where: {
           wordId: words.id,
         },
@@ -118,7 +118,7 @@ export class Words {
         definitions,
         synonyms,
         antonyms,
-        meaning,
+        meanings,
         category,
       };
     } catch (error) {
@@ -183,7 +183,7 @@ export class Words {
         },
       });
 
-      const meaning = await prisma.meaning.findMany({
+      const meanings = await prisma.meaning.findMany({
         where: {
           wordId: words.id,
         },
@@ -196,7 +196,7 @@ export class Words {
         definitions,
         synonyms,
         antonyms,
-        meaning,
+        meanings,
       };
     } catch (error) {
       console.error('Error fetching word by word:', error);

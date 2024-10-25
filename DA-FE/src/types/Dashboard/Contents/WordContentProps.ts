@@ -3,7 +3,7 @@ export interface WordContentProps {
     word: string,
     meanings: string,
     definitionText: string,
-    partOfSpeech: string,
+    partOfSpeech: string[],
     categoryName: string,
     exampleText: string,
     audioPath: string,

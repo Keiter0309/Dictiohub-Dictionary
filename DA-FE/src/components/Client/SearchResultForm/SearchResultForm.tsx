@@ -102,7 +102,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Definitions
           </h3>
           <ul className="list-disc list-inside">
-            {result.definitionWords.map((def: any, index: number) => (
+            {result.definitions.map((def: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {def.definitionText}
                 <br />
@@ -131,7 +131,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Pronunciations
           </h3>
           <ul className="list-disc list-inside">
-            {result.pronunciationWords.map((pron: any, index: number) => (
+            {result.pronunciations.map((pron: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {pron.ipaText}
                 {pron.dialect && <span> ({pron.dialect})</span>}
@@ -142,7 +142,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Meanings</h3>
           <ul className="list-disc list-inside">
-            {result.meaningWords.map((meaning: any, index: number) => (
+            {result.meanings.map((meaning: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {meaning.meaningText}
               </li>
@@ -154,10 +154,14 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Synonyms and Antonyms
           </h3>
           <ul className="list-disc list-inside">
-            {result.synonymsAntonymsWords.map((synAnt: any, index: number) => (
+            {result.synonyms.map((syn: any, index: number) => (
               <li key={index} className="text-gray-800">
-                <strong>Synonym:</strong> {synAnt.synonyms} /{' '}
-                <strong>Antonym:</strong> {synAnt.antonyms}
+                <strong>Synonym:</strong> {syn.synonyms} /{' '}
+              </li>
+            ))}
+            {result.antonyms.map((ant: any, index: number) => (
+              <li key={index} className="text-gray-800">
+                <strong>Antonym:</strong> {ant.antonyms}
               </li>
             ))}
           </ul>

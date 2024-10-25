@@ -14,7 +14,7 @@ const corsOptions: cors.CorsOptions = {
     const allowedOrigins = [
       trimTrailingSlash(process.env.IP_HOST || ""),
       trimTrailingSlash(process.env.CLIENT_HOST || ""),
-      trimTrailingSlash(process.env.SERVER_HOST || "")
+      trimTrailingSlash(process.env.DEV_HOST || "")
     ];
     const requestOrigin = trimTrailingSlash(origin || "");
 
