@@ -47,7 +47,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       if (response && response.words) {
         const {
           words,
-          meanings,
+          meaning,
           definitions,
           exampleWords,
           pronunciations,
@@ -62,7 +62,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           Array.isArray(synonymsAntonyms)
         ) {
           setWords(words);
-          setMeaning(meanings);
+          setMeaning(meaning);
           setDefinitions(definitions);
           setExampleWords(exampleWords);
           setSynonymAntonyms(synonymsAntonyms);
