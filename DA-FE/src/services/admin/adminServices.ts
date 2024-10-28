@@ -1,11 +1,8 @@
 import axios from 'axios';
 import { EAdmin } from '../../enums/Auth/EAuth';
-import { GetCookie } from '../../utils/GetCookie/getCookie.utils';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
-    const aToken = GetCookie.getCookie('aToken');
-    console.log('aToken:', aToken);
     try {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
@@ -28,7 +25,7 @@ export class AdminServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         },
       );
@@ -113,7 +110,7 @@ export class AdminWordServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         },
       );
@@ -129,7 +126,7 @@ export class AdminWordServices {
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORD}/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         },
       );

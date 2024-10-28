@@ -1,10 +1,6 @@
 import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
-import { Table } from 'antd';
-import type { TableColumnsType } from 'antd';
-import {
-  WordRowComponentProps,
-} from '../../../../../types/Dashboard/Contents/WordRowProps';
+import { WordRowComponentProps } from '../../../../../types/Dashboard/Contents/WordRowProps';
 import { Confirm } from '../../../../../utils/ToastData/Toast';
 import { AdminWordServices } from '../../../../../services/admin/adminServices';
 

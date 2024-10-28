@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import AdminLoginForm from '../../../components/Admin/LoginForm/LoginForm';
 import { AdminServices } from '../../../services/admin/adminServices'; // Adjusted import
 import { message } from 'antd';
-import { Cookies } from 'react-cookie';
 
 const AdminLogin: React.FC = () => {
-  const cookie = new Cookies();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
       navigate('/admin/dashboard');
     }
@@ -18,7 +16,7 @@ const AdminLogin: React.FC = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
 
       message.warning('Session expired. Please login again.');
       navigate('/admin/login');
@@ -31,8 +29,9 @@ const AdminLogin: React.FC = () => {
     try {
       const accessToken = await AdminServices.loginAdmin(email, password);
       if (accessToken) {
-        sessionStorage.setItem('token', accessToken);
-        console.log(cookie.get('aToken'));
+        // sessionStorage.setItem('token', accessToken);
+        localStorage.setItem('token', accessToken);
+        console.log(localStorage.getItem('token'));
         navigate('/admin/dashboard');
       } else {
         message.error('Invalid email or password');
