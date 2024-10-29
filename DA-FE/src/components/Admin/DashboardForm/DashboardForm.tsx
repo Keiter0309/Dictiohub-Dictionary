@@ -30,6 +30,8 @@ import { message } from 'antd';
 
 const SidebarForm: React.FC = () => {
   const navigate = useNavigate();
+  const [activeSearch, setActiveSearch] = React.useState(false);
+
   // Data from utils/Data.ts
   const sidebarItems = sideBarData;
   const statisticsItems = statisticsData;
@@ -54,12 +56,20 @@ const SidebarForm: React.FC = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleActiveSearch = () => {
+    setActiveSearch(true);
+  };
+
+  const handleUnActiveSearch = () => {
+    setActiveSearch(false);
+  };
+
   useEffect(() => {
     const timeout = setTimeout(() => {
-      sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
       message.error('Session expired, please login again');
       navigate('/admin/login');
-    }, 900000); // 15 minutes
+    }, 86400000);
 
     return () => clearTimeout(timeout);
   }, [navigate]);
@@ -101,7 +111,7 @@ const SidebarForm: React.FC = () => {
     antonyms: string,
   ) => {
     try {
-       const response = await AdminWordServices.createWord(
+      const response = await AdminWordServices.createWord(
         word,
         meanings,
         definitionText,
@@ -201,15 +211,48 @@ const SidebarForm: React.FC = () => {
                 {active}
               </h1>
             </div>
+            <div className="hidden md:block relative">
+              <button
+                className={`py-2 px-4 bg-blue-600 text-white rounded-full transition-all duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                  activeSearch ? 'hidden' : 'block'
+                }`}
+                onClick={handleActiveSearch}
+              >
+                <div className="flex items-center">
+                  <Search className="h-6 w-6 text-white mr-2" />
+                  <span className="font-semibold">Search</span>
+                </div>
+              </button>
+
+              {activeSearch && (
+                <div className="absolute top-[-30px] left-[-150px] bg-white shadow-lg rounded-lg w-80 p-2 transition-all duration-300 ease-in-out">
+                  <div className="flex justify-between items-center">
+                    <input
+                      type="text"
+                      className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      placeholder="Search..."
+                    />
+                    <button
+                      className="text-red-500 ml-2 focus:outline-none"
+                      onClick={handleUnActiveSearch}
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="mr-5 flex flex-row-reverse gap-x-5">
-              <img
-                src="https://avatar.iran.liara.run/public"
-                alt="Avatar"
-                className="h-6 w-6 rounded-full hover:cursor-pointer"
-              />
+              <button>
+                <img
+                  src="https://avatar.iran.liara.run/public"
+                  alt="Avatar"
+                  className="h-6 w-6 rounded-full hover:cursor-pointer"
+                />
+              </button>
               <Bell className="h-6 w-6 text-gray-800 hover:cursor-pointer" />
-              <Search className="h-6 w-6 text-gray-800 hover:cursor-pointer" />
+              <Search className="h-6 w-6 text-gray-800 hover:cursor-pointer md:hidden block" />
               <Moon className="h-6 w-6 text-gray-800 hover:cursor-pointer" />
             </div>
           </div>

@@ -11,7 +11,7 @@ const Signup: React.FC = () => {
   const formRef = React.useRef<any>(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       navigate("/");
     }

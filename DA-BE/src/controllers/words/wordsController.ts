@@ -104,7 +104,7 @@ class WordsController {
     const userId = req.body.userId;
 
     try {
-      const favorite = await Favorites.deleteFavorite(id, userId);
+      await Favorites.deleteFavorite(id, userId);
       return res.status(200).json({
         message: "Favorite deleted successfully",
       });
