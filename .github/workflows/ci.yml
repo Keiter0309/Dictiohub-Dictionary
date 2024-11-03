@@ -21,6 +21,6 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - name: Build the Docker image
-      run: docker build -t Dictionary-Application .
+      run: docker build -t dictionary_application .
     - name: Push to Dockerhub
-      run: docker push keith0309/Dictionary-Application:lastest
+      run: docker push keith0309/dictionary_application:lastest
