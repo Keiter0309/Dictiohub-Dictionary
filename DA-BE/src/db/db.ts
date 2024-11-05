@@ -22,6 +22,16 @@ con.connect(async (err) => {
   }
   console.log("Connected to the database");
 
+  // Automatically create the database tables
+  con.query("CREATE DATABASE IF NOT EXISTS " + process.env.DB_NAME, (err) => {
+    if (err) {
+      console.error("Error creating the database:", err.message);
+      return;
+    }
+    console.log("Database created or already exists");
+  });
+
+
   // Add the admin user
   const prisma = new PrismaClient();
   try {
