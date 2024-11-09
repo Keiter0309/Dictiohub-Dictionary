@@ -145,7 +145,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
       role: '',
     });
     setTitleTable('Add User');
-    setError(''); 
+    setError('');
   };
 
   const handleEditUser = async (email: string) => {
@@ -391,20 +391,24 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
                   </td>
                   <td className="py-3 px-5 text-left">{user.wordsAdded}</td>
                   <td className="py-3 px-5 text-left">
-                    <button
-                      className="text-blue-500 hover:text-blue-700 transition-all duration-300"
-                      onClick={() => {
-                        handleEditUser(user.email);
-                      }}
-                    >
-                      <Pencil />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700 ml-3"
-                      onClick={() => showConfirmSwal(user.email)}
-                    >
-                      <Trash2 />
-                    </button>
+                    {user.username !== 'administrator' && (
+                      <>
+                        <button
+                          className="text-blue-500 hover:text-blue-700 transition-all duration-300 ml-3"
+                          onClick={() => {
+                            handleEditUser(user.email);
+                          }}
+                        >
+                          <Pencil />
+                        </button>
+                        <button
+                          className="text-red-500 hover:text-red-700 ml-3"
+                          onClick={() => showConfirmSwal(user.email)}
+                        >
+                          <Trash2 />
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               );

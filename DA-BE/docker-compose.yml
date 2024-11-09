@@ -1,6 +1,6 @@
 services:
   services-da-prod:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     container_name: container-app-BE-prod

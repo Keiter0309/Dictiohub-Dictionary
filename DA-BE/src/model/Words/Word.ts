@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -11,19 +11,19 @@ export class Words {
       });
       return words;
     } catch (error) {
-      console.error('Error fetching all words:', error);
-      throw new Error('Error fetching all words');
+      console.error("Error fetching all words:", error);
+      throw new Error("Error fetching all words");
     }
   }
 
   static async fetchAllWords() {
     try {
       const words = await prisma.word.findMany();
-      const exampleWords = await prisma.exampleWord.findMany();
+      const exampleWords = await prisma.exampleword.findMany();
       const pronunciations = await prisma.pronunciation.findMany();
       const definitions = await prisma.definition.findMany();
-      const wordCategories = await prisma.wordCategory.findMany();
-      const synonymsAntonyms = await prisma.synonymsAntonyms.findMany();
+      const wordCategories = await prisma.wordcategory.findMany();
+      const synonymsAntonyms = await prisma.synonymsantonyms.findMany();
       const meaning = await prisma.meaning.findMany();
 
       return {
@@ -36,8 +36,8 @@ export class Words {
         meaning,
       };
     } catch (error) {
-      console.error('Error fetching all words:', error);
-      throw new Error('Error fetching all words');
+      console.error("Error fetching all words:", error);
+      throw new Error("Error fetching all words");
     }
   }
 
@@ -56,7 +56,7 @@ export class Words {
       }
 
       // Fetch the words related to the word record
-      const exampleWords = await prisma.exampleWord.findMany({
+      const exampleWords = await prisma.exampleword.findMany({
         where: {
           wordId: words.id,
         },
@@ -76,10 +76,10 @@ export class Words {
           definitionText: true,
           usageExample: true,
           partOfSpeech: true,
-        }
+        },
       });
 
-      const synonyms = await prisma.synonymsAntonyms.findMany({
+      const synonyms = await prisma.synonymsantonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -88,7 +88,7 @@ export class Words {
         },
       });
 
-      const antonyms = await prisma.synonymsAntonyms.findMany({
+      const antonyms = await prisma.synonymsantonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -103,7 +103,7 @@ export class Words {
         },
       });
 
-      const wordCategories = await prisma.wordCategory.findMany({
+      const wordCategories = await prisma.wordcategory.findMany({
         where: {
           wordId: words.id,
         },
@@ -122,8 +122,8 @@ export class Words {
         category,
       };
     } catch (error) {
-      console.error('Error fetching word by id:', error);
-      throw new Error('Error fetching word by id');
+      console.error("Error fetching word by id:", error);
+      throw new Error("Error fetching word by id");
     }
   }
 
@@ -142,7 +142,7 @@ export class Words {
       }
 
       // Fetch the words related to the word record
-      const exampleWords = await prisma.exampleWord.findMany({
+      const exampleWords = await prisma.exampleword.findMany({
         where: {
           wordId: words.id,
         },
@@ -162,10 +162,10 @@ export class Words {
           definitionText: true,
           usageExample: true,
           partOfSpeech: true,
-        }
+        },
       });
 
-      const synonyms = await prisma.synonymsAntonyms.findMany({
+      const synonyms = await prisma.synonymsantonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -174,7 +174,7 @@ export class Words {
         },
       });
 
-      const antonyms = await prisma.synonymsAntonyms.findMany({
+      const antonyms = await prisma.synonymsantonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -199,8 +199,8 @@ export class Words {
         meanings,
       };
     } catch (error) {
-      console.error('Error fetching word by word:', error);
-      throw new Error('Error fetching word by word');
+      console.error("Error fetching word by word:", error);
+      throw new Error("Error fetching word by word");
     }
   }
 
@@ -211,8 +211,8 @@ export class Words {
       });
       return newWord;
     } catch (error) {
-      console.error('Error creating word:', error);
-      throw new Error('Error creating word');
+      console.error("Error creating word:", error);
+      throw new Error("Error creating word");
     }
   }
 
@@ -226,8 +226,8 @@ export class Words {
       });
       return updatedWord;
     } catch (error) {
-      console.error('Error updating word:', error);
-      throw new Error('Error updating word');
+      console.error("Error updating word:", error);
+      throw new Error("Error updating word");
     }
   }
 
@@ -235,21 +235,21 @@ export class Words {
     try {
       await prisma.$transaction(async (prisma) => {
         // Delete all related records first
-        await prisma.exampleWord.deleteMany({ where: { wordId: id } });
+        await prisma.exampleword.deleteMany({ where: { wordId: id } });
         await prisma.pronunciation.deleteMany({ where: { wordId: id } });
         await prisma.definition.deleteMany({ where: { wordId: id } });
-        await prisma.wordCategory.deleteMany({ where: { wordId: id } });
-        await prisma.synonymsAntonyms.deleteMany({ where: { wordId: id } });
+        await prisma.wordcategory.deleteMany({ where: { wordId: id } });
+        await prisma.synonymsantonyms.deleteMany({ where: { wordId: id } });
         await prisma.meaning.deleteMany({ where: { wordId: id } });
 
         // Delete the word
         await prisma.word.delete({ where: { id: id } });
       });
 
-      return { message: 'Word and related records deleted successfully' };
+      return { message: "Word and related records deleted successfully" };
     } catch (error) {
-      console.error('Error deleting word:', error);
-      throw new Error('Error deleting word');
+      console.error("Error deleting word:", error);
+      throw new Error("Error deleting word");
     }
   }
 
@@ -258,8 +258,8 @@ export class Words {
       const result = await prisma.word.deleteMany();
       return result;
     } catch (error) {
-      console.error('Error deleting all words:', error);
-      throw new Error('Error deleting all words');
+      console.error("Error deleting all words:", error);
+      throw new Error("Error deleting all words");
     }
   }
 
@@ -276,8 +276,8 @@ export class Words {
       });
       return words;
     } catch (error) {
-      console.error('Error searching words:', error);
-      throw new Error('Error searching words');
+      console.error("Error searching words:", error);
+      throw new Error("Error searching words");
     }
   }
 }
@@ -285,23 +285,23 @@ export class Favorites {
   // Fetch all favorite words
   static async fetchAll(userId: number) {
     try {
-      const favorites = await prisma.favoriteWord.findMany({
+      const favorites = await prisma.favoriteword.findMany({
         where: {
           userId: userId,
         },
       });
 
-      console.log('userId:::', userId);
+      console.log("userId:::", userId);
       return favorites;
     } catch (error) {
-      console.error('Error fetching all favorite words:', error);
-      throw new Error('Error fetching all favorite words');
+      console.error("Error fetching all favorite words:", error);
+      throw new Error("Error fetching all favorite words");
     }
   }
 
   static async deleteFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteWord.deleteMany({
+      const favorite = await prisma.favoriteword.deleteMany({
         where: {
           wordId: id,
           userId: userId,
@@ -309,15 +309,15 @@ export class Favorites {
       });
       return favorite;
     } catch (error) {
-      console.error('Error deleting favorite:', error);
-      throw new Error('Error deleting favorite');
+      console.error("Error deleting favorite:", error);
+      throw new Error("Error deleting favorite");
     }
   }
 
   // Add favorite word
   static async addFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteWord.create({
+      const favorite = await prisma.favoriteword.create({
         data: {
           wordId: id,
           userId: userId,
@@ -325,22 +325,22 @@ export class Favorites {
       });
       return favorite;
     } catch (error) {
-      console.error('Error adding favorite:', error);
-      throw new Error('Error adding favorite');
+      console.error("Error adding favorite:", error);
+      throw new Error("Error adding favorite");
     }
   }
 
   static async checkFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteWord.findMany({
+      const favorite = await prisma.favoriteword.findMany({
         where: {
           wordId: id,
           userId: userId,
         },
       });
     } catch (err: any) {
-      console.error('Error checking favorite:', err);
-      throw new Error('Error checking favorite');
+      console.error("Error checking favorite:", err);
+      throw new Error("Error checking favorite");
     }
   }
 }

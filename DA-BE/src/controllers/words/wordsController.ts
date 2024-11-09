@@ -85,17 +85,19 @@ class WordsController {
 
   public async fetchAllFavorites(req: Request, res: Response) {
     const userId = parseInt(req.params.userId);
-    
+
     try {
       const favorites = await Favorites.fetchAll(userId);
       return res.status(200).json({
         data: {
-          wordId: favorites.map((favorite) => favorite.wordId),
-          userId: favorites.map((favorite) => favorite.userId),
-        }
+          wordId: favorites.map((favorite: { wordId: any }) => favorite.wordId),
+          userId: favorites.map((favorite: { userId: any }) => favorite.userId),
+        },
       });
     } catch (err: any) {
-      return res.status(500).json({ error: "Error fetching all favorite words" });
+      return res
+        .status(500)
+        .json({ error: "Error fetching all favorite words" });
     }
   }
 

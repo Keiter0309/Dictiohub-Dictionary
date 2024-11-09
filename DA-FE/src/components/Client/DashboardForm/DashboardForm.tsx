@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, Volume2, Bookmark, } from "lucide-react";
-import { DashboardFormProps } from "../../../types/Dashboard/DashboardFormProps";
-import wordServices from "../../../services/word/wordServices";
-import NavbarForm from "../NavbarForm/NavbarForm";
-import SearchResultForm from "../SearchResultForm/SearchResultForm";
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
-import { Select } from "antd";
-import Fuse from "fuse.js";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Search, Volume2, Bookmark } from 'lucide-react';
+import { DashboardFormProps } from '../../../types/Dashboard/DashboardFormProps';
+import wordServices from '../../../services/word/wordServices';
+import NavbarForm from '../NavbarForm/NavbarForm';
+import SearchResultForm from '../SearchResultForm/SearchResultForm';
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
+import { Select } from 'antd';
+import Fuse from 'fuse.js';
 
 const { Option } = Select;
 
@@ -16,9 +16,9 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
   onSubmit,
   searchResult,
 }) => {
-  const [word, setWord] = useState("");
+  const [word, setWord] = useState('');
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
-    []
+    [],
   );
   const [filteredOptions, setFilteredOptions] = useState<
     { value: string; label: string }[]
@@ -29,7 +29,7 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
     onSubmit(word);
 
     // Clear the input field
-    setWord("");
+    setWord('');
   };
 
   const handleSelectChange = (value: string) => {
@@ -37,7 +37,7 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
   };
 
   const fuse = new Fuse(options, {
-    keys: ["label"],
+    keys: ['label'],
     includeScore: true,
   });
 
@@ -57,7 +57,7 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
         const result = fuse.search(inputValue);
         setFilteredOptions(result.map(({ item }) => item));
       } catch (error) {
-        console.error("Error fetching words:", error);
+        console.error('Error fetching words:', error);
       }
     }
   };

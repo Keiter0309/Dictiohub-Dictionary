@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { BookOpen, Menu, X, ArrowLeft } from "lucide-react";
-import { Cookies } from "react-cookie";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BookOpen, Menu, X, ArrowLeft } from 'lucide-react';
+import { Cookies } from 'react-cookie';
 
 const NavbarForm: React.FC = () => {
   const cookies = new Cookies();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const isLogged = cookies.get("token");
+  const isLogged = cookies.get('token');
 
   let navItems = [
-    { to: "/", label: "Home" },
-    { to: "/thesaurus", label: "Thesaurus" },
-    { to: "/about", label: "About" },
+    { to: '/', label: 'Home' },
+    { to: '/about', label: 'About' },
+    { to: '/thesaurus', label: 'Thesaurus' },
   ];
 
   let avatarItems = [
-    { to: "/profile", label: "Profile" },
-    { to: "/favorites", label: "Favorites" },
-    { to: "/logout", label: "Logout" },
+    { to: '/profile', label: 'Profile' },
+    { to: '/favorites', label: 'Favorites' },
+    { to: '/logout', label: 'Logout' },
   ];
 
   const handleLogoutClick = () => {
-    cookies.remove("token");
-    localStorage.removeItem("favorites");
-    window.location.href = "/";
+    cookies.remove('token');
+    localStorage.removeItem('favorites');
+    window.location.href = '/';
   };
 
   return (
@@ -69,7 +69,7 @@ const NavbarForm: React.FC = () => {
                         key={item.to}
                         to={item.to}
                         onClick={() => {
-                          if (item.to === "/logout") {
+                          if (item.to === '/logout') {
                             handleLogoutClick();
                           }
                           setIsDropdownOpen(false);
@@ -102,7 +102,7 @@ const NavbarForm: React.FC = () => {
       </div>
       <div
         className={`fixed inset-0 flex justify-end z-50 transition-transform transform ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="bg-white w-64 h-full shadow-lg transition-transform transform flex flex-col">
@@ -156,7 +156,7 @@ const NavbarForm: React.FC = () => {
       </div>
       <div
         className={`fixed inset-0 bg-black transition-opacity ${
-          isOpen ? "opacity-50" : "opacity-0 pointer-events-none"
+          isOpen ? 'opacity-50' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setIsOpen(false)}
       ></div>

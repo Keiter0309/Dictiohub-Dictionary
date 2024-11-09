@@ -31,7 +31,6 @@ con.connect(async (err) => {
     console.log("Database created or already exists");
   });
 
-
   // Add the admin user
   const prisma = new PrismaClient();
   try {

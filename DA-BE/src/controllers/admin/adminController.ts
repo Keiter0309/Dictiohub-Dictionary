@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { User } from '../../model/User/User';
-import { Words } from '../../model/Words/Word';
-import { ILogin, IUser } from '../../interface/User';
-import bycrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { Request, Response } from "express";
+import { User } from "../../model/User/User";
+import { Words } from "../../model/Words/Word";
+import { ILogin, IUser } from "../../interface/User";
+import bycrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class AdminUserController {
@@ -13,7 +13,7 @@ export class AdminUserController {
       const users = (await User.fetchAll()) as ILogin[];
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: {
           users: users.map((user) => {
             return {
@@ -27,7 +27,7 @@ export class AdminUserController {
         },
       });
     } catch (err: any) {
-      return res.status(500).json({ error: 'Error fetching all users' });
+      return res.status(500).json({ error: "Error fetching all users" });
     }
   }
 
@@ -37,7 +37,7 @@ export class AdminUserController {
       const user = (await User.fetchById(id)) as IUser;
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: {
           id: user.id,
           username: user.username,
@@ -46,7 +46,7 @@ export class AdminUserController {
         },
       });
     } catch (err: any) {
-      return res.status(500).json({ error: 'Error fetching user' });
+      return res.status(500).json({ error: "Error fetching user" });
     }
   }
 
@@ -59,7 +59,7 @@ export class AdminUserController {
       if (!user) {
         return res.status(404).json({
           status_code: 404,
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
@@ -77,11 +77,11 @@ export class AdminUserController {
 
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: data,
       });
     } catch (error) {
-      console.error('Error fetching user by email:', error);
+      console.error("Error fetching user by email:", error);
     }
   }
 
@@ -92,7 +92,7 @@ export class AdminUserController {
     if (!email) {
       return res.status(400).json({
         status_code: 400,
-        message: 'Email parameter is required',
+        message: "Email parameter is required",
       });
     }
 
@@ -102,7 +102,7 @@ export class AdminUserController {
       if (!user) {
         return res.status(404).json({
           status_code: 404,
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
@@ -111,13 +111,13 @@ export class AdminUserController {
 
       return res.status(200).json({
         status_code: 200,
-        message: 'User deleted successfully',
+        message: "User deleted successfully",
       });
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
       return res.status(500).json({
         status_code: 500,
-        message: 'Error deleting user',
+        message: "Error deleting user",
       });
     }
   }
@@ -130,7 +130,7 @@ export class AdminUserController {
     if (!email || !firstName || !lastName || !username || !role) {
       return res.status(400).json({
         status_code: 400,
-        message: 'All fields are required',
+        message: "All fields are required",
       });
     }
 
@@ -140,7 +140,7 @@ export class AdminUserController {
       if (!existingUser) {
         return res.status(404).json({
           status_code: 404,
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
@@ -155,7 +155,7 @@ export class AdminUserController {
 
       return res.status(200).json({
         status_code: 200,
-        message: 'User updated successfully',
+        message: "User updated successfully",
         data: {
           firstName: updatedUser.firstName,
           lastName: updatedUser.lastName,
@@ -165,10 +165,10 @@ export class AdminUserController {
         },
       });
     } catch (err) {
-      console.error('Error updating user:', err);
+      console.error("Error updating user:", err);
       return res.status(500).json({
         status_code: 500,
-        message: 'Error updating user',
+        message: "Error updating user",
       });
     }
   }
@@ -179,7 +179,7 @@ export class AdminUserController {
     // Validate input
     if (!firstName || !lastName || !username || !email || !password || !role) {
       return res.status(400).json({
-        message: 'All fields are required',
+        message: "All fields are required",
       });
     }
 
@@ -188,7 +188,7 @@ export class AdminUserController {
       const existingUsername = await User.fetchByUsername(username);
       if (existingUsername) {
         return res.status(400).json({
-          message: 'Username already taken',
+          message: "Username already taken",
         });
       }
 
@@ -196,7 +196,7 @@ export class AdminUserController {
       const existingEmail = await User.fetchByEmail(email);
       if (existingEmail) {
         return res.status(400).json({
-          message: 'Email already taken',
+          message: "Email already taken",
         });
       }
 
@@ -215,7 +215,7 @@ export class AdminUserController {
 
       return res.status(201).json({
         status_code: 201,
-        message: 'User created successfully',
+        message: "User created successfully",
         data: {
           id: newUser.id,
           firstName: newUser.firstName,
@@ -226,9 +226,9 @@ export class AdminUserController {
         },
       });
     } catch (err) {
-      console.error('Error creating user:', err);
+      console.error("Error creating user:", err);
       return res.status(500).json({
-        message: 'Error creating user',
+        message: "Error creating user",
       });
     }
   }
@@ -238,14 +238,14 @@ export class AdminUserController {
     if (!username) {
       return res
         .status(400)
-        .json({ error: 'Username query parameter is required' });
+        .json({ error: "Username query parameter is required" });
     }
 
     try {
       const users = (await User.search(username)) as IUser[];
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: {
           users: users.map((user) => {
             return {
@@ -258,7 +258,7 @@ export class AdminUserController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'Error searching users' });
+      return res.status(500).json({ error: "Error searching users" });
     }
   }
 }
@@ -269,13 +269,13 @@ export class AdminWordController {
       const words = await Words.fetchAllWords();
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: {
           words: words,
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'Error fetching all words' });
+      return res.status(500).json({ error: "Error fetching all words" });
     }
   }
 
@@ -285,17 +285,17 @@ export class AdminWordController {
       const word = await Words.fetchById(id);
 
       if (!word) {
-        return res.status(404).json({ error: 'Word not found' });
+        return res.status(404).json({ error: "Word not found" });
       }
 
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: word,
       });
     } catch (error) {
-      console.error('Error fetching word:', error);
-      return res.status(500).json({ error: 'Error fetching word' });
+      console.error("Error fetching word:", error);
+      return res.status(500).json({ error: "Error fetching word" });
     }
   }
 
@@ -332,7 +332,7 @@ export class AdminWordController {
       ) {
         return res.status(400).json({
           status_code: 400,
-          message: 'All fields are required',
+          message: "All fields are required",
         });
       }
 
@@ -343,7 +343,7 @@ export class AdminWordController {
         },
       });
 
-      const newPos = await prisma.partOfSpeech.create({
+      const newPos = await prisma.partofspeech.create({
         data: {
           definitionId: newWord.id,
           partOfSpeech: partOfSpeech,
@@ -373,11 +373,11 @@ export class AdminWordController {
         },
       });
 
-      const newExample = await prisma.exampleWord.create({
+      const newExample = await prisma.exampleword.create({
         data: {
           wordId: newWord.id,
           exampleText: exampleText,
-          source: ' ',
+          source: " ",
         },
       });
 
@@ -390,7 +390,7 @@ export class AdminWordController {
         },
       });
 
-      const newSynonymsAntonyms = await prisma.synonymsAntonyms.create({
+      const newSynonymsAntonyms = await prisma.synonymsantonyms.create({
         data: {
           wordId: newWord.id,
           synonyms: synonyms,
@@ -400,7 +400,7 @@ export class AdminWordController {
 
       return res.status(201).json({
         status_code: 201,
-        message: 'Word created successfully',
+        message: "Word created successfully",
         data: {
           word: newWord,
           meaning: newMeaning,
@@ -412,14 +412,14 @@ export class AdminWordController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'Error creating word' });
+      return res.status(500).json({ error: "Error creating word" });
     }
   }
 
   public static async deleteWord(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid word ID' });
+      return res.status(400).json({ error: "Invalid word ID" });
     }
 
     try {
@@ -428,7 +428,7 @@ export class AdminWordController {
       });
 
       if (!existingWord) {
-        return res.status(404).json({ error: 'Word not found' });
+        return res.status(404).json({ error: "Word not found" });
       }
 
       await prisma.$transaction(async (prisma) => {
@@ -440,11 +440,11 @@ export class AdminWordController {
           where: { wordId: id },
         });
 
-        await prisma.partOfSpeech.deleteMany({
+        await prisma.partofspeech.deleteMany({
           where: { id: id, definitionId: id },
         });
 
-        const categoryNames = await prisma.wordCategory.findMany({
+        const categoryNames = await prisma.wordcategory.findMany({
           where: { wordId: id },
           select: { categoryName: true },
         });
@@ -455,7 +455,7 @@ export class AdminWordController {
           },
         });
 
-        await prisma.exampleWord.deleteMany({
+        await prisma.exampleword.deleteMany({
           where: { wordId: id },
         });
 
@@ -463,7 +463,7 @@ export class AdminWordController {
           where: { wordId: id },
         });
 
-        await prisma.synonymsAntonyms.deleteMany({
+        await prisma.synonymsantonyms.deleteMany({
           where: { wordId: id },
         });
 
@@ -474,11 +474,11 @@ export class AdminWordController {
 
       return res.status(200).json({
         status_code: 200,
-        message: 'Word deleted successfully',
+        message: "Word deleted successfully",
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: 'Error deleting word' });
+      return res.status(500).json({ error: "Error deleting word" });
     }
   }
 
@@ -516,7 +516,7 @@ export class AdminWordController {
     ) {
       return res.status(400).json({
         status_code: 400,
-        message: 'All fields are required',
+        message: "All fields are required",
       });
     }
 
@@ -535,7 +535,7 @@ export class AdminWordController {
         });
 
         // Update part of speech multiple
-        await prisma.partOfSpeech.updateMany({
+        await prisma.partofspeech.updateMany({
           where: { definitionId: id },
           data: { partOfSpeech },
         });
@@ -547,13 +547,13 @@ export class AdminWordController {
         });
 
         // Update categories
-        await prisma.wordCategory.updateMany({
+        await prisma.wordcategory.updateMany({
           where: { wordId: id },
           data: { categoryName },
         });
 
         // Update example words
-        await prisma.exampleWord.updateMany({
+        await prisma.exampleword.updateMany({
           where: { wordId: id },
           data: { exampleText },
         });
@@ -565,22 +565,22 @@ export class AdminWordController {
         });
 
         // Update synonyms and antonyms
-        await prisma.synonymsAntonyms.updateMany({
+        await prisma.synonymsantonyms.updateMany({
           where: { wordId: id },
           data: { synonyms, antonyms },
         });
 
         return res.status(200).json({
           status_code: 200,
-          message: 'Word updated successfully',
+          message: "Word updated successfully",
           data: { word: updatedWord },
         });
       });
     } catch (err) {
-      console.error('Error updating word:', err);
+      console.error("Error updating word:", err);
       return res.status(500).json({
         status_code: 500,
-        message: 'Error updating word',
+        message: "Error updating word",
       });
     }
   }
@@ -592,17 +592,17 @@ export class AdminAuthController {
     try {
       const user = (await User.fetchByEmail(email)) as ILogin;
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: "User not found" });
       }
 
       const isInvalidPassword = bycrypt.compareSync(password, user.password);
 
       if (!isInvalidPassword) {
-        return res.status(401).json({ error: 'Invalid password' });
+        return res.status(401).json({ error: "Invalid password" });
       }
 
-      if (user.role !== 'admin') {
-        return res.status(401).json({ error: 'Unauthorized' });
+      if (user.role !== "admin") {
+        return res.status(401).json({ error: "Unauthorized" });
       }
 
       const payload = {
@@ -612,23 +612,23 @@ export class AdminAuthController {
       };
 
       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: '1d',
+        expiresIn: "1d",
       });
 
       // last login
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      res.cookie('aToken', token, {
+      res.cookie("aToken", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 24 * 60 * 60 * 1000,
       });
 
       return res.status(200).json({
         status_code: 200,
-        message: 'success',
+        message: "success",
         data: {
           id: user.id,
           email: user.email,
@@ -637,7 +637,7 @@ export class AdminAuthController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'Error logging in user' });
+      return res.status(500).json({ error: "Error logging in user" });
     }
   }
 }
