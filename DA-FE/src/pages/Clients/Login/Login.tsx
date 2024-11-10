@@ -2,15 +2,13 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthServices from "../../../services/auth/authServices";
 import LoginForm from "../../../components/Client/LoginForm/LoginForm";
-import { Cookies } from "react-cookie";
 import { message } from "antd";
 
 const Login: React.FC = () => {
-  const cookies = new Cookies();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = cookies.get("token");
+    const token = localStorage.getItem("token");
     if (token) {
       navigate("/");
     } else {

@@ -3,7 +3,8 @@ export enum EAdmin {
     CREATE_USER = "/api/v1/admin/create",
     DELETE_USER = "/api/v1/admin/delete/:email",
     FETCH_USERS = "/api/v1/admin/users",
-    FETCH_USER = "/api/v1/admin/user/:email",
+    FETCH_USER = "/api/v1/admin/user/email/:email",
+    FETCH_USER_BY_ID = "/api/v1/admin/user/id/:id",
     UPDATE_USER = "/api/v1/admin/update/:id",
     LOGIN = "/api/v1/admin/login",
     

@@ -27,7 +27,11 @@ export class User {
           if (err) {
             reject(err);
           } else {
-            resolve(result);
+            if (result.length > 0) {
+              resolve(result[0]);
+            } else {
+              resolve(null);
+            }
           }
         }
       );

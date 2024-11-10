@@ -7,6 +7,7 @@ export interface IUser {
   password: string;
   confirmPassword: string;
   role: string;
+  createdAt?: string;
 }
 
 export interface ILogin extends IUser {

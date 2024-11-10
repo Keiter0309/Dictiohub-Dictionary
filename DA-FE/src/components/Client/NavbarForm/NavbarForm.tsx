@@ -1,29 +1,28 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Menu, X, ArrowLeft } from 'lucide-react';
-import { Cookies } from 'react-cookie';
 
 const NavbarForm: React.FC = () => {
-  const cookies = new Cookies();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const isLogged = cookies.get('token');
+  const isLogged = localStorage.getItem('token');
 
-  let navItems = [
+  const navItems = [
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About' },
     { to: '/thesaurus', label: 'Thesaurus' },
   ];
 
-  let avatarItems = [
+  const avatarItems = [
     { to: '/profile', label: 'Profile' },
     { to: '/favorites', label: 'Favorites' },
     { to: '/logout', label: 'Logout' },
   ];
 
   const handleLogoutClick = () => {
-    cookies.remove('token');
+    localStorage.removeItem('token');
     localStorage.removeItem('favorites');
+
     window.location.href = '/';
   };
 
@@ -128,8 +127,7 @@ const NavbarForm: React.FC = () => {
             </div>
             <div className="p-4 mt-auto border-t">
               {isLogged ? (
-                <Link
-                  to="/logout"
+                <button
                   className="block px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md duration-300"
                   onClick={() => {
                     handleLogoutClick();
@@ -140,7 +138,7 @@ const NavbarForm: React.FC = () => {
                     <ArrowLeft className="h-4 w-4" />
                     <span className="ml-2">Logout</span>
                   </div>
-                </Link>
+                </button>
               ) : (
                 <Link
                   to="/login"

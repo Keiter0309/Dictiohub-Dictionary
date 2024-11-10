@@ -4,5 +4,6 @@ export enum EAuth {
   AUTH_FORGOT_PASSWORD = 'api/v1/auth/forgot-password',
   AUTH_RESET_PASSWORD = 'api/v1/auth/reset-password',
   AUTH_CHANGE_PASSWORD = 'api/v1/auth/change-password',
-  AUTH_CLIENT_HOST = 'localhost:9000',
+  AUTH_ME= 'api/v1/auth/me',
+  AUTH_CLIENT_HOST = 'http://localhost:9000',
 }

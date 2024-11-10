@@ -7,10 +7,19 @@ export class AdminServices {
       const response = await axios.post(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
         { email, password },
+        {
+          withCredentials: true,
+        }
       );
 
       // if token expires, the user will be logged out
       const access_token = response.data.data.access_token;
+
+      localStorage.setItem('token', 'true');
+
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${response.data.data['access_token']}`;
 
       return access_token;
     } catch (error: any) {
@@ -23,12 +32,9 @@ export class AdminServices {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USERS}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          withCredentials: true,
         },
       );
-
       if (response) {
         return response.data.data.users;
       }
@@ -108,9 +114,7 @@ export class AdminWordServices {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          withCredentials: true,
         },
       );
       return response.data.data;
@@ -124,9 +128,7 @@ export class AdminWordServices {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORD}/${id}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          withCredentials: true
         },
       );
       console.log(response.data);

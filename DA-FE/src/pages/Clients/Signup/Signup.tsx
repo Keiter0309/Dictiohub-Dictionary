@@ -12,7 +12,7 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+        if (token) {
       navigate("/");
     }
   }, [navigate]);

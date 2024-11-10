@@ -105,7 +105,9 @@ const AboutForm: React.FC = () => {
                     margin: '0 auto',
                   }}
                 >
-                  Explore Dictiohub
+                  <Link to={'/'}>
+                    Explore Dictiohub
+                  </Link>
                 </Button>
               </div>
             </Space>

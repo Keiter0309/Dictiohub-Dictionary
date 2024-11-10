@@ -43,6 +43,7 @@ export class AdminUserController {
           username: user.username,
           email: user.email,
           role: user.role,
+          joinedAt: user.createdAt,
         },
       });
     } catch (err: any) {
@@ -619,7 +620,7 @@ export class AdminAuthController {
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      res.cookie("aToken", token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",

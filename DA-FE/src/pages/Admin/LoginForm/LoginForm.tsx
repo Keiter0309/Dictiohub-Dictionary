@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLoginForm from '../../../components/Admin/LoginForm/LoginForm';
-import { AdminServices } from '../../../services/admin/adminServices'; // Adjusted import
+import { AdminServices } from '../../../services/admin/adminServices';
 import { message } from 'antd';
 
 const AdminLogin: React.FC = () => {
@@ -29,9 +29,6 @@ const AdminLogin: React.FC = () => {
     try {
       const accessToken = await AdminServices.loginAdmin(email, password);
       if (accessToken) {
-        // sessionStorage.setItem('token', accessToken);
-        localStorage.setItem('token', accessToken);
-        console.log(localStorage.getItem('token'));
         navigate('/admin/dashboard');
       } else {
         message.error('Invalid email or password');

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { EAuth } from "../../enums/Auth/EAuth";
-import { Cookies } from "react-cookie";
 
 class AuthServices {
   public async register(
@@ -49,17 +48,45 @@ class AuthServices {
     try {
       const response = await axios.post(
         `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
-        { email, password }
+        { email, password },
+        {
+          withCredentials: true,
+        }
       );
-      const userId = response.data.data["id"];
-      const cookies = new Cookies();
-      cookies.set("token", 'true', {
-        maxAge: 3600,
-      });
 
-      localStorage.setItem("id", userId);
-      return response.data;
+      // Validate response structure
+      if (response.data && response.data.data && response.data.data.id) {
+        const userId = response.data.data.id;
+        localStorage.setItem('id', userId);
+        localStorage.setItem('token', 'true');
+
+        return response.data;
+      } else {
+        throw new Error('Invalid response structure');
+      }
     } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        console.error('Error logging in:', err.response.data);
+        throw err.response.data;
+      } else {
+        console.error('Error logging in:', err.message);
+        throw new Error(err.message);
+      }
+    }
+  }
+
+  public async getMe() {
+    try {
+      const response = await axios.get(
+        `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_ME}`,
+        {
+          withCredentials: true
+        }
+      )
+      if (response) {
+        return response.data
+      }
+    } catch(err: any) {
       if (axios.isAxiosError(err) && err.response) {
         throw err.response.data;
       } else {

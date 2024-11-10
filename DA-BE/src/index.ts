@@ -4,7 +4,7 @@ import corsMiddlewares from './middlewares/cors/corsMiddlewares';
 import { authRoute } from './routes/auth/auth';
 import { wordsRoute } from './routes/words/word';
 import { adminRoute } from './routes/admin/admin';
-import path from 'path';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,6 +12,7 @@ const port = process.env.PORT || 3000;
 app.use(corsMiddlewares);
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, Typescript Express');
 });

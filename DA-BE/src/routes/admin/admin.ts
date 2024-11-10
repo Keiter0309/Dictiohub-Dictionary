@@ -9,6 +9,7 @@ export const adminRoute = Router();
 // Admin & User management routes
 adminRoute.post(EAdmin.LOGIN, AdminAuthController.login);
 adminRoute.get(EAdmin.FETCH_USER, AdminUserController.fetchUserByEmail);
+adminRoute.get(EAdmin.FETCH_USER_BY_ID, authenticateToken, AdminUserController.fetchUser);
 adminRoute.put(EAdmin.UPDATE_USER, AdminUserController.updateUser);
 adminRoute.post(EAdmin.CREATE_USER, AdminUserController.createUser);
 adminRoute.delete(EAdmin.DELETE_USER, AdminUserController.deleteUser);

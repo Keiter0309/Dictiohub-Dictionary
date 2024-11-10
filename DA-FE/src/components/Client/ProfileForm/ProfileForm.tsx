@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -13,16 +13,27 @@ import {
   SettingOutlined,
   ClockCircleOutlined,
   StarOutlined,
+  UserOutlined,
+  MailOutlined,
+  CalendarOutlined,
+  IdcardOutlined,
 } from '@ant-design/icons';
 import { BookOpen } from 'lucide-react';
 import { menuItems } from '../../../mock/Clients/Profile/menu.mock';
-import { personalInfoFields } from '../../../mock/Clients/Profile/personal.mock';
 import { Link } from 'react-router-dom';
+import authServices from '../../../services/auth/authServices';
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 
-const PersonalInfo = () => (
+interface PersonalData {
+  id: string;
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+}
+
+const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({ personalData }) => (
   <Card
     className="mb-8"
     title={
@@ -38,7 +49,7 @@ const PersonalInfo = () => (
         gap: '24px',
       }}
     >
-      {personalInfoFields.map(({ id, label, value, icon }) => (
+      {personalData.map(({ id, label, value, icon }) => (
         <div
           key={id}
           style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
@@ -82,6 +93,7 @@ const WordList: React.FC<{ words: string[] }> = ({ words }) => (
 );
 
 const ProfileForm = () => {
+  const [personalData, setPersonalData] = useState<PersonalData[]>([]);
   const words = [
     'serendipity',
     'eloquent',
@@ -90,12 +102,30 @@ const ProfileForm = () => {
     'panacea',
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await authServices.getMe();
+        if (response) {
+          const data = response.data;
+          const formattedData: PersonalData[] = [
+            { id: 'username', label: 'Username', value: data.username, icon: <UserOutlined /> },
+            { id: 'email', label: 'Email', value: data.email, icon: <MailOutlined /> },
+            { id: 'role', label: 'Role', value: data.role, icon: <IdcardOutlined /> },
+            { id: 'joined', label: 'Joined', value: new Date(data.joined).toLocaleDateString(), icon: <CalendarOutlined /> },
+          ];
+          setPersonalData(formattedData);
+        }
+      } catch (error: any) {
+        console.error('Error fetching personal data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const menu = (
-    <Menu>
-      {menuItems.map((item) => (
-        <Menu.Item key={item.key}>{item.label}</Menu.Item>
-      ))}
-    </Menu>
+    <Menu items={menuItems.map(item => ({ key: item.key, label: item.label }))} />
   );
 
   return (
@@ -124,11 +154,11 @@ const ProfileForm = () => {
               style={{ color: 'inherit', textDecoration: 'none' }}
               className="flex"
             >
-              <BookOpen size={32} style={{}} className="h-8 w-8 mr-2" />
+              <BookOpen size={32} className="h-8 w-8 mr-2" />
               Dictiohub
             </Link>
           </Title>
-          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+          <Dropdown menu={menu} trigger={['click']} placement="bottomRight">
             <Button
               type="text"
               icon={<SettingOutlined />}
@@ -146,7 +176,7 @@ const ProfileForm = () => {
           padding: '32px 16px',
         }}
       >
-        <PersonalInfo />
+        <PersonalInfo personalData={personalData} />
 
         <Tabs defaultActiveKey="history">
           <TabPane

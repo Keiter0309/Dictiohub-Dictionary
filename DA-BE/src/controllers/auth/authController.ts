@@ -1,17 +1,18 @@
-import { Request, Response } from 'express';
-import { SendMailTemplates } from '../../constant/mails/sendmails';
+import { Request, Response } from "express";
+import { SendMailTemplates } from "../../constant/mails/sendmails";
 import {
   IUser,
   IResetPassword,
   IForgotPassword,
   IChangePassword,
   ILogin,
-} from '../../interface/User';
-import { User } from '../../model/User/User';
-import { sendMail } from '../../utils/mailer';
-import { randomOtpDigit } from '../../utils/randomOtpDigit';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+} from "../../interface/User";
+import { User } from "../../model/User/User";
+import { sendMail } from "../../utils/mailer";
+import { randomOtpDigit } from "../../utils/randomOtpDigit";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { JwtPayload } from "../../interface/JwtPayload";
 
 class AuthController {
   public async register(req: Request, res: Response) {
@@ -31,7 +32,7 @@ class AuthController {
     const existingUser = await User.fetchByEmail(email);
     if (existingUser) {
       return res.status(400).json({
-        message: 'User already registered',
+        message: "User already registered",
       });
     }
 
@@ -39,14 +40,14 @@ class AuthController {
     const existingUsername = await User.fetchByUsername(username);
     if (existingUsername) {
       return res.status(400).json({
-        message: 'Username already taken',
+        message: "Username already taken",
       });
     }
 
     // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       return res.status(400).json({
-        message: 'Passwords do not match',
+        message: "Passwords do not match",
       });
     }
 
@@ -62,7 +63,7 @@ class AuthController {
       email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      role: 'viewer',
+      role: "viewer",
     };
 
     try {
@@ -74,16 +75,16 @@ class AuthController {
         email,
         mailOptions.subject,
         mailOptions.text,
-        mailOptions.html,
+        mailOptions.html
       );
 
       return res.status(201).json({
-        message: 'User registered successfully',
+        message: "User registered successfully",
       });
     } catch (error) {
       console.error(error);
       return res.status(500).json({
-        message: 'Error registering user',
+        message: "Error registering user",
       });
     }
   }
@@ -94,7 +95,7 @@ class AuthController {
     // Check if email password empty
     if (!email || !password) {
       return res.status(401).json({
-        message: 'Email, password are required',
+        message: "Email, password are required",
       });
     }
 
@@ -104,18 +105,18 @@ class AuthController {
 
       if (!existingUser) {
         return res.status(401).json({
-          message: 'Invalid credentials',
+          message: "Invalid credentials",
         });
       }
 
       // Check password is correct
       const isPasswordValid = bcrypt.compareSync(
         password,
-        existingUser.password,
+        existingUser.password
       );
       if (!isPasswordValid) {
         return res.status(401).json({
-          message: 'Invalid password',
+          message: "Invalid password",
         });
       }
 
@@ -127,22 +128,23 @@ class AuthController {
 
       // Generate token
       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: '1d',
+        expiresIn: "1d",
       });
 
       // Last Login
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      res.cookie('uToken', token, {
+      res.cookie("token", token, {
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: 'strict',
+        sameSite: "strict",
       });
 
       return res.status(200).json({
         status_code: 200,
-        message: 'Login successful',
+        message: "Login successful",
         access_token: token,
         data: {
           id: existingUser.id,
@@ -156,7 +158,7 @@ class AuthController {
     } catch (err) {
       console.error(err);
       return res.status(500).json({
-        message: 'An error occurred while loggin in',
+        message: "An error occurred while loggin in",
       });
     }
   }
@@ -166,7 +168,7 @@ class AuthController {
     // Check for empty email field
     if (!email) {
       return res.status(401).json({
-        message: 'Email is required',
+        message: "Email is required",
       });
     }
     try {
@@ -175,7 +177,7 @@ class AuthController {
 
       if (!existingUser) {
         return res.status(404).json({
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
@@ -188,21 +190,21 @@ class AuthController {
       // Send OTP to the email
       const mailOptions = SendMailTemplates.MAIL_FORGOT_PASSWORD(
         existingUser.firstName,
-        otp,
+        otp
       );
       await sendMail(
         email,
         mailOptions.subject,
         mailOptions.text,
-        mailOptions.html,
+        mailOptions.html
       );
 
-      return res.status(200).json({ 
-        message: 'OTP sent to email',
+      return res.status(200).json({
+        message: "OTP sent to email",
       });
     } catch (err) {
       return res.status(500).json({
-        message: 'An error occurred while forgot password',
+        message: "An error occurred while forgot password",
       });
     }
   }
@@ -213,7 +215,7 @@ class AuthController {
     // Check for empty fields
     if (!otp || !password || !confirmPassword) {
       return res.status(400).json({
-        message: 'OTP, Password and confirm password are required',
+        message: "OTP, Password and confirm password are required",
       });
     }
 
@@ -223,26 +225,26 @@ class AuthController {
 
       if (!existingUser) {
         return res.status(404).json({
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
       if (otp !== existingUser.resetPasswordOTP) {
         return res.status(401).json({
-          message: 'OTP invalid',
+          message: "OTP invalid",
         });
       }
 
       if (new Date() > existingUser.resetPasswordExpires) {
         return res.status(401).json({
-          message: 'OTP expired',
+          message: "OTP expired",
         });
       }
 
       // Check password, confirm password
       if (password !== confirmPassword) {
         return res.status(400).json({
-          message: 'Password do not match',
+          message: "Password do not match",
         });
       }
 
@@ -253,22 +255,22 @@ class AuthController {
 
       // Send email notification
       const mailOptions = SendMailTemplates.MAIL_RESET_PASSWORD(
-        existingUser.firstName,
+        existingUser.firstName
       );
       await sendMail(
         email,
         mailOptions.subject,
         mailOptions.text,
-        mailOptions.html,
+        mailOptions.html
       );
 
       return res.status(200).json({
-        message: 'Password reset successful',
+        message: "Password reset successful",
       });
     } catch (err) {
       console.error(err);
       return res.status(500).json({
-        message: 'An error occurred while reseting password',
+        message: "An error occurred while reseting password",
       });
     }
   }
@@ -291,37 +293,37 @@ class AuthController {
 
       if (!existingUser) {
         return res.status(404).json({
-          message: 'User not found',
+          message: "User not found",
         });
       }
 
       // Check new password and current password
       const isPasswordValid = bcrypt.compareSync(
         newPassword,
-        existingUser.password,
+        existingUser.password
       );
       if (isPasswordValid) {
         return res.status(400).json({
-          message: 'New password is required',
+          message: "New password is required",
         });
       }
 
       // Check old password and existing password
       const passwordValid = bcrypt.compareSync(
         oldPassword,
-        existingUser.password,
+        existingUser.password
       );
 
       if (!passwordValid) {
         return res.status(400).json({
-          message: 'Invalid Password',
+          message: "Invalid Password",
         });
       }
 
       // Check new password and confirm password
       if (newPassword !== confirmPassword) {
         return res.status(400).json({
-          message: 'Password do not match',
+          message: "Password do not match",
         });
       }
 
@@ -333,22 +335,58 @@ class AuthController {
 
       // Send email notification
       const mailOptions = SendMailTemplates.MAIL_CHANGE_PASSWORD(
-        existingUser.firstName,
+        existingUser.firstName
       );
       await sendMail(
         email,
         mailOptions.subject,
         mailOptions.text,
-        mailOptions.html,
+        mailOptions.html
       );
 
       return res.status(200).json({
-        message: 'Password change succesful',
+        message: "Password change succesful",
       });
     } catch (err) {
       console.error(err);
       return res.status(500).json({
-        message: 'An error occurred while changing password',
+        message: "An error occurred while changing password",
+      });
+    }
+  }
+
+  public async getMe(req: Request & {user?: JwtPayload}, res: Response) {
+    try {
+      // Get user data from token
+      const user = req.user as JwtPayload;
+
+      const existingUser = (await User.fetchByEmail(user.email)) as IUser;
+      console.log(existingUser);
+      if (!user) {
+        return res.status(401).json({
+          status_code: 401,
+          message: "Unauthorized",
+        });
+      }
+
+      const payload = {
+        id: existingUser.id,
+        email: existingUser.email,
+        username: existingUser.username,
+        joined: existingUser.createdAt,
+        role: existingUser.role,
+      }
+      
+      return res.status(200).json({
+        status_code: 200,
+        message: "User data",
+        data: payload,
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        status_code: 500,
+        message: "Internal server error",
+        error: err.message,
       });
     }
   }
