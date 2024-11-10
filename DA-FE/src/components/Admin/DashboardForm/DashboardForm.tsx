@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './DashboardForm-module.css';
 import { sideBarData, statisticsData } from '../../../utils/Data/Data';
 import CountUp from 'react-countup';
@@ -16,6 +16,8 @@ import {
   TrendingUp,
   Clock,
   ChartLine,
+  User2,
+  ArrowLeft,
 } from 'lucide-react';
 import WordContent from './Content/WordContent/WordContent';
 import CategoriesContent from './Content/CategoriesContent/CategoriesContent';
@@ -26,22 +28,40 @@ import {
   AdminServices,
   AdminWordServices,
 } from '../../../services/admin/adminServices';
-import { message } from 'antd';
+import { Dropdown, MenuProps, message } from 'antd';
 
 const SidebarForm: React.FC = () => {
   const navigate = useNavigate();
-  const [activeSearch, setActiveSearch] = React.useState(false);
+  const [activeSearch, setActiveSearch] = useState(false);
 
   // Data from utils/Data.ts
   const sidebarItems = sideBarData;
   const statisticsItems = statisticsData;
 
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      icon: <User2 className='h-5 w-5'/>,
+      label: 'Profile',
+      onClick: () => navigate('/admin/profile'),
+    },
+    {
+      key: '2',
+      icon: <ArrowLeft className='h-5 w-5'/>,
+      label: 'Logout',
+      onClick: () => {
+        localStorage.removeItem('token');
+        navigate('/admin/login');
+      },
+    },
+  ]
+
   // Active tab state
-  const [active, setActive] = React.useState(
+  const [active, setActive] = useState(
     localStorage.getItem('active') || 'Dashboard',
   );
-  const [open, setOpen] = React.useState(true);
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [open, setOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('active', active);
@@ -59,6 +79,7 @@ const SidebarForm: React.FC = () => {
   const handleActiveSearch = () => {
     setActiveSearch(true);
   };
+
 
   const handleUnActiveSearch = () => {
     setActiveSearch(false);
@@ -244,13 +265,15 @@ const SidebarForm: React.FC = () => {
             </div>
 
             <div className="mr-5 flex flex-row-reverse gap-x-5">
-              <button>
-                <img
+               <Dropdown menu={{ items }}>
+                <a onClick={(e) => e.preventDefault()}>
+                  <img
                   src="https://avatar.iran.liara.run/public"
                   alt="Avatar"
                   className="h-6 w-6 rounded-full hover:cursor-pointer"
                 />
-              </button>
+                </a>
+              </Dropdown>
               <Bell className="h-6 w-6 text-gray-800 hover:cursor-pointer" />
               <Search className="h-6 w-6 text-gray-800 hover:cursor-pointer md:hidden block" />
               <Moon className="h-6 w-6 text-gray-800 hover:cursor-pointer" />
