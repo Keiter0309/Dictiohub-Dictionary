@@ -361,7 +361,6 @@ class AuthController {
       const user = req.user as JwtPayload;
 
       const existingUser = (await User.fetchByEmail(user.email)) as IUser;
-      console.log(existingUser);
       if (!user) {
         return res.status(401).json({
           status_code: 401,

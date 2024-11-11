@@ -620,7 +620,7 @@ export class AdminAuthController {
       const lastLogin = new Date();
       await User.updateLastLogin(email, lastLogin);
 
-      res.cookie("token", token, {
+      res.cookie("aToken", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
