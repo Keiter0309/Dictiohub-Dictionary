@@ -102,7 +102,49 @@ export const wordData = [
   {
     id: 3,
     title: "Last Updated",
-    value: "2 days ago",
+    value: "1 days ago",
+    icon: React.createElement(Timer, {className: "text-blue-500 h-8 w-8"}),
+  }
+]
+
+export const categoryData = [
+  {
+    id: 1,
+    title: "Total Categories",
+    value: "100",
+    icon: React.createElement(Archive, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 2,
+    title: "Total Words",
+    value: "1000",
+    icon: React.createElement(BookOpenCheck, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 3,
+    title: "Last Updated",
+    value: "5 days ago",
+    icon: React.createElement(Timer, {className: "text-blue-500 h-8 w-8"}),
+  }
+]
+
+export const favoriteData = [
+  {
+    id: 1,
+    title: "Total Categories",
+    value: "300",
+    icon: React.createElement(Archive, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 2,
+    title: "Total Favorites",
+    value: "500",
+    icon: React.createElement(BookOpenCheck, {className: "text-blue-500 h-8 w-8"}),
+  },
+  {
+    id: 3,
+    title: "Last Updated",
+    value: "1 days ago",
     icon: React.createElement(Timer, {className: "text-blue-500 h-8 w-8"}),
   }
 ]

@@ -158,7 +158,7 @@ const ProfileForm = () => {
               Dictiohub
             </Link>
           </Title>
-          <Dropdown menu={menu} trigger={['click']} placement="bottomRight">
+          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Button
               type="text"
               icon={<SettingOutlined />}
