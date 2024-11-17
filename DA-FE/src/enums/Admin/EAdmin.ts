@@ -4,7 +4,7 @@ export enum EAdmin {
   ADMIN_CREATE_USER = "api/v1/admin/create",
   ADMIN_DELETE_USER = "api/v1/admin/delete",
   ADMIN_FETCH_USERS = "api/v1/admin/users",
-  ADMIN_FETCH_USER = "api/v1/admin/user",
+  ADMIN_FETCH_USER = "api/v1/admin/user/email",
   ADMIN_UPDATE_USER = "api/v1/admin/update",
 
   // Words management endpoints

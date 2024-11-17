@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './DashboardForm-module.css';
+import axios from 'axios';
 import { sideBarData, statisticsData } from '../../../utils/Data/Data';
 import CountUp from 'react-countup';
 import { Link, useNavigate } from 'react-router-dom';
@@ -41,20 +42,20 @@ const SidebarForm: React.FC = () => {
   const items: MenuProps['items'] = [
     {
       key: '1',
-      icon: <User2 className='h-5 w-5'/>,
+      icon: <User2 className="h-5 w-5" />,
       label: 'Profile',
       onClick: () => navigate('/admin/profile'),
     },
     {
       key: '2',
-      icon: <ArrowLeft className='h-5 w-5'/>,
+      icon: <ArrowLeft className="h-5 w-5" />,
       label: 'Logout',
       onClick: () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('aToken');
         navigate('/admin/login');
       },
     },
-  ]
+  ];
 
   // Active tab state
   const [active, setActive] = useState(
@@ -80,19 +81,27 @@ const SidebarForm: React.FC = () => {
     setActiveSearch(true);
   };
 
-
   const handleUnActiveSearch = () => {
     setActiveSearch(false);
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      localStorage.removeItem('token');
-      message.error('Session expired, please login again');
-      navigate('/admin/login');
-    }, 86400000);
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('token');
+          message.error('Session expired. Please login again.');
+          navigate('/admin/login');
+        }
+        return Promise.reject(error);
+      },
+    );
 
-    return () => clearTimeout(timeout);
+    // remove interceptor when component unmounts
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, [navigate]);
 
   const handleCreateUser = async (
@@ -265,13 +274,13 @@ const SidebarForm: React.FC = () => {
             </div>
 
             <div className="mr-5 flex flex-row-reverse gap-x-5">
-               <Dropdown menu={{ items }}>
+              <Dropdown menu={{ items }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <img
-                  src="https://avatar.iran.liara.run/public"
-                  alt="Avatar"
-                  className="h-6 w-6 rounded-full hover:cursor-pointer"
-                />
+                    src="https://avatar.iran.liara.run/public"
+                    alt="Avatar"
+                    className="h-6 w-6 rounded-full hover:cursor-pointer"
+                  />
                 </a>
               </Dropdown>
               <Bell className="h-6 w-6 text-gray-800 hover:cursor-pointer" />

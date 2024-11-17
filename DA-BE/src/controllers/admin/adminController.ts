@@ -7,6 +7,63 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+
+export class AdminAuthController {
+  public static async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+    try {
+      const user = (await User.fetchByEmail(email)) as ILogin;
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const isInvalidPassword = bycrypt.compareSync(password, user.password);
+
+      if (!isInvalidPassword) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const payload = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      };
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+        expiresIn: "5m",
+      });
+
+      // last login
+      const lastLogin = new Date();
+      await User.updateLastLogin(email, lastLogin);
+
+      res.cookie("aToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 5,
+      });
+
+      return res.status(200).json({
+        status_code: 200,
+        message: "success",
+        data: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          access_token: token,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error logging in user" });
+    }
+  }
+}
 export class AdminUserController {
   public static async fetchAllUsers(req: Request, res: Response) {
     try {
@@ -587,58 +644,35 @@ export class AdminWordController {
   }
 }
 
-export class AdminAuthController {
-  public static async login(req: Request, res: Response) {
-    const { email, password } = req.body;
+export class AdminCategoryController {
+  public static async fetchAllCategories(req: Request, res: Response) {
     try {
-      const user = (await User.fetchByEmail(email)) as ILogin;
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      const isInvalidPassword = bycrypt.compareSync(password, user.password);
-
-      if (!isInvalidPassword) {
-        return res.status(401).json({ error: "Invalid password" });
-      }
-
-      if (user.role !== "admin") {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-
-      const payload = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      };
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: "1d",
-      });
-
-      // last login
-      const lastLogin = new Date();
-      await User.updateLastLogin(email, lastLogin);
-
-      res.cookie("aToken", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-
+      const categories = await prisma.category.findMany();
       return res.status(200).json({
         status_code: 200,
         message: "success",
         data: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          access_token: token,
+          categories: categories,
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: "Error logging in user" });
+      return res.status(500).json({ error: "Error fetching all categories" });
+    }
+  }
+
+  public static async fetchCategory(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id);
+      const category = await prisma.category.findUnique({
+        where: { id },
+      });
+      return res.status(200).json({
+        status_code: 200,
+        message: "success",
+        data: category,
+      })
+    } catch (err) {
+      return res.status(500).json({ error: "Error fetching category" });
     }
   }
 }

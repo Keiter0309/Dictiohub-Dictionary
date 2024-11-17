@@ -203,6 +203,7 @@ const UserContentForm: React.FC<UserContentProps> = ({ onSubmit }) => {
   const fetchUser = async (email: string) => {
     try {
       const response = await AdminServices.fetchUser(email);
+      console.log(response)
       setUser({
         firstName: response.firstName,
         lastName: response.lastName,

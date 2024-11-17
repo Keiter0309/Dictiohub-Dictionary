@@ -12,14 +12,22 @@ export class AdminServices {
         }
       );
 
-      // if token expires, the user will be logged out
       const access_token = response.data.data.access_token;
 
-      localStorage.setItem('token', 'true');
+      localStorage.setItem('aToken', 'true')
 
-      axios.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${response.data.data['access_token']}`;
+      const interceptor = axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+          if (error.response && error.response.status === 401) {
+            localStorage.removeItem('aToken');
+            console.log('Token expired');
+          }
+          return Promise.reject(error);
+        },
+      );
+
+      console.log(`Session expired:::: ${interceptor}`);
 
       return access_token;
     } catch (error: any) {
@@ -47,6 +55,9 @@ export class AdminServices {
     try {
       const response = await axios.get(
         `${EAdmin.ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USER}/${email}`,
+        {
+          withCredentials: true,
+        }
       );
 
       return response.data.data;

@@ -32,6 +32,7 @@ async function main() {
           ipaText: "/əˈbæn.dən/",
         },
       ],
+
       definitions: [
         {
           definitionText: "A way of behaving that is not sensible and shows that you do not care about the possible results of your actions or what other people think.",
@@ -52,7 +53,7 @@ async function main() {
       categories: ["General"],
       synonymsAntonyms: {
         synonyms: "spontaneity, disregard, freedom, impulse, licentiousness",
-        antonyms: "restraint, sel   f-restraint",
+        antonyms: "restraint, self-restraint",
       },
       meanings: [
         {
@@ -122,41 +123,47 @@ async function main() {
     const word = await prisma.word.create({
       data: {
         word: wordData.word,
-        exampleWords: {
+        exampleword: {
           create: wordData.exampleWords.map((exampleWord) => ({
             exampleText: exampleWord.exampleText,
             source: exampleWord.source,
           })),
         },
-        pronunciations: {
+        pronunciation: {
           create: wordData.pronunciations,
         },
-        definitions: {
+        definition: {
           create: wordData.definitions.map((def) => ({
             definitionText: def.definitionText,
             usageExample: def.usageExample,
-            pos: {
-              create: {
-                partOfSpeech: def.partOfSpeech,
-              },
-            },
             partOfSpeech: def.partOfSpeech,
           })),
         },
-        wordCategories: {
+        partofspeech: {
+          create: wordData.definitions.map((def) => ({
+            partOfSpeech: {
+              connectOrCreate: {
+                where: { partOfSpeech: def.partOfSpeech },
+                create: { partOfSpeech: def.partOfSpeech },
+              },
+            },
+          })),
+        },
+        wordcategory: {
           create: wordData.categories.map((categoryName) => ({
             category: {
-              create: {
-                categoryName,
+              connectOrCreate: {
+                where: { categoryName },
+                create: { categoryName },
               },
             },
             categoryName,
           })),
         },
-        SynonymsAntonyms: {
+        synonymsantonyms: {
           create: wordData.synonymsAntonyms,
         },
-        meanings: {
+        meaning: {
           create: wordData.meanings,
         },
       },

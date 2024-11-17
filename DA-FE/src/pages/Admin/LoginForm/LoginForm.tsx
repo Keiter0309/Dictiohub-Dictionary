@@ -8,7 +8,7 @@ const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('aToken');
     if (token) {
       navigate('/admin/dashboard');
     }
@@ -16,7 +16,7 @@ const AdminLogin: React.FC = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      localStorage.removeItem('token');
+      localStorage.removeItem('aToken');
 
       message.warning('Session expired. Please login again.');
       navigate('/admin/login');
