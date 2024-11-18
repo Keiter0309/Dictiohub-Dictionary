@@ -22,7 +22,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   }, []);
 
   const handleFavorite = async (word: string) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const userId = localStorage.getItem('id');
     const wordId = localStorage.getItem('ord');
     if (token) {

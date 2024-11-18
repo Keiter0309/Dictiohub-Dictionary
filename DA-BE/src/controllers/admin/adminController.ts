@@ -8,7 +8,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-
 export class AdminAuthController {
   public static async login(req: Request, res: Response) {
     const { email, password } = req.body;
@@ -401,7 +400,7 @@ export class AdminWordController {
         },
       });
 
-      const newPos = await prisma.partofspeech.create({
+      const newPos = await prisma.partOfSpeech.create({
         data: {
           definitionId: newWord.id,
           partOfSpeech: partOfSpeech,
@@ -431,7 +430,7 @@ export class AdminWordController {
         },
       });
 
-      const newExample = await prisma.exampleword.create({
+      const newExample = await prisma.exampleWord.create({
         data: {
           wordId: newWord.id,
           exampleText: exampleText,
@@ -448,7 +447,7 @@ export class AdminWordController {
         },
       });
 
-      const newSynonymsAntonyms = await prisma.synonymsantonyms.create({
+      const newSynonymsAntonyms = await prisma.synonymsAntonyms.create({
         data: {
           wordId: newWord.id,
           synonyms: synonyms,
@@ -498,11 +497,11 @@ export class AdminWordController {
           where: { wordId: id },
         });
 
-        await prisma.partofspeech.deleteMany({
+        await prisma.partOfSpeech.deleteMany({
           where: { id: id, definitionId: id },
         });
 
-        const categoryNames = await prisma.wordcategory.findMany({
+        const categoryNames = await prisma.wordCategory.findMany({
           where: { wordId: id },
           select: { categoryName: true },
         });
@@ -513,7 +512,7 @@ export class AdminWordController {
           },
         });
 
-        await prisma.exampleword.deleteMany({
+        await prisma.exampleWord.deleteMany({
           where: { wordId: id },
         });
 
@@ -521,7 +520,7 @@ export class AdminWordController {
           where: { wordId: id },
         });
 
-        await prisma.synonymsantonyms.deleteMany({
+        await prisma.synonymsAntonyms.deleteMany({
           where: { wordId: id },
         });
 
@@ -593,7 +592,7 @@ export class AdminWordController {
         });
 
         // Update part of speech multiple
-        await prisma.partofspeech.updateMany({
+        await prisma.partOfSpeech.updateMany({
           where: { definitionId: id },
           data: { partOfSpeech },
         });
@@ -605,13 +604,13 @@ export class AdminWordController {
         });
 
         // Update categories
-        await prisma.wordcategory.updateMany({
+        await prisma.wordCategory.updateMany({
           where: { wordId: id },
           data: { categoryName },
         });
 
         // Update example words
-        await prisma.exampleword.updateMany({
+        await prisma.exampleWord.updateMany({
           where: { wordId: id },
           data: { exampleText },
         });
@@ -623,7 +622,7 @@ export class AdminWordController {
         });
 
         // Update synonyms and antonyms
-        await prisma.synonymsantonyms.updateMany({
+        await prisma.synonymsAntonyms.updateMany({
           where: { wordId: id },
           data: { synonyms, antonyms },
         });
@@ -670,7 +669,7 @@ export class AdminCategoryController {
         status_code: 200,
         message: "success",
         data: category,
-      })
+      });
     } catch (err) {
       return res.status(500).json({ error: "Error fetching category" });
     }

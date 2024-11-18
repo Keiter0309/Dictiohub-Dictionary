@@ -8,6 +8,7 @@ import React from 'react';
 import AdminLogin from './pages/Admin/LoginForm/LoginForm';
 import Profile from './pages/Clients/Profile/Profile';
 import About from './pages/Clients/About/About';
+import Thesaurus from './pages/Clients/Thesaurus/Thesaurus';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/about" element={<About />} />
+      <Route path="/thesaurus" element={<Thesaurus />} />
     </Routes>
   );
 };

@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,8 @@ async function main() {
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "People often simply abandon their pets when they go abroad.",
+          exampleText:
+            "People often simply abandon their pets when they go abroad.",
           source: "Oxford Dictionary",
         },
         {
@@ -21,7 +22,8 @@ async function main() {
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "The study showed a deep fear among the elderly of being abandoned to the care of strangers.",
+          exampleText:
+            "The study showed a deep fear among the elderly of being abandoned to the care of strangers.",
           source: "Oxford Dictionary",
         },
       ],
@@ -32,21 +34,23 @@ async function main() {
           ipaText: "/əˈbæn.dən/",
         },
       ],
-
       definitions: [
         {
-          definitionText: "A way of behaving that is not sensible and shows that you do not care about the possible results of your actions or what other people think.",
+          definitionText:
+            "A way of behaving that is not sensible and shows that you do not care about the possible results of your actions or what other people think.",
           usageExample: "He spent money with careless abandon.",
           partOfSpeech: "noun",
         },
         {
-          definitionText: "To leave somebody, especially somebody you are responsible for, with no intention of returning.",
+          definitionText:
+            "To leave somebody, especially somebody you are responsible for, with no intention of returning.",
           usageExample: "The baby had been abandoned by its mother.",
           partOfSpeech: "verb",
         },
         {
           definitionText: "To leave somebody to something.",
-          usageExample: "We have been abandoned to our fate,’ said one resident.",
+          usageExample:
+            "We have been abandoned to our fate,’ said one resident.",
           partOfSpeech: "verb",
         },
       ],
@@ -57,10 +61,12 @@ async function main() {
       },
       meanings: [
         {
-          meaningText: "A way of behaving that is not sensible and shows that you do not care about the possible results of your actions or what other people think.",
+          meaningText:
+            "A way of behaving that is not sensible and shows that you do not care about the possible results of your actions or what other people think.",
         },
         {
-          meaningText: "To leave somebody, especially somebody you are responsible for, with no intention of returning.",
+          meaningText:
+            "To leave somebody, especially somebody you are responsible for, with no intention of returning.",
         },
         {
           meaningText: "To leave somebody to something.",
@@ -71,7 +77,8 @@ async function main() {
       word: "ability",
       exampleWords: [
         {
-          exampleText: "People with the disease may lose their ability to communicate.",
+          exampleText:
+            "People with the disease may lose their ability to communicate.",
           source: "Oxford Dictionary",
         },
         {
@@ -79,15 +86,18 @@ async function main() {
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "Students must demonstrate the ability to understand simple texts.",
+          exampleText:
+            "Students must demonstrate the ability to understand simple texts.",
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "She has an uncanny ability to predict what consumers will want.",
+          exampleText:
+            "She has an uncanny ability to predict what consumers will want.",
           source: "Oxford Dictionary",
         },
         {
-          exampleText: "A gentle form of exercise will increase your ability to relax.",
+          exampleText:
+            "A gentle form of exercise will increase your ability to relax.",
           source: "Oxford Dictionary",
         },
       ],
@@ -100,7 +110,8 @@ async function main() {
       ],
       definitions: [
         {
-          definitionText: "The fact that somebody/something is able to do something.",
+          definitionText:
+            "The fact that somebody/something is able to do something.",
           usageExample: " ",
           partOfSpeech: "noun",
         },
@@ -112,7 +123,8 @@ async function main() {
       },
       meanings: [
         {
-          meaningText: "The fact that somebody/something is able to do something.",
+          meaningText:
+            "The fact that somebody/something is able to do something.",
         },
       ],
     },
@@ -123,48 +135,72 @@ async function main() {
     const word = await prisma.word.create({
       data: {
         word: wordData.word,
-        exampleword: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        exampleWords: {
           create: wordData.exampleWords.map((exampleWord) => ({
             exampleText: exampleWord.exampleText,
             source: exampleWord.source,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           })),
         },
-        pronunciation: {
-          create: wordData.pronunciations,
-        },
-        definition: {
-          create: wordData.definitions.map((def) => ({
-            definitionText: def.definitionText,
-            usageExample: def.usageExample,
-            partOfSpeech: def.partOfSpeech,
+        pronunciations: {
+          create: wordData.pronunciations.map((pronunciation) => ({
+            audioPath: pronunciation.audioPath,
+            dialect: pronunciation.dialect,
+            ipaText: pronunciation.ipaText,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           })),
         },
-        partofspeech: {
-          create: wordData.definitions.map((def) => ({
-            partOfSpeech: {
-              connectOrCreate: {
+        definitions: {
+          create: await Promise.all(
+            wordData.definitions.map(async (def) => {
+              const pos = await prisma.partOfSpeech.upsert({
                 where: { partOfSpeech: def.partOfSpeech },
+                update: {},
                 create: { partOfSpeech: def.partOfSpeech },
-              },
-            },
-          })),
+              });
+              return {
+                definitionText: def.definitionText,
+                usageExample: def.usageExample,
+                partOfSpeech: def.partOfSpeech,
+                posId: pos.id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              };
+            })
+          ),
         },
-        wordcategory: {
+        wordCategories: {
           create: wordData.categories.map((categoryName) => ({
             category: {
               connectOrCreate: {
                 where: { categoryName },
-                create: { categoryName },
+                create: {
+                  categoryName,
+                },
               },
             },
-            categoryName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           })),
         },
-        synonymsantonyms: {
-          create: wordData.synonymsAntonyms,
+        synonymsAntonyms: {
+          create: {
+            synonyms: wordData.synonymsAntonyms.synonyms,
+            antonyms: wordData.synonymsAntonyms.antonyms,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
         },
-        meaning: {
-          create: wordData.meanings,
+        meanings: {
+          create: wordData.meanings.map((meaning) => ({
+            meaningText: meaning.meaningText,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })),
         },
       },
     });

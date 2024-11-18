@@ -19,11 +19,11 @@ export class Words {
   static async fetchAllWords() {
     try {
       const words = await prisma.word.findMany();
-      const exampleWords = await prisma.exampleword.findMany();
+      const exampleWords = await prisma.exampleWord.findMany();
       const pronunciations = await prisma.pronunciation.findMany();
       const definitions = await prisma.definition.findMany();
-      const wordCategories = await prisma.wordcategory.findMany();
-      const synonymsAntonyms = await prisma.synonymsantonyms.findMany();
+      const wordCategories = await prisma.wordCategory.findMany();
+      const synonymsAntonyms = await prisma.synonymsAntonyms.findMany();
       const meaning = await prisma.meaning.findMany();
 
       return {
@@ -56,7 +56,7 @@ export class Words {
       }
 
       // Fetch the words related to the word record
-      const exampleWords = await prisma.exampleword.findMany({
+      const exampleWords = await prisma.exampleWord.findMany({
         where: {
           wordId: words.id,
         },
@@ -79,7 +79,7 @@ export class Words {
         },
       });
 
-      const synonyms = await prisma.synonymsantonyms.findMany({
+      const synonyms = await prisma.synonymsAntonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -88,7 +88,7 @@ export class Words {
         },
       });
 
-      const antonyms = await prisma.synonymsantonyms.findMany({
+      const antonyms = await prisma.synonymsAntonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -103,13 +103,15 @@ export class Words {
         },
       });
 
-      const wordCategories = await prisma.wordcategory.findMany({
+      const wordCategories = await prisma.wordCategory.findMany({
         where: {
           wordId: words.id,
         },
       });
 
-      const category = wordCategories.map((category) => category.categoryName);
+      const category = wordCategories.map(
+        (category: any) => category.categoryName
+      );
 
       return {
         ...words,
@@ -142,7 +144,7 @@ export class Words {
       }
 
       // Fetch the words related to the word record
-      const exampleWords = await prisma.exampleword.findMany({
+      const exampleWords = await prisma.exampleWord.findMany({
         where: {
           wordId: words.id,
         },
@@ -165,7 +167,7 @@ export class Words {
         },
       });
 
-      const synonyms = await prisma.synonymsantonyms.findMany({
+      const synonyms = await prisma.synonymsAntonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -174,7 +176,7 @@ export class Words {
         },
       });
 
-      const antonyms = await prisma.synonymsantonyms.findMany({
+      const antonyms = await prisma.synonymsAntonyms.findMany({
         where: {
           wordId: words.id,
         },
@@ -235,11 +237,11 @@ export class Words {
     try {
       await prisma.$transaction(async (prisma) => {
         // Delete all related records first
-        await prisma.exampleword.deleteMany({ where: { wordId: id } });
+        await prisma.exampleWord.deleteMany({ where: { wordId: id } });
         await prisma.pronunciation.deleteMany({ where: { wordId: id } });
         await prisma.definition.deleteMany({ where: { wordId: id } });
-        await prisma.wordcategory.deleteMany({ where: { wordId: id } });
-        await prisma.synonymsantonyms.deleteMany({ where: { wordId: id } });
+        await prisma.wordCategory.deleteMany({ where: { wordId: id } });
+        await prisma.synonymsAntonyms.deleteMany({ where: { wordId: id } });
         await prisma.meaning.deleteMany({ where: { wordId: id } });
 
         // Delete the word
@@ -285,7 +287,7 @@ export class Favorites {
   // Fetch all favorite words
   static async fetchAll(userId: number) {
     try {
-      const favorites = await prisma.favoriteword.findMany({
+      const favorites = await prisma.favoriteWord.findMany({
         where: {
           userId: userId,
         },
@@ -301,7 +303,7 @@ export class Favorites {
 
   static async deleteFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteword.deleteMany({
+      const favorite = await prisma.favoriteWord.deleteMany({
         where: {
           wordId: id,
           userId: userId,
@@ -317,7 +319,7 @@ export class Favorites {
   // Add favorite word
   static async addFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteword.create({
+      const favorite = await prisma.favoriteWord.create({
         data: {
           wordId: id,
           userId: userId,
@@ -332,7 +334,7 @@ export class Favorites {
 
   static async checkFavorite(id: number, userId: number) {
     try {
-      const favorite = await prisma.favoriteword.findMany({
+      const favorite = await prisma.favoriteWord.findMany({
         where: {
           wordId: id,
           userId: userId,

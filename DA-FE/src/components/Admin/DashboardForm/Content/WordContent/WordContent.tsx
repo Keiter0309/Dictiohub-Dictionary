@@ -87,20 +87,22 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const fetchWord = async (id: number) => {
     try {
       const response = await AdminWordServices.fetchWord(id);
-      (setWord({
-        word: response.data.word,
-        meanings: response.data.meaning[0].meaningText,
-        definitionText: response.data.definitions[0].definitionText,
-        partOfSpeech: response.data.definitions[0].partOfSpeech,
-        categoryName: response.data.category,
-        exampleText: response.data.exampleWords[0].exampleText,
-        audioPath: response.data.pronunciations[0].audioPath,
-        dialect: response.data.pronunciations[0].dialect,
-        ipaText: response.data.pronunciations[0].ipaText,
-        usageExample: response.data.definitions[0].usageExample,
-        synonyms: response.data.synonyms[0].synonyms,
-        antonyms: response.data.antonyms[0].antonyms,
-      }));
+      const data = response.data;
+
+      setWord({
+        word: data.word,
+        meanings: data.meanings?.[0]?.meaningText || '',
+        definitionText: data.definitions?.[0]?.definitionText || '',
+        partOfSpeech: data.definitions?.[0]?.partOfSpeech || '',
+        categoryName: data.category || '',
+        exampleText: data.exampleWords?.[0]?.exampleText || '',
+        audioPath: data.pronunciations?.[0]?.audioPath || '',
+        dialect: data.pronunciations?.[0]?.dialect || '',
+        ipaText: data.pronunciations?.[0]?.ipaText || '',
+        usageExample: data.definitions?.[0]?.usageExample || '',
+        synonyms: data.synonyms?.[0]?.synonyms || '',
+        antonyms: data.antonyms?.[0]?.antonyms || '',
+      });
 
       return response;
     } catch (error: any) {
@@ -234,7 +236,9 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 {wordData.icon}
               </div>
             </div>
-            <p className="text-2xl text-gray-800 font-semibold">{wordData.value}</p>
+            <p className="text-2xl text-gray-800 font-semibold">
+              {wordData.value}
+            </p>
           </div>
         ))}
       </div>
@@ -431,7 +435,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           <tbody>
             {combinedData.map((item, index) => (
               <WordRow
-                key={`${item.id}-${index}`} 
+                key={`${item.id}-${index}`}
                 item={item}
                 index={index + 1}
                 fetchAllWords={fetchAllWords}

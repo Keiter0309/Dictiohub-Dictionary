@@ -7,37 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model category {
-  id           Int            @id @default(autoincrement())
-  categoryName String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now())
-  deletedAt    DateTime?
-  deletedBy    Int?
-  updatedBy    Int?
-  wordcategory wordcategory[]
-}
-
-model definition {
-  id             Int          @id @default(autoincrement())
-  wordId         Int
-  posId          Int
-  partOfSpeech   String
-  definitionText String
-  usageExample   String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now())
+model Category {
+  id             Int            @id @default(autoincrement())
+  categoryName   String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now())
   deletedAt      DateTime?
   deletedBy      Int?
   updatedBy      Int?
-  partofspeech   partofspeech @relation(fields: [posId], references: [id], map: "Definition_posId_fkey")
-  word           word         @relation(fields: [wordId], references: [id], map: "Definition_wordId_fkey")
+  wordCategories WordCategory[]
+}
+
+model Definition {
+  id                   Int          @id @default(autoincrement())
+  wordId               Int
+  posId                Int
+  partOfSpeech         String
+  definitionText       String
+  usageExample         String
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @default(now())
+  deletedAt            DateTime?
+  deletedBy            Int?
+  updatedBy            Int?
+  partOfSpeechRelation PartOfSpeech @relation(fields: [posId], references: [id], map: "Definition_posId_fkey")
+  word                 Word         @relation(fields: [wordId], references: [id], map: "Definition_wordId_fkey")
 
   @@index([posId], map: "Definition_posId_fkey")
   @@index([wordId], map: "Definition_wordId_fkey")
 }
 
-model exampleword {
+model ExampleWord {
   id          Int       @id @default(autoincrement())
   wordId      Int
   exampleText String
@@ -47,24 +47,24 @@ model exampleword {
   deletedAt   DateTime?
   deletedBy   Int?
   updatedBy   Int?
-  word        word      @relation(fields: [wordId], references: [id], map: "ExampleWord_wordId_fkey")
+  word        Word      @relation(fields: [wordId], references: [id], map: "ExampleWord_wordId_fkey")
 
   @@index([wordId], map: "ExampleWord_wordId_fkey")
 }
 
-model favoriteword {
+model FavoriteWord {
   id        Int      @id @default(autoincrement())
   wordId    Int
   userId    Int
   createdAt DateTime @default(now())
-  user      user     @relation(fields: [userId], references: [id], map: "FavoriteWord_userId_fkey")
-  word      word     @relation(fields: [wordId], references: [id], map: "FavoriteWord_wordId_fkey")
+  user      User     @relation(fields: [userId], references: [id], map: "FavoriteWord_userId_fkey")
+  word      Word     @relation(fields: [wordId], references: [id], map: "FavoriteWord_wordId_fkey")
 
   @@index([userId], map: "FavoriteWord_userId_fkey")
   @@index([wordId], map: "FavoriteWord_wordId_fkey")
 }
 
-model meaning {
+model Meaning {
   id          Int       @id @default(autoincrement())
   wordId      Int
   meaningText String
@@ -73,19 +73,19 @@ model meaning {
   deletedAt   DateTime?
   deletedBy   Int?
   updatedBy   Int?
-  word        word      @relation(fields: [wordId], references: [id], map: "Meaning_wordId_fkey")
+  word        Word      @relation(fields: [wordId], references: [id], map: "Meaning_wordId_fkey")
 
   @@index([wordId], map: "Meaning_wordId_fkey")
 }
 
-model partofspeech {
+model PartOfSpeech {
   id           Int          @id @default(autoincrement())
-  definitionId Int
-  partOfSpeech String
-  definition   definition[]
+  definitionId Int?
+  partOfSpeech String       @unique
+  definitions  Definition[]
 }
 
-model pronunciation {
+model Pronunciation {
   id        Int       @id @default(autoincrement())
   wordId    Int
   audioPath String
@@ -96,12 +96,12 @@ model pronunciation {
   deletedAt DateTime?
   deletedBy Int?
   updatedBy Int?
-  word      word      @relation(fields: [wordId], references: [id], map: "Pronunciation_wordId_fkey")
+  word      Word      @relation(fields: [wordId], references: [id], map: "Pronunciation_wordId_fkey")
 
   @@index([wordId], map: "Pronunciation_wordId_fkey")
 }
 
-model synonymsantonyms {
+model SynonymsAntonyms {
   id        Int       @id @default(autoincrement())
   wordId    Int
   synonyms  String
@@ -111,12 +111,12 @@ model synonymsantonyms {
   deletedAt DateTime?
   deletedBy Int?
   updatedBy Int?
-  word      word      @relation(fields: [wordId], references: [id], map: "SynonymsAntonyms_wordId_fkey")
+  word      Word      @relation(fields: [wordId], references: [id], map: "SynonymsAntonyms_wordId_fkey")
 
   @@index([wordId], map: "SynonymsAntonyms_wordId_fkey")
 }
 
-model user {
+model User {
   id                   Int                 @id @default(autoincrement())
   firstName            String
   lastName             String
@@ -135,47 +135,47 @@ model user {
   lastLogin            DateTime?
   lastLoginIP          String?
   wordAdded            Int?
-  favoriteword         favoriteword[]
-  usersearchhistory    usersearchhistory[]
+  favoriteWords        FavoriteWord[]
+  searchHistory        UserSearchHistory[]
 }
 
-model usersearchhistory {
+model UserSearchHistory {
   id         Int      @id @default(autoincrement())
   wordId     Int
   userId     Int
   searchTime DateTime @default(now())
-  user       user     @relation(fields: [userId], references: [id], map: "UserSearchHistory_userId_fkey")
-  word       word     @relation(fields: [wordId], references: [id], map: "UserSearchHistory_wordId_fkey")
+  user       User     @relation(fields: [userId], references: [id], map: "UserSearchHistory_userId_fkey")
+  word       Word     @relation(fields: [wordId], references: [id], map: "UserSearchHistory_wordId_fkey")
 
   @@index([userId], map: "UserSearchHistory_userId_fkey")
   @@index([wordId], map: "UserSearchHistory_wordId_fkey")
 }
 
-model word {
-  id                Int                 @id @default(autoincrement())
-  word              String              @unique(map: "Word_word_key")
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @default(now())
-  deletedAt         DateTime?
-  deletedBy         Int?
-  updatedBy         Int?
-  definition        definition[]
-  exampleword       exampleword[]
-  favoriteword      favoriteword[]
-  meaning           meaning[]
-  pronunciation     pronunciation[]
-  synonymsantonyms  synonymsantonyms[]
-  usersearchhistory usersearchhistory[]
-  wordcategory      wordcategory[]
+model Word {
+  id               Int                 @id @default(autoincrement())
+  word             String              @unique(map: "Word_word_key")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @default(now())
+  deletedAt        DateTime?
+  deletedBy        Int?
+  updatedBy        Int?
+  definitions      Definition[]
+  exampleWords     ExampleWord[]
+  favoriteWords    FavoriteWord[]
+  meanings         Meaning[]
+  pronunciations   Pronunciation[]
+  synonymsAntonyms SynonymsAntonyms[]
+  searchHistories  UserSearchHistory[]
+  wordCategories   WordCategory[]
 }
 
-model wordcategory {
+model WordCategory {
   id           Int      @id @default(autoincrement())
   wordId       Int
   categoryId   Int
   categoryName String
-  category     category @relation(fields: [categoryId], references: [id], map: "WordCategory_categoryId_fkey")
-  word         word     @relation(fields: [wordId], references: [id], map: "WordCategory_wordId_fkey")
+  category     Category @relation(fields: [categoryId], references: [id], map: "WordCategory_categoryId_fkey")
+  word         Word     @relation(fields: [wordId], references: [id], map: "WordCategory_wordId_fkey")
 
   @@index([categoryId], map: "WordCategory_categoryId_fkey")
   @@index([wordId], map: "WordCategory_wordId_fkey")
