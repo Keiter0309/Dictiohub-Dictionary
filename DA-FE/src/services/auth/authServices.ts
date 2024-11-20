@@ -1,5 +1,6 @@
-import axios from "axios";
-import { EAuth } from "../../enums/Auth/EAuth";
+import axios from 'axios';
+import { EAuth } from '../../enums/Auth/EAuth';
+import { AUTH_CLIENT_HOST } from '../../enums/Auth/EAuth';
 
 class AuthServices {
   public async register(
@@ -8,7 +9,7 @@ class AuthServices {
     email: string,
     username: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
   ) {
     const payload = {
       firstName,
@@ -17,24 +18,24 @@ class AuthServices {
       username,
       password,
       confirmPassword,
-    }; 
+    };
 
     try {
       const response = await axios.post(
-        `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_REGISTER}`,
-        payload
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_REGISTER}`,
+        payload,
       );
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         const errorData = err.response.data;
         if (errorData.message) {
-          if (errorData.message === "User already registerd") {
-            throw new Error("User already registered");
-          } else if (errorData.message === "Password does not match") {
-            throw new Error("Password does not match");
-          } else if (errorData.message === "Username already taken") {
-            throw new Error("Username already taken");
+          if (errorData.message === 'User already registerd') {
+            throw new Error('User already registered');
+          } else if (errorData.message === 'Password does not match') {
+            throw new Error('Password does not match');
+          } else if (errorData.message === 'Username already taken') {
+            throw new Error('Username already taken');
           }
         }
         throw err.response.data;
@@ -47,11 +48,11 @@ class AuthServices {
   public async login(email: string, password: string) {
     try {
       const response = await axios.post(
-        `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGIN}`,
         { email, password },
         {
           withCredentials: true,
-        }
+        },
       );
 
       // Validate response structure
@@ -77,16 +78,13 @@ class AuthServices {
 
   public async getMe() {
     try {
-      const response = await axios.get(
-        `${EAuth.AUTH_CLIENT_HOST}/${EAuth.AUTH_ME}`,
-        {
-          withCredentials: true
-        }
-      )
+      const response = await axios.get(`${AUTH_CLIENT_HOST}/${EAuth.AUTH_ME}`, {
+        withCredentials: true,
+      });
       if (response) {
-        return response.data
+        return response.data;
       }
-    } catch(err: any) {
+    } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         throw err.response.data;
       } else {
