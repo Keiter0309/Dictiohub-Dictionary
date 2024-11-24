@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "seed": "ts-node prisma/seed.ts",
-    "prestart": "prisma migrate deploy",
     "start": "ts-node-dev src/index.ts",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "serve": "node dist/index.js",
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

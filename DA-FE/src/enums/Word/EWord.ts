@@ -8,5 +8,8 @@ export enum EWord {
   WORD_SEARCH = "api/v1/words/search",
   WORD_FAVORITE = "api/v1/words/favorite",
   WORD_DELETE_FAVORITE = "api/v1/words/favorite",
-  WORD_SERVER_HOST = "http://localhost:9000",
 }
+
+const WORD_CLIENT_HOST: string = import.meta.env.VITE_API_BASE_URL;
+
+export { WORD_CLIENT_HOST };

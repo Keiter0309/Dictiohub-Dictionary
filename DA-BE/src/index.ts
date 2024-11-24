@@ -5,11 +5,20 @@ import { authRoute } from "./routes/auth/auth";
 import { wordsRoute } from "./routes/words/word";
 import { adminRoute } from "./routes/admin/admin";
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(corsMiddlewares);
+// app.use(corsMiddlewares);
+app.use(cors(
+  {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }
+));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());

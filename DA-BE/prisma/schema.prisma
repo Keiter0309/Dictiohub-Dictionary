@@ -16,6 +16,8 @@ model Category {
   deletedBy      Int?
   updatedBy      Int?
   wordCategories WordCategory[]
+
+  @@map("category")
 }
 
 model Definition {
@@ -35,6 +37,7 @@ model Definition {
 
   @@index([posId], map: "Definition_posId_fkey")
   @@index([wordId], map: "Definition_wordId_fkey")
+  @@map("definition")
 }
 
 model ExampleWord {
@@ -50,6 +53,7 @@ model ExampleWord {
   word        Word      @relation(fields: [wordId], references: [id], map: "ExampleWord_wordId_fkey")
 
   @@index([wordId], map: "ExampleWord_wordId_fkey")
+  @@map("exampleword")
 }
 
 model FavoriteWord {
@@ -62,6 +66,7 @@ model FavoriteWord {
 
   @@index([userId], map: "FavoriteWord_userId_fkey")
   @@index([wordId], map: "FavoriteWord_wordId_fkey")
+  @@map("favoriteword")
 }
 
 model Meaning {
@@ -76,6 +81,7 @@ model Meaning {
   word        Word      @relation(fields: [wordId], references: [id], map: "Meaning_wordId_fkey")
 
   @@index([wordId], map: "Meaning_wordId_fkey")
+  @@map("meaning")
 }
 
 model PartOfSpeech {
@@ -83,6 +89,8 @@ model PartOfSpeech {
   definitionId Int?
   partOfSpeech String       @unique
   definitions  Definition[]
+
+  @@map("partofspeech")
 }
 
 model Pronunciation {
@@ -99,6 +107,7 @@ model Pronunciation {
   word      Word      @relation(fields: [wordId], references: [id], map: "Pronunciation_wordId_fkey")
 
   @@index([wordId], map: "Pronunciation_wordId_fkey")
+  @@map("pronunciation")
 }
 
 model SynonymsAntonyms {
@@ -114,6 +123,7 @@ model SynonymsAntonyms {
   word      Word      @relation(fields: [wordId], references: [id], map: "SynonymsAntonyms_wordId_fkey")
 
   @@index([wordId], map: "SynonymsAntonyms_wordId_fkey")
+  @@map("synonymsantonyms")
 }
 
 model User {
@@ -137,6 +147,8 @@ model User {
   wordAdded            Int?
   favoriteWords        FavoriteWord[]
   searchHistory        UserSearchHistory[]
+
+  @@map("user")
 }
 
 model UserSearchHistory {
@@ -149,6 +161,7 @@ model UserSearchHistory {
 
   @@index([userId], map: "UserSearchHistory_userId_fkey")
   @@index([wordId], map: "UserSearchHistory_wordId_fkey")
+  @@map("usersearchhistory")
 }
 
 model Word {
@@ -167,6 +180,8 @@ model Word {
   synonymsAntonyms SynonymsAntonyms[]
   searchHistories  UserSearchHistory[]
   wordCategories   WordCategory[]
+
+  @@map("word")
 }
 
 model WordCategory {
@@ -179,4 +194,5 @@ model WordCategory {
 
   @@index([categoryId], map: "WordCategory_categoryId_fkey")
   @@index([wordId], map: "WordCategory_wordId_fkey")
+  @@map("wordcategory")
 }

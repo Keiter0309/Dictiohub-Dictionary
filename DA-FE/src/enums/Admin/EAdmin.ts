@@ -1,5 +1,4 @@
 export enum EAdmin {
-  ADMIN_CLIENT_HOST = "http://localhost:9000",
   ADMIN_LOGIN = "api/v1/admin/login",
   ADMIN_CREATE_USER = "api/v1/admin/create",
   ADMIN_DELETE_USER = "api/v1/admin/delete",
@@ -14,3 +13,7 @@ export enum EAdmin {
   ADMIN_UPDATE_WORD = "api/v1/admin/words/update",
   ADMIN_DELETE_WORD = "api/v1/admin/words/delete",
 }
+
+const ADMIN_CLIENT_HOST: string = import.meta.env.VITE_API_BASE_URL;
+
+export { ADMIN_CLIENT_HOST };

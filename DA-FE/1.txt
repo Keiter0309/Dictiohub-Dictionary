@@ -1,5 +1,0 @@
-CREATE USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'keith0309';
-GRANT ALL PRIVILEGES ON my_app.* TO 'root'@'localhost';
-
-
-telnet da-instance.cz2muugsm551.us-east-1.rds.amazonaws.com 3306

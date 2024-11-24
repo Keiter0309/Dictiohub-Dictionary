@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE `Category` (
+CREATE TABLE `category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `categoryName` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -8,12 +8,12 @@ CREATE TABLE `Category` (
     `deletedBy` INTEGER NULL,
     `updatedBy` INTEGER NULL,
 
-    UNIQUE INDEX `Category_categoryName_key`(`categoryName`),
+    UNIQUE INDEX `category_categoryName_key`(`categoryName`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Definition` (
+CREATE TABLE `definition` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `posId` INTEGER NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE `Definition` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `ExampleWord` (
+CREATE TABLE `exampleword` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `exampleText` VARCHAR(191) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `ExampleWord` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `FavoriteWord` (
+CREATE TABLE `favoriteword` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `userId` INTEGER NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `FavoriteWord` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Meaning` (
+CREATE TABLE `meaning` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `meaningText` VARCHAR(191) NOT NULL,
@@ -75,17 +75,17 @@ CREATE TABLE `Meaning` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `PartOfSpeech` (
+CREATE TABLE `partofspeech` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `definitionId` INTEGER NULL,
     `partOfSpeech` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `PartOfSpeech_partOfSpeech_key`(`partOfSpeech`),
+    UNIQUE INDEX `partofspeech_partOfSpeech_key`(`partOfSpeech`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Pronunciation` (
+CREATE TABLE `pronunciation` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `audioPath` VARCHAR(191) NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE `Pronunciation` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `SynonymsAntonyms` (
+CREATE TABLE `synonymsantonyms` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `synonyms` VARCHAR(191) NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE `SynonymsAntonyms` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `User` (
+CREATE TABLE `user` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `firstName` VARCHAR(191) NOT NULL,
     `lastName` VARCHAR(191) NOT NULL,
@@ -144,7 +144,7 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `UserSearchHistory` (
+CREATE TABLE `usersearchhistory` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `userId` INTEGER NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE `UserSearchHistory` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Word` (
+CREATE TABLE `word` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `word` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -170,7 +170,7 @@ CREATE TABLE `Word` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `WordCategory` (
+CREATE TABLE `wordcategory` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `wordId` INTEGER NOT NULL,
     `categoryId` INTEGER NOT NULL,
@@ -182,37 +182,37 @@ CREATE TABLE `WordCategory` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Definition` ADD CONSTRAINT `Definition_posId_fkey` FOREIGN KEY (`posId`) REFERENCES `PartOfSpeech`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `definition` ADD CONSTRAINT `Definition_posId_fkey` FOREIGN KEY (`posId`) REFERENCES `partofspeech`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Definition` ADD CONSTRAINT `Definition_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `definition` ADD CONSTRAINT `Definition_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ExampleWord` ADD CONSTRAINT `ExampleWord_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `exampleword` ADD CONSTRAINT `ExampleWord_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FavoriteWord` ADD CONSTRAINT `FavoriteWord_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `favoriteword` ADD CONSTRAINT `FavoriteWord_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FavoriteWord` ADD CONSTRAINT `FavoriteWord_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `favoriteword` ADD CONSTRAINT `FavoriteWord_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Meaning` ADD CONSTRAINT `Meaning_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `meaning` ADD CONSTRAINT `Meaning_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Pronunciation` ADD CONSTRAINT `Pronunciation_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `pronunciation` ADD CONSTRAINT `Pronunciation_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `SynonymsAntonyms` ADD CONSTRAINT `SynonymsAntonyms_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `synonymsantonyms` ADD CONSTRAINT `SynonymsAntonyms_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserSearchHistory` ADD CONSTRAINT `UserSearchHistory_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `usersearchhistory` ADD CONSTRAINT `UserSearchHistory_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserSearchHistory` ADD CONSTRAINT `UserSearchHistory_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `usersearchhistory` ADD CONSTRAINT `UserSearchHistory_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `WordCategory` ADD CONSTRAINT `WordCategory_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `wordcategory` ADD CONSTRAINT `WordCategory_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `WordCategory` ADD CONSTRAINT `WordCategory_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `Word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `wordcategory` ADD CONSTRAINT `WordCategory_wordId_fkey` FOREIGN KEY (`wordId`) REFERENCES `word`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

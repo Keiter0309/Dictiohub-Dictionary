@@ -9,6 +9,9 @@ import AdminLogin from './pages/Admin/LoginForm/LoginForm';
 import Profile from './pages/Clients/Profile/Profile';
 import About from './pages/Clients/About/About';
 import Thesaurus from './pages/Clients/Thesaurus/Thesaurus';
+import Forgot from './pages/Clients/Forgot/Forgot';
+import Reset from './pages/Clients/Reset/Reset';
+import Change from './Change';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +24,9 @@ const App: React.FC = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="/about" element={<About />} />
       <Route path="/thesaurus" element={<Thesaurus />} />
+      <Route path="/forgot-password" element={<Forgot />} />
+      <Route path="/reset-password" element={<Reset />} />
+      <Route path="/change-password" element={<Change />} />
     </Routes>
   );
 };
