@@ -6,9 +6,9 @@ export class SendMailTemplates {
         Welcome to Our Platform! We're excited to have you on board.
         
         Here are some resources to get you started:
-        - Visit our website: https://www.ourplatform.com
-        - Check out our help center: https://www.ourplatform.com/help
-        - Join our community forum: https://www.ourplatform.com/forum
+        - Visit our website: https://dictiohub.site
+        - Check out our help center: https://dictiohub.site/help
+        - Join our community forum: https://dictiohub.site/forum
         
         If you have any questions, feel free to reply to this email or contact our support team at support@ourplatform.com.
         
@@ -18,12 +18,12 @@ export class SendMailTemplates {
              <p>Welcome to <strong>Our Platform</strong>! We're excited to have you on board.</p>
              <p>Here are some resources to get you started:</p>
              <ul>
-                 <li>Visit our website: <a href="https://www.ourplatform.com">https://www.ourplatform.com</a></li>
-                 <li>Check out our help center: <a href="https://www.ourplatform.com/help">https://www.ourplatform.com/help</a></li>
-                 <li>Join our community forum: <a href="https://www.ourplatform.com/forum">https://www.ourplatform.com/forum</a></li>
+                 <li>Visit our website: <a href="https://dictiohub.site">https://dictiohub.site</a></li>
+                 <li>Check out our help center: <a href="https://dictiohub.site/help">https://dictiohub.site/help</a></li>
+                 <li>Join our community forum: <a href="https://dictiohub.site/forum">https://dictiohub.site/forum</a></li>
              </ul>
              <p>If you have any questions, feel free to reply to this email or contact our support team at <a href="mailto:support@ourplatform.com">support@ourplatform.com</a>.</p>
-             <p>Best regards,<br>The Our Platform Team</p>`
+             <p>Best regards,<br>Dictiohub Team</p>`
     });
 
     public static readonly MAIL_FORGOT_PASSWORD = (firstName: string, otp: number) => ({
@@ -42,7 +42,7 @@ export class SendMailTemplates {
              <p>You are receiving this email because you have requested to reset your password.</p>
              <p>Your OTP is <strong>${otp}</strong>.</p>
              <p>If you did not request this, please ignore this email.</p>
-             <p>Best regards,<br>The Our Platform Team</p>`
+             <p>Best regards,<br>Dictiohub Team</p>`
     });
 
     public static readonly MAIL_RESET_PASSWORD = (firstName: string) => ({
@@ -58,7 +58,7 @@ export class SendMailTemplates {
         html: `<p>Hello ${firstName},</p>
              <p>Your password has been successfully reset.</p>
              <p>If you did not request this, please contact our support team immediately.</p>
-             <p>Best regards,<br>The Our Platform Team</p>`
+             <p>Best regards,<br>The Dictiohub Team</p>`
     });
 
     public static readonly MAIL_CHANGE_PASSWORD = (firstName: string) => ({
@@ -74,6 +74,6 @@ export class SendMailTemplates {
         html: `<p>Hello ${firstName},</p>
              <p>Your password has been successfully changed.</p>
              <p>If you did not request this, please contact our support team immediately.</p>
-             <p>Best regards,<br>The Our Platform Team</p>`
+             <p>Best regards,<br>Dictiohub Team</p>`
     });
 }

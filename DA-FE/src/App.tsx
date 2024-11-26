@@ -11,7 +11,7 @@ import About from './pages/Clients/About/About';
 import Thesaurus from './pages/Clients/Thesaurus/Thesaurus';
 import Forgot from './pages/Clients/Forgot/Forgot';
 import Reset from './pages/Clients/Reset/Reset';
-import Change from './Change';
+import Change from './pages/Clients/Change/Change';
 
 const App: React.FC = () => {
   return (

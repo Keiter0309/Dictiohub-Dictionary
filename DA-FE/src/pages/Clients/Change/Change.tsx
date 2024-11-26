@@ -1,5 +1,5 @@
 import React from 'react';
-import ChangeForm from './components/Client/ChangeForm/ChangeForm';
+import ChangeForm from '../../../components/Client/ChangeForm/ChangeForm';
 
 const Change: React.FC = () => {
   return (

@@ -5,8 +5,48 @@ import { ILogin, IUser } from "../../interface/User";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import {
+  PollyClient,
+  DescribeVoicesCommand,
+  SynthesizeSpeechCommand,
+} from "@aws-sdk/client-polly";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
+const polly = new PollyClient({ region: "ap-southeast-2" });
+
+async function getAvailableVoices() {
+  try {
+    const command = new DescribeVoicesCommand({});
+    const response = await polly.send(command);
+    return response.Voices || [];
+  } catch (error) {
+    console.error("Error fetching voices:", error);
+    return [];
+  }
+}
+
+async function synthesizeSpeech(text: string, outputPath: string) {
+  try {
+    const command = new SynthesizeSpeechCommand({
+      OutputFormat: "mp3",
+      Text: text,
+      VoiceId: "Joanna",
+    });
+    const response = await polly.send(command);
+
+    if (response.AudioStream) {
+      const audioBuffer = Buffer.from(
+        await response.AudioStream.transformToByteArray()
+      );
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.writeFileSync(outputPath, audioBuffer);
+    }
+  } catch (error) {
+    console.error("Error synthesizing speech:", error);
+  }
+}
 
 export class AdminAuthController {
   public static async login(req: Request, res: Response) {
@@ -672,6 +712,72 @@ export class AdminCategoryController {
       });
     } catch (err) {
       return res.status(500).json({ error: "Error fetching category" });
+    }
+  }
+
+  public static async createCategory(req: Request, res: Response) {
+    try {
+      const { categoryName } = req.body;
+      if (!categoryName) {
+        return res.status(400).json({ error: "Category name is required" });
+      }
+
+      const newCategory = await prisma.category.create({
+        data: {
+          categoryName,
+        },
+      });
+
+      return res.status(201).json({
+        status_code: 201,
+        message: "Category created successfully",
+        data: newCategory,
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error creating category" });
+    }
+  }
+
+  public static async deleteCategory(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid category ID" });
+      }
+
+      await prisma.category.delete({
+        where: { id },
+      });
+
+      return res.status(200).json({
+        status_code: 200,
+        message: "Category deleted successfully",
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error deleting category" });
+    }
+  }
+
+  public static async updateCategory(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id);
+      const { categoryName } = req.body;
+      if (!categoryName) {
+        return res.status(400).json({ error: "Category name is required" });
+      }
+
+      const updatedCategory = await prisma.category.update({
+        where: { id },
+        data: { categoryName },
+      });
+
+      return res.status(200).json({
+        status_code: 200,
+        message: "Category updated successfully",
+        data: updatedCategory,
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Error updating category" });
     }
   }
 }

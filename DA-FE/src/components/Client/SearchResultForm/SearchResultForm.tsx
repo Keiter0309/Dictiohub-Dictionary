@@ -9,9 +9,8 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState(
-    'You must be logged in to add to favorites',
-  );
+  const [modalText, setModalText] = useState('You must be logged in to add to favorites');
+  const [searchResults, setSearchResults] = useState(result);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +19,10 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
+
+  useEffect(() => {
+    setSearchResults(result);
+  }, [result]);
 
   const handleFavorite = async (word: string) => {
     const token = localStorage.getItem('token');
@@ -72,22 +75,33 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="bg-blue-50 px-6 py-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-gray-900">{result.word}</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{searchResults.word}</h2>
           <div className="flex items-center">
-            <button
-              className="text-blue-600 hover:text-blue-800 focus:outline-none mr-4"
-              aria-label="Listen to pronunciation"
-            >
-              <Volume2 className="h-6 w-6" />
-            </button>
+            {searchResults.pronunciations.map((pron: any, index: number) => {
+              const audioSrc = `http://localhost:9000/audio/${pron.audioPath}`;
+
+              // reload audio when word changes
+              const audio = new Audio(audioSrc);
+              audio.load();
+              return (
+                <button
+                  key={index}
+                  className="text-blue-600 hover:text-blue-800 focus:outline-none"
+                  aria-label="Play pronunciation"
+                  onClick={() => audio.play()}
+                >
+                  <Volume2 className='h-6 w-6'/>
+                </button>
+              );
+            })}
             <button
               className="text-blue-600 hover:text-blue-800 focus:outline-none"
               aria-label="Bookmark word"
-              onClick={() => handleFavorite(result.word)}
+              onClick={() => handleFavorite(searchResults.word)}
             >
               <Bookmark
                 className={`h-6 w-6 ${
-                  favorites.includes(result.word)
+                  favorites.includes(searchResults.word)
                     ? 'text-blue-600'
                     : 'text-gray-600'
                 }`}
@@ -102,7 +116,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Definitions
           </h3>
           <ul className="list-disc list-inside">
-            {result.definitions.map((def: any, index: number) => (
+            {searchResults.definitions.map((def: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {def.definitionText}
                 <br />
@@ -119,7 +133,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
         <div className="mb-6 last:mb-0">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Examples</h3>
           <ul className="list-disc list-inside">
-            {result.exampleWords.map((example: any, index: number) => (
+            {searchResults.exampleWords.map((example: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {example.exampleText}
               </li>
@@ -131,7 +145,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Pronunciations
           </h3>
           <ul className="list-disc list-inside">
-            {result.pronunciations.map((pron: any, index: number) => (
+            {searchResults.pronunciations.map((pron: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {pron.ipaText}
                 {pron.dialect && <span> ({pron.dialect})</span>}
@@ -142,7 +156,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Meanings</h3>
           <ul className="list-disc list-inside">
-            {result.meanings.map((meaning: any, index: number) => (
+            {searchResults.meanings.map((meaning: any, index: number) => (
               <li key={index} className="text-gray-800">
                 {meaning.meaningText}
               </li>
@@ -154,12 +168,12 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
             Synonyms and Antonyms
           </h3>
           <ul className="list-disc list-inside">
-            {result.synonyms.map((syn: any, index: number) => (
+            {searchResults.synonyms.map((syn: any, index: number) => (
               <li key={index} className="text-gray-800">
                 <strong>Synonym:</strong> {syn.synonyms} /{' '}
               </li>
             ))}
-            {result.antonyms.map((ant: any, index: number) => (
+            {searchResults.antonyms.map((ant: any, index: number) => (
               <li key={index} className="text-gray-800">
                 <strong>Antonym:</strong> {ant.antonyms}
               </li>

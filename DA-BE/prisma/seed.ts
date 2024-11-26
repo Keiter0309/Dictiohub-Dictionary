@@ -1,9 +1,49 @@
 import { PrismaClient } from "@prisma/client";
+import {
+  PollyClient,
+  DescribeVoicesCommand,
+  SynthesizeSpeechCommand,
+} from "@aws-sdk/client-polly";
+import fs from "fs";
+import path from "path";
+
 const prisma = new PrismaClient();
+const polly = new PollyClient({ region: "ap-southeast-2" });
+
+async function getAvailableVoices() {
+  try {
+    const command = new DescribeVoicesCommand({});
+    const response = await polly.send(command);
+    return response.Voices || [];
+  } catch (error) {
+    console.error("Error fetching Polly voices:", error);
+    return [];
+  }
+}
+
+async function synthesizeSpeech(text: string, outputPath: string) {
+  try {
+    const command = new SynthesizeSpeechCommand({
+      OutputFormat: "mp3",
+      Text: text,
+      VoiceId: "Joanna",
+    });
+
+    const response = await polly.send(command);
+    if (response.AudioStream) {
+      // Convert to Buffer using unknown intermediary
+      const audioBuffer = Buffer.from(await response.AudioStream.transformToByteArray());
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.writeFileSync(outputPath, audioBuffer);
+    }
+  } catch (error) {
+    console.error(`Error synthesizing speech for ${text}:`, error);
+  }
+}
 
 async function main() {
   try {
-    // Clean up existing data if needed
+    // Clean up existing data
     await prisma.wordCategory.deleteMany();
     await prisma.synonymsAntonyms.deleteMany();
     await prisma.meaning.deleteMany();
@@ -14,46 +54,40 @@ async function main() {
     await prisma.category.deleteMany();
     await prisma.partOfSpeech.deleteMany();
 
+    // Fetch available voices
+    const voices = await getAvailableVoices();
+    console.log(`Available Polly voices: ${voices.length}`);
+
     // Create categories
     const categories = await Promise.all([
       prisma.category.create({
-        data: {
-          categoryName: "Academic",
-        },
+        data: { categoryName: "Academic" },
       }),
       prisma.category.create({
-        data: {
-          categoryName: "Literature",
-        },
+        data: { categoryName: "Literature" },
       }),
       prisma.category.create({
-        data: {
-          categoryName: "Common Usage",
-        },
+        data: { categoryName: "Common Usage" },
       }),
     ]);
 
     // Create parts of speech
     const partsOfSpeech = await Promise.all([
       prisma.partOfSpeech.create({
-        data: {
-          partOfSpeech: "adjective",
-        },
+        data: { partOfSpeech: "adjective" },
       }),
       prisma.partOfSpeech.create({
-        data: {
-          partOfSpeech: "noun",
-        },
+        data: { partOfSpeech: "noun" },
       }),
     ]);
 
-    // Create words with their related data
+    // Word data
     const words = [
       {
         word: "resilient",
         definitions: [
           {
-            posId: partsOfSpeech[0].id, // adjective
+            posId: partsOfSpeech[0].id,
             partOfSpeech: "adjective",
             definitionText: "Able to recover quickly from difficult conditions",
             usageExample: "The resilient plant survived despite the drought.",
@@ -61,16 +95,13 @@ async function main() {
           {
             posId: partsOfSpeech[0].id,
             partOfSpeech: "adjective",
-            definitionText:
-              "Having the quality of being able to return to original form after being bent or compressed",
-            usageExample:
-              "The resilient material bounced back to its original shape.",
+            definitionText: "Having the quality of being able to return to original form after being bent or compressed",
+            usageExample: "The resilient material bounced back to its original shape.",
           },
         ],
         examples: [
           {
-            exampleText:
-              "The resilient economy quickly recovered from the recession.",
+            exampleText: "The resilient economy quickly recovered from the recession.",
             source: "Financial Times",
           },
           {
@@ -80,27 +111,21 @@ async function main() {
         ],
         pronunciations: [
           {
-            audioPath: "/audio/resilient.mp3",
+            audioPath: "/audio/resilient-us.mp3",
             dialect: "American",
-            ipaText: "rɪˈzɪliənt",
-          },
-          {
-            audioPath: "/audio/resilient-uk.mp3",
-            dialect: "British",
             ipaText: "rɪˈzɪliənt",
           },
         ],
         meanings: [
           {
-            meaningText:
-              "Having the ability to withstand or recover quickly from difficult conditions",
+            meaningText: "Having the ability to withstand or recover quickly from difficult conditions",
           },
         ],
         synonymsAntonyms: {
           synonyms: "tough, flexible, adaptable, elastic",
           antonyms: "fragile, weak, inflexible",
         },
-        categories: [categories[0].id, categories[2].id], // Academic, Common Usage
+        categories: [categories[0].id, categories[2].id],
       },
       {
         word: "ephemeral",
@@ -120,7 +145,7 @@ async function main() {
         ],
         pronunciations: [
           {
-            audioPath: "/audio/ephemeral.mp3",
+            audioPath: "/audio/ephemeral-us.mp3",
             dialect: "American",
             ipaText: "ɪˈfem(ə)rəl",
           },
@@ -134,53 +159,125 @@ async function main() {
           synonyms: "fleeting, transitory, temporary, brief",
           antonyms: "permanent, lasting, enduring",
         },
-        categories: [categories[1].id], // Literature
+        categories: [categories[1].id],
       },
       {
-        word: "serendipity",
+        word: "ubiquitous",
         definitions: [
           {
-            posId: partsOfSpeech[1].id, // noun
-            partOfSpeech: "noun",
-            definitionText:
-              "The occurrence and development of events by chance in a happy or beneficial way",
-            usageExample: "Finding his dream job was pure serendipity.",
+            posId: partsOfSpeech[0].id,
+            partOfSpeech: "adjective",
+            definitionText: "Present, appearing, or found everywhere",
+            usageExample: "The ubiquitous presence of smartphones",
           },
         ],
         examples: [
           {
-            exampleText:
-              "Meeting her future husband at the airport was serendipity.",
-            source: "Contemporary Fiction",
+            exampleText: "The company aims to make its products ubiquitous in the market.",
+            source: "Business Insider",
           },
         ],
         pronunciations: [
           {
-            audioPath: "/audio/serendipity.mp3",
+            audioPath: "/audio/ubiquitous-us.mp3",
             dialect: "American",
-            ipaText: "ˌserənˈdipədi",
+            ipaText: "juˈbɪkwɪtəs",
           },
         ],
         meanings: [
           {
-            meaningText:
-              "The faculty of making fortunate discoveries by accident",
+            meaningText: "Present, appearing, or found everywhere",
           },
         ],
         synonymsAntonyms: {
-          synonyms: "chance, fortune, luck",
-          antonyms: "misfortune, design, plan",
+          synonyms: "omnipresent, pervasive, universal, ever-present",
+          antonyms: "rare, scarce, limited, uncommon",
         },
-        categories: [categories[1].id], // Literature
+        categories: [categories[2].id],
+      },
+      {
+        word: "beauty",
+        definitions: [
+          {
+            posId: partsOfSpeech[1].id,
+            partOfSpeech: "noun",
+            definitionText: "A combination of qualities that pleases the aesthetic senses",
+            usageExample: "The beauty of a sunset",
+          }
+        ],
+        examples: [
+          {
+            exampleText: "The beauty of the landscape took my breath away.",
+            source: "Travel Magazine",
+          },
+        ],
+        pronunciations: [
+          {
+            audioPath: "/audio/beauty-us.mp3",
+            dialect: "American",
+            ipaText: "ˈbjuːti",
+          },
+        ],
+        meanings: [
+          {
+            meaningText: "A combination of qualities that pleases the aesthetic senses",
+          },
+        ],
+        synonymsAntonyms: {
+          synonyms: "attractiveness, loveliness, charm, elegance",
+          antonyms: "ugliness, unattractiveness, repulsiveness",
+        },
+        categories: [categories[0].id, categories[2].id],
+      },
+      {
+        word: "study",
+        definitions: [
+          {
+            posId: partsOfSpeech[1].id,
+            partOfSpeech: "noun",
+            definitionText: "The devotion of time and attention to acquiring knowledge",
+            usageExample: "She spent hours in the library for her study.",
+          },
+          {
+            posId: partsOfSpeech[1].id,
+            partOfSpeech: "noun",
+            definitionText: "A detailed investigation and analysis of a subject or situation",
+            usageExample: "The study of climate change",
+          },
+        ],
+        examples: [
+          {
+            exampleText: "The study of history helps us understand the present.",
+            source: "Historical Journal",
+          },
+        ],
+        pronunciations: [
+          {
+            audioPath: "/audio/study-us.mp3",
+            dialect: "American",
+            ipaText: "ˈstʌdi",
+          },
+        ],
+        meanings: [
+          {
+            meaningText: "The devotion of time and attention to acquiring knowledge",
+          },
+          {
+            meaningText: "A detailed investigation and analysis of a subject or situation",
+          },
+        ],
+        synonymsAntonyms: {
+          synonyms: "research, learning, investigation, analysis",
+          antonyms: "ignorance, neglect, disregard",
+        },
+        categories: [categories[0].id],
       },
     ];
 
     // Create words and their related data
     for (const wordData of words) {
       const word = await prisma.word.create({
-        data: {
-          word: wordData.word,
-        },
+        data: { word: wordData.word },
       });
 
       // Create definitions
@@ -207,16 +304,25 @@ async function main() {
         )
       );
 
-      // Create pronunciations
+      // Create pronunciations and generate audio files
       await Promise.all(
-        wordData.pronunciations.map((pron) =>
-          prisma.pronunciation.create({
+        wordData.pronunciations.map(async (pron) => {
+          const audioPath = path.join(
+            `audio/${wordData.word}-${pron.dialect}.mp3`
+          );
+          
+          const audio = path.join(
+            `${wordData.word}-${pron.dialect}.mp3`
+          )
+          await synthesizeSpeech(wordData.word, audioPath);
+          await prisma.pronunciation.create({
             data: {
               wordId: word.id,
               ...pron,
+              audioPath: audio,
             },
-          })
-        )
+          });
+        })
       );
 
       // Create meanings

@@ -50,3 +50,19 @@ adminRoute.get(
 );
 
 adminRoute.get(EAdmin.FETCH_CATEGORY, AdminCategoryController.fetchCategory);
+adminRoute.get(
+  `${EAdmin.FETCH_CATEGORY}`,
+  AdminCategoryController.fetchCategory
+);
+adminRoute.post(
+  `${EAdmin.CREATE_CATEGORY}`,
+  AdminCategoryController.createCategory
+);
+adminRoute.put(
+  `${EAdmin.UPDATE_CATEGORY}`,
+  AdminCategoryController.updateCategory
+);
+adminRoute.delete(
+  `${EAdmin.DELETE_CATEGORY}`,
+  AdminCategoryController.deleteCategory
+);

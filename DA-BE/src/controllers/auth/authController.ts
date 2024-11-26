@@ -11,7 +11,7 @@ import { User } from "../../model/User/User";
 import { sendMail } from "../../utils/mailer";
 import { randomOtpDigit } from "../../utils/randomOtpDigit";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { Jwt } from "jsonwebtoken";
 import { JwtPayload } from "../../interface/JwtPayload";
 
 class AuthController {
@@ -275,21 +275,18 @@ class AuthController {
     }
   }
 
-  public async changePassword(req: Request, res: Response) {
-    const { email, oldPassword, newPassword, confirmPassword } = req.body;
-
-    // Check empty fields
-    for (const key in req.body) {
-      if (!req.body[key]) {
-        return res.status(400).json({
-          message: `${key} is required`,
-        });
-      }
-    }
+  public async changePassword(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
+    const user = req.user as JwtPayload;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
 
     try {
       // Check existing user
-      const existingUser = (await User.fetchByEmail(email)) as IChangePassword;
+      const existingUser = (await User.fetchByEmail(
+        user.email
+      )) as IChangePassword;
 
       if (!existingUser) {
         return res.status(404).json({
@@ -331,14 +328,14 @@ class AuthController {
       const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
       // Update password
-      await User.updatePassword(email, hashedPassword);
+      await User.updatePassword(user.email, hashedPassword);
 
       // Send email notification
       const mailOptions = SendMailTemplates.MAIL_CHANGE_PASSWORD(
         existingUser.firstName
       );
       await sendMail(
-        email,
+        user.email,
         mailOptions.subject,
         mailOptions.text,
         mailOptions.html
@@ -355,7 +352,7 @@ class AuthController {
     }
   }
 
-  public async getMe(req: Request & {user?: JwtPayload}, res: Response) {
+  public async getMe(req: Request & { user?: JwtPayload }, res: Response) {
     try {
       // Get user data from token
       const user = req.user as JwtPayload;
@@ -374,8 +371,8 @@ class AuthController {
         username: existingUser.username,
         joined: existingUser.createdAt,
         role: existingUser.role,
-      }
-      
+      };
+
       return res.status(200).json({
         status_code: 200,
         message: "User data",

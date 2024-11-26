@@ -28,8 +28,10 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@aws-sdk/client-polly": "^3.699.0",
     "@prisma/client": "^5.22.0",
     "@types/bcrypt": "^5.0.2",
+    "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

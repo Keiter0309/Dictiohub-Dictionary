@@ -5,23 +5,26 @@ import { authRoute } from "./routes/auth/auth";
 import { wordsRoute } from "./routes/words/word";
 import { adminRoute } from "./routes/admin/admin";
 import cookieParser from "cookie-parser";
-import cors from 'cors';
+import cors from "cors";
+import path from "path";
+import { audioRoute } from "./routes/audio/audio";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // app.use(corsMiddlewares);
-app.use(cors(
-  {
+app.use(
+  cors({
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  }
-));
+  })
+);
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use("/audio", express.static(path.join(__dirname, "..", "audio")));
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, Typescript Express");
 });
@@ -29,6 +32,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use(authRoute);
 app.use(wordsRoute);
 app.use(adminRoute);
+app.use(audioRoute);
 
 app.listen(port, () => {
   console.log(`Server is running http://localhost:${port}`);

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Words, Favorites } from "../../model/Words/Word";
+
 class WordsController {
   // Create a new word
   public async createWord(req: Request, res: Response) {
