@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Alert, Typography } from 'antd';
+import { Form, Input, Button, Alert, Typography, message as msg } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { message as antdMessage } from 'antd';
+import authServices from '../../../services/auth/authServices';
 
 const { Title, Text } = Typography;
 
@@ -15,11 +16,16 @@ const ForgotForm: React.FC = () => {
     setIsSubmitting(true);
     setMessage('');
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    setIsSubmitting(false);
-    setMessage('If an account exists for this email, a password reset link has been sent.');
-    setEmail('');
+    try {
+      await authServices.forgotPassword(email);
+      setIsSubmitting(false);
+      msg.success('Password reset link sent to your email');
+      setEmail('');
+      navigate('/reset-password');
+    } catch (error: any) {
+      setIsSubmitting(false);
+      msg.error(error.message);
+    }
   };
 
   useEffect(() => {
@@ -30,14 +36,20 @@ const ForgotForm: React.FC = () => {
     } else {
       navigate('/forgot-password');
     }
-  }, [navigate])
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-blue-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <Title level={2} className="text-center" style={{ color: '#1d4ed8' }}>Forgot Password</Title>
-        <Text className="text-center" style={{ display: 'block', marginBottom: '24px', color: '#6b7280' }}>
-          Enter your email address and we'll send you a link to reset your password.
+        <Title level={2} className="text-center" style={{ color: '#1d4ed8' }}>
+          Forgot Password
+        </Title>
+        <Text
+          className="text-center"
+          style={{ display: 'block', marginBottom: '24px', color: '#6b7280' }}
+        >
+          Enter your email address and we'll send you a link to reset your
+          password.
         </Text>
         <Form onFinish={handleSubmit} layout="vertical">
           <Form.Item

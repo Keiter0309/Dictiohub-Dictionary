@@ -210,7 +210,7 @@ class AuthController {
   }
 
   public async resetPassword(req: Request, res: Response) {
-    const { email, otp, password, confirmPassword } = req.body;
+    const { otp, password, confirmPassword } = req.body;
 
     // Check for empty fields
     if (!otp || !password || !confirmPassword) {
@@ -221,7 +221,9 @@ class AuthController {
 
     try {
       // Check existing user
-      const existingUser = (await User.fetchByEmail(email)) as IResetPassword;
+      const existingUser = (await User.fetchByOTP(otp)) as IResetPassword;
+      console.log(existingUser);
+      console.log(otp);
 
       if (!existingUser) {
         return res.status(404).json({
@@ -229,7 +231,7 @@ class AuthController {
         });
       }
 
-      if (otp !== existingUser.resetPasswordOTP) {
+      if (otp !== Number(existingUser.resetPasswordOTP)) {
         return res.status(401).json({
           message: "OTP invalid",
         });
@@ -251,18 +253,7 @@ class AuthController {
       const hashedPassword = bcrypt.hashSync(password, 10);
 
       // Update password
-      await User.updatePassword(email, hashedPassword);
-
-      // Send email notification
-      const mailOptions = SendMailTemplates.MAIL_RESET_PASSWORD(
-        existingUser.firstName
-      );
-      await sendMail(
-        email,
-        mailOptions.subject,
-        mailOptions.text,
-        mailOptions.html
-      );
+      await User.updatePassword(otp, hashedPassword);
 
       return res.status(200).json({
         message: "Password reset successful",

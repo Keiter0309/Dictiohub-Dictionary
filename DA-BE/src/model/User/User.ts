@@ -58,6 +58,26 @@ export class User {
     });
   }
 
+  static fetchByOTP(otp: number) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM user WHERE resetPasswordOTP = ?",
+        [otp],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (result.length > 0) {
+              resolve(result[0]);
+            } else {
+              resolve(null);
+            }
+          }
+        }
+      );
+    });
+  }
+
   static fetchByUsername(username: string) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -180,7 +200,7 @@ export class User {
   static updatePassword(email: string, password: string) {
     return new Promise((resolve, reject) => {
       db.query(
-        "UPDATE user SET password = ? WHERE email = ?",
+        "UPDATE user SET password = ? WHERE resetPasswordOTP = ?",
         [password, email],
         (err: any, result: any) => {
           if (err) {
@@ -212,7 +232,7 @@ export class User {
 
   // Update last IP
   static updateLastIP(email: string, lastIP: string) {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       db.query(
         "UPDATE user SET lastIP = ? WHERE email = ?",
         [lastIP, email],
@@ -223,7 +243,7 @@ export class User {
             resolve(result);
           }
         }
-      )
-    })
+      );
+    });
   }
 }

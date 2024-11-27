@@ -160,7 +160,6 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       word.partOfSpeech[0].split(','),
       word.categoryName,
       word.exampleText,
-      word.audioPath,
       word.dialect,
       word.ipaText,
       word.usageExample,
@@ -279,7 +278,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
               <TextArea
                 rows={2}
                 placeholder="Meaning"
-                name="meaning"
+                name="meanings"
                 value={word.meanings}
                 onChange={(e) => setWord({ ...word, meanings: e.target.value })}
               />
@@ -340,17 +339,8 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                   setWord({ ...word, usageExample: e.target.value })
                 }
               />
-              <Input
-                placeholder="Audio Path"
-                name="audioPath"
-                typeof="file"
-                value={word.audioPath}
-                onChange={(e) =>
-                  setWord({ ...word, audioPath: e.target.value })
-                }
-              />
 
-              <Select
+              {/* <Select
                 id="partOfSpeech"
                 value={
                   Array.isArray(word.partOfSpeech)
@@ -358,7 +348,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                     : [word.partOfSpeech]
                 }
                 onChange={(value) =>
-                  setWord({ ...word, partOfSpeech: value.join(', ') })
+                  setWord({ ...word, partOfSpeech: value.join(',') })
                 }
                 placeholder="Select a Part of Speech"
                 mode="multiple"
@@ -373,6 +363,14 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                   { value: 'conjunction', label: 'Conjunction' },
                   { value: 'interjection', label: 'Interjection' },
                 ]}
+              /> */}
+              <Input
+                placeholder="IPA"
+                name="partOfSpeech"
+                value={word.partOfSpeech}
+                onChange={(value) =>
+                  setWord({ ...word, partOfSpeech: value.target.value })
+                }
               />
               <div className="flex justify-end items-center">
                 <button

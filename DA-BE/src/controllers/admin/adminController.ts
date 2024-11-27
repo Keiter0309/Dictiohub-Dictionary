@@ -12,6 +12,7 @@ import {
 } from "@aws-sdk/client-polly";
 import fs from "fs";
 import path from "path";
+import { error } from "console";
 
 const prisma = new PrismaClient();
 const polly = new PollyClient({ region: "ap-southeast-2" });
@@ -405,7 +406,6 @@ export class AdminWordController {
       categoryName,
       exampleText,
       usageExample,
-      audioPath,
       dialect,
       ipaText,
       synonyms,
@@ -421,15 +421,17 @@ export class AdminWordController {
         !categoryName ||
         !exampleText ||
         !usageExample ||
-        !audioPath ||
         !dialect ||
         !ipaText ||
         !synonyms ||
         !antonyms
       ) {
+        console.log(
+          `All fields are required word: ${word} meaning: ${meanings} def${definitionText} pos${partOfSpeech} cn${categoryName} et${exampleText} ue${usageExample} d${dialect} i${ipaText} s${synonyms} a${antonyms}`
+        );
         return res.status(400).json({
           status_code: 400,
-          message: "All fields are required",
+          message: `All fields are required word: ${word} meaning: ${meanings} def${definitionText} pos${partOfSpeech} cn${categoryName} et${exampleText} ue${usageExample} d${dialect} i${ipaText} s${synonyms} a${antonyms}`,
         });
       }
 
@@ -481,7 +483,7 @@ export class AdminWordController {
       const newPronunciation = await prisma.pronunciation.create({
         data: {
           wordId: newWord.id,
-          audioPath: audioPath,
+          audioPath: " ",
           ipaText: ipaText,
           dialect: dialect,
         },
@@ -509,7 +511,7 @@ export class AdminWordController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: "Error creating word" });
+      return res.status(500).json({ error: `Error creating word ${err}` });
     }
   }
 

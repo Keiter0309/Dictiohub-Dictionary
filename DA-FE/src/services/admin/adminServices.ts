@@ -11,12 +11,12 @@ export class AdminServices {
         { email, password },
         {
           withCredentials: true,
-        }
+        },
       );
 
       const access_token = response.data.data.access_token;
 
-      localStorage.setItem('aToken', 'true')
+      localStorage.setItem('aToken', 'true');
 
       const interceptor = axios.interceptors.response.use(
         (response) => response,
@@ -59,7 +59,7 @@ export class AdminServices {
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_USER}/${email}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       return response.data.data;
@@ -141,7 +141,7 @@ export class AdminWordServices {
       const response = await axios.get(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORD}/${id}`,
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       console.log(response.data);
@@ -158,7 +158,6 @@ export class AdminWordServices {
     partOfSpeech: string[],
     categoryName: string,
     exampleText: string,
-    audioPath: string,
     dialect: string,
     ipaText: string,
     usageExample: string,
@@ -175,7 +174,6 @@ export class AdminWordServices {
           partOfSpeech,
           categoryName,
           exampleText,
-          audioPath,
           dialect,
           ipaText,
           usageExample,
@@ -183,7 +181,7 @@ export class AdminWordServices {
           antonyms,
         },
       );
-
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error(error);

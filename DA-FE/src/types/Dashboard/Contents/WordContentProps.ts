@@ -6,7 +6,6 @@ export interface WordContentProps {
     partOfSpeech: string[],
     categoryName: string,
     exampleText: string,
-    audioPath: string,
     dialect: string,
     ipaText: string,
     usageExample: string,

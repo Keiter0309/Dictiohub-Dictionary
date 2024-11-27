@@ -133,7 +133,6 @@ const SidebarForm: React.FC = () => {
     partOfSpeech: string[],
     categoryName: string,
     exampleText: string,
-    audioPath: string,
     dialect: string,
     ipaText: string,
     usageExample: string,
@@ -148,13 +147,13 @@ const SidebarForm: React.FC = () => {
         partOfSpeech,
         categoryName,
         exampleText,
-        audioPath,
         dialect,
         ipaText,
         usageExample,
         synonyms,
         antonyms,
       );
+      console.log(response);
       return response;
     } catch (error: any) {
       throw new Error(error);
