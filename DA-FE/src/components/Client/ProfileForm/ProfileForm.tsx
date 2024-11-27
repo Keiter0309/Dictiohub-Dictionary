@@ -33,7 +33,9 @@ interface PersonalData {
   icon: React.ReactNode;
 }
 
-const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({ personalData }) => (
+const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({
+  personalData,
+}) => (
   <Card
     className="mb-8"
     title={
@@ -109,10 +111,30 @@ const ProfileForm = () => {
         if (response) {
           const data = response.data;
           const formattedData: PersonalData[] = [
-            { id: 'username', label: 'Username', value: data.username, icon: <UserOutlined /> },
-            { id: 'email', label: 'Email', value: data.email, icon: <MailOutlined /> },
-            { id: 'role', label: 'Role', value: data.role, icon: <IdcardOutlined /> },
-            { id: 'joined', label: 'Joined', value: new Date(data.joined).toLocaleDateString(), icon: <CalendarOutlined /> },
+            {
+              id: 'username',
+              label: 'Username',
+              value: data.username,
+              icon: <UserOutlined />,
+            },
+            {
+              id: 'email',
+              label: 'Email',
+              value: data.email,
+              icon: <MailOutlined />,
+            },
+            {
+              id: 'role',
+              label: 'Role',
+              value: data.role,
+              icon: <IdcardOutlined />,
+            },
+            {
+              id: 'joined',
+              label: 'Joined',
+              value: new Date(data.joined).toLocaleDateString(),
+              icon: <CalendarOutlined />,
+            },
           ];
           setPersonalData(formattedData);
         }
@@ -125,7 +147,13 @@ const ProfileForm = () => {
   }, []);
 
   const menu = (
-    <Menu items={menuItems.map(item => ({ key: item.key, label: item.label }))} />
+    <Menu>
+      {menuItems.map((item) => (
+        <Menu.Item key={item.key}>
+          <Link to={item.link || '#'}>{item.label}</Link>
+        </Menu.Item>
+      ))}
+    </Menu>
   );
 
   return (

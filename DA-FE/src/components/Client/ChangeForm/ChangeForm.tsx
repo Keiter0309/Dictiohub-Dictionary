@@ -1,53 +1,94 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Alert, Typography } from 'antd';
+import { Form, Input, Button, Alert, Typography, message as msg } from 'antd';
 import { CheckCircle, AlertCircle } from 'lucide-react';
+import authServices from '../../../services/auth/authServices';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
 const ChangeForm: React.FC = () => {
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setMessage(null);
 
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       setMessage({ type: 'error', text: 'Passwords do not match.' });
       setIsSubmitting(false);
       return;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    setIsSubmitting(false);
-    setMessage({ type: 'success', text: 'Your password has been successfully reset.' });
-    setPassword('');
-    setConfirmPassword('');
+    try {
+      await authServices.changePassword(
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      );
+      setIsSubmitting(false);
+      // setMessage({
+      //   type: 'success',
+      //   text: 'Your password has been successfully reset.',
+      // });
+      msg.success('Your password has been successfully reset.');
+      localStorage.removeItem('token');
+      navigate('/login');
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      setIsSubmitting(false);
+      setMessage({ type: 'error', text: err.message });
+    }
   };
 
   return (
     <div className="min-h-screen bg-blue-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <Title level={2} className="text-center" style={{ color: '#1d4ed8' }}>Change Password</Title>
+        <Title level={2} className="text-center" style={{ color: '#1d4ed8' }}>
+          Change Password
+        </Title>
         <Form onFinish={handleSubmit} layout="vertical" className="space-y-4">
           <Form.Item
-            label="New Password"
-            name="password"
-            rules={[{ required: true, message: 'Please input your new password!' }]}
+            label="Old Password"
+            name="old password"
+            rules={[
+              { required: true, message: 'Please input your old password!' },
+            ]}
           >
             <Input.Password
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              className="w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+            />
+          </Form.Item>
+          <Form.Item
+            label="New Password"
+            name="new password"
+            rules={[
+              { required: true, message: 'Please input your new password!' },
+            ]}
+          >
+            <Input.Password
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               className="w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500"
             />
           </Form.Item>
           <Form.Item
             label="Confirm New Password"
             name="confirmPassword"
-            rules={[{ required: true, message: 'Please confirm your new password!' }]}
+            rules={[
+              { required: true, message: 'Please confirm your new password!' },
+            ]}
           >
             <Input.Password
               value={confirmPassword}
@@ -71,7 +112,9 @@ const ChangeForm: React.FC = () => {
             message={message.text}
             type={message.type}
             showIcon
-            icon={message.type === 'success' ? <CheckCircle /> : <AlertCircle />}
+            icon={
+              message.type === 'success' ? <CheckCircle /> : <AlertCircle />
+            }
             style={{ marginTop: '24px' }}
           />
         )}

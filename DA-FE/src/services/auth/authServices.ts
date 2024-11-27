@@ -76,6 +76,56 @@ class AuthServices {
     }
   }
 
+  public async forgotPassword(email: string) {
+    try {
+      const response = await axios.post(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_FORGOT_PASSWORD}`,
+        { email },
+      );
+
+      return response.data;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  public async resetPassword(
+    password: string,
+    confirmPassword: string,
+    otp: number,
+  ) {
+    try {
+      const response = await axios.post(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_RESET_PASSWORD}`,
+        { password, confirmPassword, otp },
+      );
+
+      return response.data;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  public async changePassword(
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ) {
+    try {
+      const response = await axios.post(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_CHANGE_PASSWORD}`,
+        { oldPassword, newPassword, confirmPassword },
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
   public async getMe() {
     try {
       const response = await axios.get(`${AUTH_CLIENT_HOST}/${EAuth.AUTH_ME}`, {
