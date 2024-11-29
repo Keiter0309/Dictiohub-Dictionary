@@ -5,49 +5,10 @@ import { ILogin, IUser } from "../../interface/User";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import {
-  PollyClient,
-  DescribeVoicesCommand,
-  SynthesizeSpeechCommand,
-} from "@aws-sdk/client-polly";
-import fs from "fs";
+import { PollyService } from "../../services/aws/polly.service";
 import path from "path";
-import { error } from "console";
 
 const prisma = new PrismaClient();
-const polly = new PollyClient({ region: "ap-southeast-2" });
-
-async function getAvailableVoices() {
-  try {
-    const command = new DescribeVoicesCommand({});
-    const response = await polly.send(command);
-    return response.Voices || [];
-  } catch (error) {
-    console.error("Error fetching voices:", error);
-    return [];
-  }
-}
-
-async function synthesizeSpeech(text: string, outputPath: string) {
-  try {
-    const command = new SynthesizeSpeechCommand({
-      OutputFormat: "mp3",
-      Text: text,
-      VoiceId: "Joanna",
-    });
-    const response = await polly.send(command);
-
-    if (response.AudioStream) {
-      const audioBuffer = Buffer.from(
-        await response.AudioStream.transformToByteArray()
-      );
-      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-      fs.writeFileSync(outputPath, audioBuffer);
-    }
-  } catch (error) {
-    console.error("Error synthesizing speech:", error);
-  }
-}
 
 export class AdminAuthController {
   public static async login(req: Request, res: Response) {
@@ -446,7 +407,7 @@ export class AdminWordController {
             `audio/${newWord.word}.mp3`
           );
 
-      await synthesizeSpeech(word, audioPath);
+      await PollyService.synthesizeSpeech(word, audioPath);
 
       const newPos = await prisma.partOfSpeech.create({
         data: {

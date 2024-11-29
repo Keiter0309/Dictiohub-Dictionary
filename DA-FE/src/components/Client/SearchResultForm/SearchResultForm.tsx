@@ -4,7 +4,7 @@ import { Bookmark, Volume2 } from 'lucide-react';
 import { Modal, message } from 'antd';
 import { SearchResultFormProps } from '../../../types/Dashboard/SearchResultFormProps';
 import wordServices from '../../../services/word/wordServices';
-import { AUTH_CLIENT_HOST } from '../../../enums/Auth/EAuth';
+import { EAws } from '../../../enums/Aws/EAws';
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -83,7 +83,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
           </h2>
           <div className="flex items-center">
             {searchResults.pronunciations.map((pron: any, index: number) => {
-              const audioSrc = `${AUTH_CLIENT_HOST}/api/v1/audio/${pron.audioPath}`;
+              const audioSrc = `${EAws.S3_URL}/${pron.audioPath}`;
 
               // reload audio when word changes
               const audio = new Audio(audioSrc);

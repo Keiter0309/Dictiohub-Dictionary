@@ -1,45 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import {
-  PollyClient,
-  DescribeVoicesCommand,
-  SynthesizeSpeechCommand,
-} from "@aws-sdk/client-polly";
-import fs from "fs";
 import path from "path";
+import {PollyService} from '../src/services/aws/polly.service'
 
 const prisma = new PrismaClient();
-const polly = new PollyClient({ region: "ap-southeast-2" });
-
-async function getAvailableVoices() {
-  try {
-    const command = new DescribeVoicesCommand({});
-    const response = await polly.send(command);
-    return response.Voices || [];
-  } catch (error) {
-    console.error("Error fetching Polly voices:", error);
-    return [];
-  }
-}
-
-async function synthesizeSpeech(text: string, outputPath: string) {
-  try {
-    const command = new SynthesizeSpeechCommand({
-      OutputFormat: "mp3",
-      Text: text,
-      VoiceId: "Joanna",
-    });
-
-    const response = await polly.send(command);
-    if (response.AudioStream) {
-      // Convert to Buffer using unknown intermediary
-      const audioBuffer = Buffer.from(await response.AudioStream.transformToByteArray());
-      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-      fs.writeFileSync(outputPath, audioBuffer);
-    }
-  } catch (error) {
-    console.error(`Error synthesizing speech for ${text}:`, error);
-  }
-}
 
 async function main() {
   try {
@@ -53,10 +16,6 @@ async function main() {
     await prisma.word.deleteMany();
     await prisma.category.deleteMany();
     await prisma.partOfSpeech.deleteMany();
-
-    // Fetch available voices
-    const voices = await getAvailableVoices();
-    console.log(`Available Polly voices: ${voices.length}`);
 
     // Create categories
     const categories = await Promise.all([
@@ -314,7 +273,7 @@ async function main() {
           const audio = path.join(
             `${wordData.word}.mp3`
           )
-          await synthesizeSpeech(wordData.word, audioPath);
+          await PollyService.synthesizeSpeech(wordData.word, audioPath);
           await prisma.pronunciation.create({
             data: {
               wordId: word.id,
