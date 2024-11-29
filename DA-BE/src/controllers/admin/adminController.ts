@@ -75,7 +75,7 @@ export class AdminAuthController {
       };
 
       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: "5m",
+        expiresIn: "1d",
       });
 
       // last login
@@ -86,7 +86,7 @@ export class AdminAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 5,
+        maxAge: 1000 * 60 * 24,  
       });
 
       return res.status(200).json({
@@ -426,12 +426,10 @@ export class AdminWordController {
         !synonyms ||
         !antonyms
       ) {
-        console.log(
-          `All fields are required word: ${word} meaning: ${meanings} def${definitionText} pos${partOfSpeech} cn${categoryName} et${exampleText} ue${usageExample} d${dialect} i${ipaText} s${synonyms} a${antonyms}`
-        );
+        
         return res.status(400).json({
           status_code: 400,
-          message: `All fields are required word: ${word} meaning: ${meanings} def${definitionText} pos${partOfSpeech} cn${categoryName} et${exampleText} ue${usageExample} d${dialect} i${ipaText} s${synonyms} a${antonyms}`,
+          message: `All fields are required word`,
         });
       }
 
@@ -441,6 +439,14 @@ export class AdminWordController {
           word: word,
         },
       });
+
+      // Create audio file
+      const audio = `${newWord.word}.mp3`;
+      const audioPath = path.join(
+            `audio/${newWord.word}.mp3`
+          );
+
+      await synthesizeSpeech(word, audioPath);
 
       const newPos = await prisma.partOfSpeech.create({
         data: {
@@ -483,7 +489,7 @@ export class AdminWordController {
       const newPronunciation = await prisma.pronunciation.create({
         data: {
           wordId: newWord.id,
-          audioPath: " ",
+          audioPath: audio,
           ipaText: ipaText,
           dialect: dialect,
         },

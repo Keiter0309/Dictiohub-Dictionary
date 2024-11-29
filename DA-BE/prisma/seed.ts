@@ -308,11 +308,11 @@ async function main() {
       await Promise.all(
         wordData.pronunciations.map(async (pron) => {
           const audioPath = path.join(
-            `audio/${wordData.word}-${pron.dialect}.mp3`
+            `audio/${wordData.word}.mp3`
           );
           
           const audio = path.join(
-            `${wordData.word}-${pron.dialect}.mp3`
+            `${wordData.word}.mp3`
           )
           await synthesizeSpeech(wordData.word, audioPath);
           await prisma.pronunciation.create({

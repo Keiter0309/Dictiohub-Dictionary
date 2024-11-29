@@ -130,7 +130,7 @@ const SidebarForm: React.FC = () => {
     word: string,
     meanings: string,
     definitionText: string,
-    partOfSpeech: string[],
+    partOfSpeech: string,
     categoryName: string,
     exampleText: string,
     dialect: string,
@@ -153,7 +153,6 @@ const SidebarForm: React.FC = () => {
         synonyms,
         antonyms,
       );
-      console.log(response);
       return response;
     } catch (error: any) {
       throw new Error(error);

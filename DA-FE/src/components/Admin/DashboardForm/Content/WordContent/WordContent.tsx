@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination, Input, Modal, Select } from 'antd';
+import { Pagination, Input, Modal } from 'antd';
 import { Search, Plus, ChevronUp } from 'lucide-react';
 import { AdminWordServices } from '../../../../../services/admin/adminServices';
 import WordRow from './WordRow';
@@ -157,7 +157,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       word.word,
       word.meanings,
       word.definitionText,
-      word.partOfSpeech[0].split(','),
+      word.partOfSpeech,
       word.categoryName,
       word.exampleText,
       word.dialect,
@@ -181,6 +181,9 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       synonyms: '',
       antonyms: '',
     });
+
+    handleCloseModal();
+    fetchAllWords();
   };
 
   const handlePageChange = (page: number) => {

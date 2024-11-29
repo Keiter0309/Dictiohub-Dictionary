@@ -24,7 +24,7 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use("/audio", express.static(path.join(__dirname, "..", "audio")));
+app.use("/api/v1/audio", express.static(path.join(__dirname, "..", "audio")));
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, Typescript Express");
 });

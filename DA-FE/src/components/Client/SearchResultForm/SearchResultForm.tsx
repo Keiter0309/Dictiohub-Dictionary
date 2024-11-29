@@ -4,12 +4,15 @@ import { Bookmark, Volume2 } from 'lucide-react';
 import { Modal, message } from 'antd';
 import { SearchResultFormProps } from '../../../types/Dashboard/SearchResultFormProps';
 import wordServices from '../../../services/word/wordServices';
+import { AUTH_CLIENT_HOST } from '../../../enums/Auth/EAuth';
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState('You must be logged in to add to favorites');
+  const [modalText, setModalText] = useState(
+    'You must be logged in to add to favorites',
+  );
   const [searchResults, setSearchResults] = useState(result);
   const navigate = useNavigate();
 
@@ -75,10 +78,12 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="bg-blue-50 px-6 py-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-gray-900">{searchResults.word}</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            {searchResults.word}
+          </h2>
           <div className="flex items-center">
             {searchResults.pronunciations.map((pron: any, index: number) => {
-              const audioSrc = `http://localhost:9000/audio/${pron.audioPath}`;
+              const audioSrc = `${AUTH_CLIENT_HOST}/api/v1/audio/${pron.audioPath}`;
 
               // reload audio when word changes
               const audio = new Audio(audioSrc);
@@ -90,7 +95,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
                   aria-label="Play pronunciation"
                   onClick={() => audio.play()}
                 >
-                  <Volume2 className='h-6 w-6'/>
+                  <Volume2 className="h-6 w-6" />
                 </button>
               );
             })}

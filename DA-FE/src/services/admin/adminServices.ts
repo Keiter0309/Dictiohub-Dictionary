@@ -155,7 +155,7 @@ export class AdminWordServices {
     word: string,
     meanings: string,
     definitionText: string,
-    partOfSpeech: string[],
+    partOfSpeech: string,
     categoryName: string,
     exampleText: string,
     dialect: string,
@@ -165,6 +165,21 @@ export class AdminWordServices {
     antonyms: string,
   ) {
     try {
+      console.log(`Request URL: ${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`);
+      console.log('Request Payload:', {
+        word,
+        meanings,
+        definitionText,
+        partOfSpeech,
+        categoryName,
+        exampleText,
+        dialect,
+        ipaText,
+        usageExample,
+        synonyms,
+        antonyms,
+      });
+
       const response = await axios.post(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`,
         {
@@ -181,10 +196,12 @@ export class AdminWordServices {
           antonyms,
         },
       );
-      console.log(response.data);
+
+      console.log('Response Data:', response.data);
       return response.data;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('Error creating word:', error.response?.data || error.message);
+      throw new Error(`Failed to create word: ${error.response?.data?.message || error.message}`);
     }
   }
 
