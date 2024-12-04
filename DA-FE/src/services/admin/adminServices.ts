@@ -130,7 +130,8 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
-      return response.data.data;
+      console.log(response.data.data.words.currentPage);
+      return response.data.data.words.words;
     } catch (error) {
       console.error(error);
     }

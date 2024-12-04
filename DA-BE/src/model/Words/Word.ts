@@ -16,24 +16,29 @@ export class Words {
     }
   }
 
-  static async fetchAllWords() {
+  static async fetchAllWords(page: number = 1, pageSize: number = 10) {
     try {
-      const words = await prisma.word.findMany();
-      const exampleWords = await prisma.exampleWord.findMany();
-      const pronunciations = await prisma.pronunciation.findMany();
-      const definitions = await prisma.definition.findMany();
-      const wordCategories = await prisma.wordCategory.findMany();
-      const synonymsAntonyms = await prisma.synonymsAntonyms.findMany();
-      const meaning = await prisma.meaning.findMany();
+      const skip = (page - 1) * pageSize;
+      const words = await prisma.word.findMany({
+        skip,
+        take: pageSize,
+        include: {
+          exampleWords: true,
+          pronunciations: true,
+          definitions: true,
+          wordCategories: true,
+          synonymsAntonyms: true,
+          meanings: true,
+        },
+      });
+
+      const wordCount = await prisma.word.count();
+      const totalPage = Math.ceil(wordCount / pageSize);
 
       return {
         words,
-        exampleWords,
-        pronunciations,
-        definitions,
-        wordCategories,
-        synonymsAntonyms,
-        meaning,
+        totalPage,
+        currentPage: page,
       };
     } catch (error) {
       console.error("Error fetching all words:", error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination, Input, Modal } from 'antd';
+import { Pagination, Input, Modal, message } from 'antd';
 import { Search, Plus, ChevronUp } from 'lucide-react';
 import { AdminWordServices } from '../../../../../services/admin/adminServices';
 import WordRow from './WordRow';
@@ -181,7 +181,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       synonyms: '',
       antonyms: '',
     });
-
+    message.success('Word added successfully');
     handleCloseModal();
     fetchAllWords();
   };
@@ -368,7 +368,8 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 ]}
               /> */}
               <Input
-                placeholder="IPA"
+                placeholder="Part of Speech"
+                inputMode="text"
                 name="partOfSpeech"
                 value={word.partOfSpeech}
                 onChange={(value) =>
@@ -388,72 +389,74 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
         </Modal>
       </div>
       {/* Word table */}
-      <div className="bg-white mt-5 rounded-md shadow-md overflow-x-auto">
-        <table className="min-w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr className="border-b border-gray-200">
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                ID
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700 flex gap-x-2">
-                Word
-                <button onClick={handleSortWords}>
-                  <ChevronUp className="w-5 h-5 text-gray-500" />
-                </button>
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Meaning
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Definition
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Example
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Part Of Speech
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Synonyms
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Antonyms
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                IPA
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Dialect
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Audio Path
-              </th>
-              <th className="py-3 px-5 text-left font-semibold text-gray-700">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {combinedData.map((item, index) => (
-              <WordRow
-                key={`${item.id}-${index}`}
-                item={item}
-                index={index + 1}
-                fetchAllWords={fetchAllWords}
-                handleEditWord={handleEditWord}
-                fetchWord={fetchWord}
-              />
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination */}
-        <div className="flex justify-center items-center p-5">
-          <Pagination
-            current={currentPage}
-            total={words.length}
-            onChange={handlePageChange}
-          />
+      <div className="bg-white mt-5 rounded-md shadow-md overflow-x-auto relative">
+        <div className="relative">
+          <table className="min-w-full table-auto bg-white shadow-md rounded-lg">
+            <thead className="bg-gray-100">
+              <tr className="border-b border-gray-200">
+                <th className="py-3 px-5 text-left font-semibold text-gray-700 z-10 sticky left-0 bg-gray-100">
+                  ID
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700 flex gap-x-2 z-10 sticky left-0 bg-gray-100">
+                  Word
+                  <button onClick={handleSortWords}>
+                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                  </button>
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Meaning
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Definition
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Example
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Part Of Speech
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Synonyms
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Antonyms
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  IPA
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Dialect
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Audio Path
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700 sticky right-0 z-10 bg-gray-100">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {combinedData.map((item, index) => (
+                <WordRow
+                  key={`${item.id}-${index}`}
+                  item={item}
+                  index={index + 1}
+                  fetchAllWords={fetchAllWords}
+                  handleEditWord={handleEditWord}
+                  fetchWord={fetchWord}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
+      {/* Pagination */}
+      <div className="flex justify-center items-center p-5">
+        <Pagination
+          current={currentPage}
+          total={words.length}
+          onChange={handlePageChange}
+        />
       </div>
     </div>
   );

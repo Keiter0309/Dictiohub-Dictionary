@@ -3,12 +3,17 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { WordRowComponentProps } from '../../../../../types/Dashboard/Contents/WordRowProps';
 import { Confirm } from '../../../../../utils/ToastData/Toast';
 import { AdminWordServices } from '../../../../../services/admin/adminServices';
+import { message } from 'antd';
 
 interface WordRowProps extends WordRowComponentProps {
-  fetchAllWords: () => void;
   handleEditWord: (id: number) => void;
   fetchWord: (id: number) => void;
+  fetchAllWords: () => void;
+
+
+
 }
+
 
 const WordRow: React.FC<WordRowProps> = ({
   item,
@@ -30,6 +35,7 @@ const WordRow: React.FC<WordRowProps> = ({
   const handleDeleteWord = async (id: number) => {
     try {
       const response = await AdminWordServices.deleteWord(id);
+      message.success('Word deleted successfully');
       fetchAllWords();
       if (response.status === 200) {
         return response;
@@ -44,7 +50,7 @@ const WordRow: React.FC<WordRowProps> = ({
   return (
     <tr className="hover:bg-gray-50">
       <td className="py-3 px-5 text-left">{index}</td>
-      <td className="py-3 px-5 text-left">{item.word}</td>
+      <td className="py-3 px-5 text-left sticky z-10 bg-white left-0">{item.word}</td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
         {item.meaningText && item.meaningText.length > 0 ? (
           <ul>
@@ -104,7 +110,7 @@ const WordRow: React.FC<WordRowProps> = ({
       <td className="py-3 px-5 text-left whitespace-nowrap">
         {item.audioPath || ''}
       </td>
-      <td className="py-3 px-5 text-left">
+      <td className="py-3 px-5 text-left sticky right-0 z-10 bg-white">
         <button
           className="text-blue-500 hover:text-blue-700 transition-all duration-300"
           onClick={() => handleEditWord(item.id)}
