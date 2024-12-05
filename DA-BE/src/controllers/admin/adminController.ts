@@ -6,7 +6,9 @@ import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { PollyService } from "../../services/aws/polly.service";
+import { JwtPayload } from "../../interface/JwtPayload";
 import path from "path";
+import { randomInt } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -47,7 +49,7 @@ export class AdminAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 24,  
+        maxAge: 1000 * 60 * 24,
       });
 
       return res.status(200).json({
@@ -324,8 +326,10 @@ export class AdminUserController {
 
 export class AdminWordController {
   public static async fetchAllWords(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
     try {
-      const words = await Words.fetchAllWords();
+      const words = await Words.fetchAllWords(page, limit);
       return res.status(200).json({
         status_code: 200,
         message: "success",
@@ -358,7 +362,11 @@ export class AdminWordController {
     }
   }
 
-  public static async createWord(req: Request, res: Response) {
+  public static async createWord(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
+    const user = req.user as JwtPayload;
     const {
       word,
       meanings,
@@ -387,7 +395,6 @@ export class AdminWordController {
         !synonyms ||
         !antonyms
       ) {
-        
         return res.status(400).json({
           status_code: 400,
           message: `All fields are required word`,
@@ -403,9 +410,7 @@ export class AdminWordController {
 
       // Create audio file
       const audio = `${newWord.word}.mp3`;
-      const audioPath = path.join(
-            `audio/${newWord.word}.mp3`
-          );
+      const audioPath = path.join(`audio/${newWord.word}.mp3`);
 
       await PollyService.synthesizeSpeech(word, audioPath);
 

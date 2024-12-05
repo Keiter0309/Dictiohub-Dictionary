@@ -222,8 +222,6 @@ class AuthController {
     try {
       // Check existing user
       const existingUser = (await User.fetchByOTP(otp)) as IResetPassword;
-      console.log(existingUser);
-      console.log(otp);
 
       if (!existingUser) {
         return res.status(404).json({

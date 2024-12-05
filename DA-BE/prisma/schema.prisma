@@ -87,7 +87,7 @@ model Meaning {
 model PartOfSpeech {
   id           Int          @id @default(autoincrement())
   definitionId Int?
-  partOfSpeech String       @unique
+  partOfSpeech String      
   definitions  Definition[]
 
   @@map("partofspeech")
@@ -187,7 +187,7 @@ model Word {
 model WordCategory {
   id           Int      @id @default(autoincrement())
   wordId       Int
-  categoryId   Int
+  categoryId   Int     
   categoryName String
   category     Category @relation(fields: [categoryId], references: [id], map: "WordCategory_categoryId_fkey")
   word         Word     @relation(fields: [wordId], references: [id], map: "WordCategory_wordId_fkey")

@@ -80,7 +80,6 @@ CREATE TABLE `partofspeech` (
     `definitionId` INTEGER NULL,
     `partOfSpeech` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `partofspeech_partOfSpeech_key`(`partOfSpeech`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
