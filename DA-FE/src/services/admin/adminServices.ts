@@ -4,7 +4,6 @@ import { ADMIN_CLIENT_HOST } from '../../enums/Admin/EAdmin';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
-    console.log(`${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`);
     try {
       const response = await axios.post(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
@@ -23,7 +22,6 @@ export class AdminServices {
         (error) => {
           if (error.response && error.response.status === 401) {
             localStorage.removeItem('aToken');
-            console.log('Token expired');
           }
           return Promise.reject(error);
         },
@@ -122,16 +120,15 @@ export class AdminServices {
 }
 
 export class AdminWordServices {
-  public static async fetchAllWords() {
+  public static async fetchAllWords(page: number, limit: number) {
     try {
       const response = await axios.get(
-        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}?page=${page}&limit=${limit}`,
         {
           withCredentials: true,
         },
       );
-      console.log(response.data.data.words.currentPage);
-      return response.data.data.words.words;
+      return response.data.data;
     } catch (error) {
       console.error(error);
     }
@@ -145,7 +142,6 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
-      console.log(response.data);
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to fetch word: ${error.message}`);
@@ -166,21 +162,6 @@ export class AdminWordServices {
     antonyms: string,
   ) {
     try {
-      console.log(`Request URL: ${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`);
-      console.log('Request Payload:', {
-        word,
-        meanings,
-        definitionText,
-        partOfSpeech,
-        categoryName,
-        exampleText,
-        dialect,
-        ipaText,
-        usageExample,
-        synonyms,
-        antonyms,
-      });
-
       const response = await axios.post(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`,
         {
@@ -198,10 +179,8 @@ export class AdminWordServices {
         },
       );
 
-      console.log('Response Data:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('Error creating word:', error.response?.data || error.message);
       throw new Error(`Failed to create word: ${error.response?.data?.message || error.message}`);
     }
   }

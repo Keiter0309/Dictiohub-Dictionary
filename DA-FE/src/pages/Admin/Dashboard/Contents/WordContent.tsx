@@ -30,7 +30,6 @@ const WordContent: React.FC = () => {
         synonyms,
         antonyms,
       );
-      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error(error);

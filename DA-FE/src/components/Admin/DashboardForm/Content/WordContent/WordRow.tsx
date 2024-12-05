@@ -8,12 +8,8 @@ import { message } from 'antd';
 interface WordRowProps extends WordRowComponentProps {
   handleEditWord: (id: number) => void;
   fetchWord: (id: number) => void;
-  fetchAllWords: () => void;
-
-
-
+  fetchAllWords: (page:number) => void;
 }
-
 
 const WordRow: React.FC<WordRowProps> = ({
   item,
@@ -36,7 +32,7 @@ const WordRow: React.FC<WordRowProps> = ({
     try {
       const response = await AdminWordServices.deleteWord(id);
       message.success('Word deleted successfully');
-      fetchAllWords();
+      fetchAllWords(1);
       if (response.status === 200) {
         return response;
       } else {
@@ -50,7 +46,9 @@ const WordRow: React.FC<WordRowProps> = ({
   return (
     <tr className="hover:bg-gray-50">
       <td className="py-3 px-5 text-left">{index}</td>
-      <td className="py-3 px-5 text-left sticky z-10 bg-white left-0">{item.word}</td>
+      <td className="py-3 px-5 text-left sticky z-10 bg-white left-0">
+        {item.word}
+      </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
         {item.meaningText && item.meaningText.length > 0 ? (
           <ul>

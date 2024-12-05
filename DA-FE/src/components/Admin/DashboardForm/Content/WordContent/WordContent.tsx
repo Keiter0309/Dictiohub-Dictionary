@@ -23,6 +23,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [exampleWords, setExampleWords] = useState<ExampleWord[]>([]);
   const [synonymsAntonyms, setSynonymAntonyms] = useState<SynonymAntonym[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
+  const [totalWords, setTotalWords] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [titleTable, setTitleTable] = useState('Add Word');
   const [word, setWord] = useState({
@@ -41,10 +42,10 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   });
   const { TextArea } = Input;
 
-  const fetchAllWords = async () => {
+  const fetchAllWords = async (page:number) => {
     try {
-      const response = await AdminWordServices.fetchAllWords();
-      if (response && response.words) {
+      const response = await AdminWordServices.fetchAllWords(page, 10);
+      if (response) {
         const {
           words,
           meaning,
@@ -52,7 +53,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           exampleWords,
           pronunciations,
           synonymsAntonyms,
-        } = response.words;
+        } = response.words.data;
         if (
           Array.isArray(words) &&
           Array.isArray(meaning) &&
@@ -67,6 +68,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           setExampleWords(exampleWords);
           setSynonymAntonyms(synonymsAntonyms);
           setPronunciations(pronunciations);
+          setTotalWords(response.words.meta.totalWords);
         } else {
           console.error(
             'API response does not contain valid arrays:',
@@ -88,6 +90,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     try {
       const response = await AdminWordServices.fetchWord(id);
       const data = response.data;
+      console.log(data)
 
       setWord({
         word: data.word,
@@ -183,11 +186,12 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     });
     message.success('Word added successfully');
     handleCloseModal();
-    fetchAllWords();
+    fetchAllWords(currentPage);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchAllWords(page);
   };
 
   const handleShowModal = () => {
@@ -221,8 +225,8 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   };
 
   useEffect(() => {
-    fetchAllWords();
-  }, []);
+    fetchAllWords(currentPage);
+  }, [currentPage]);
 
   return (
     <div>
@@ -454,7 +458,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       <div className="flex justify-center items-center p-5">
         <Pagination
           current={currentPage}
-          total={words.length}
+          total={totalWords}
           onChange={handlePageChange}
         />
       </div>
