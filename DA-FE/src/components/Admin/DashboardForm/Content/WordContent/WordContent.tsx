@@ -53,7 +53,6 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const fetchAllWords = async (page: number) => {
     try {
       const response = await AdminWordServices.fetchAllWords(page, 10);
-      console.log('response', response);
       if (response) {
         const {
           words,
@@ -151,7 +150,6 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     const categories = category
       .filter((cat) => cat.wordId === word.id)
       .map((cat) => cat.categoryName);
-    console.log('categories', categories);
     return {
       ...word,
       meaningText: meaningText,
@@ -166,7 +164,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       ipa: pronunciation ? pronunciation.ipaText : '',
       dialect: pronunciation ? pronunciation.dialect : '',
       audioPath: pronunciation ? pronunciation.audioPath : '',
-      categoryNames: categories.join(', '), // Join category names into a single string
+      categoryNames: categories.join(', '),
     };
   });
 
@@ -363,10 +361,8 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
               <Input
                 placeholder="Category"
                 name="categoryNames"
-                onChange={(e) =>
-                  setWord({ ...word, categoryNames: e.target.value })
-                }
-                value={word.categoryNames}
+                type='hidden'
+                value={selectedCategory}
               />
               <Select
                 placeholder="Select a Category"

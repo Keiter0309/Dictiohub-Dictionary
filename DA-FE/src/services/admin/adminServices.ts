@@ -128,7 +128,6 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
-      console.log(`response:::: ${response.data.data}`);
       return response.data.data;
     } catch (error) {
       console.error(error);
@@ -179,7 +178,6 @@ export class AdminWordServices {
           antonyms,
         },
       );
-      console.log(`response:::: ${response.data}`);
       return response.data;
     } catch (error: any) {
       throw new Error(

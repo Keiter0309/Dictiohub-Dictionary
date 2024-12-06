@@ -380,7 +380,6 @@ export class AdminWordController {
       synonyms,
       antonyms,
     } = req.body;
-    console.log(`Payload: ${JSON.stringify(req.body)}`);
     try {
       // Validate input
       if (

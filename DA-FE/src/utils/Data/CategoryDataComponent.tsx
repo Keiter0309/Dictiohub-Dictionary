@@ -14,6 +14,7 @@ const CategoryDataComponent: React.FC = () => {
         setLastUpdatedTime(time.toString());
       }
     } catch (error) {
+      console.log(lastUpdatedTime);
       console.error('Error fetching last updated time:', error);
     }
   };
