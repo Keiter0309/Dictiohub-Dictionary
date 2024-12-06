@@ -38,14 +38,14 @@ adminRoute.post(EAdmin.CREATE_WORD, AdminWordController.createWord);
 adminRoute.delete(EAdmin.DELETE_WORD, AdminWordController.deleteWord);
 adminRoute.get(
   EAdmin.FETCH_WORDS,
-  authenticateToken,
+  // authenticateToken,
   AdminWordController.fetchAllWords
 );
 
 // Category management routes
 adminRoute.get(
   EAdmin.FETCH_CATEGORIES,
-  authenticateToken,
+  // authenticateToken,
   AdminCategoryController.fetchAllCategories
 );
 
@@ -56,10 +56,12 @@ adminRoute.get(
 );
 adminRoute.post(
   `${EAdmin.CREATE_CATEGORY}`,
+  authenticateToken,
   AdminCategoryController.createCategory
 );
 adminRoute.put(
   `${EAdmin.UPDATE_CATEGORY}`,
+  authenticateToken,
   AdminCategoryController.updateCategory
 );
 adminRoute.delete(

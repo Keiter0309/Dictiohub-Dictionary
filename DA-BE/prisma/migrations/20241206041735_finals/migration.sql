@@ -2,11 +2,13 @@
 CREATE TABLE `category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `categoryName` VARCHAR(191) NOT NULL,
+    `categoryDescription` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
-    `deletedBy` INTEGER NULL,
-    `updatedBy` INTEGER NULL,
+    `deletedBy` VARCHAR(191) NULL,
+    `createdBy` VARCHAR(191) NULL,
+    `updatedBy` VARCHAR(191) NULL,
 
     UNIQUE INDEX `category_categoryName_key`(`categoryName`),
     PRIMARY KEY (`id`)

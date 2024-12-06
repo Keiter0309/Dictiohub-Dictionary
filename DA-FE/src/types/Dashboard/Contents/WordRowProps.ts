@@ -4,6 +4,7 @@ export interface WordRowProps {
     meaningText?: string[];
     partOfSpeech?: string[];
     usageExample?: string[];
+    categoryNames?: string;
     synonyms?: string;
     antonyms?: string;
     ipa?: string;
@@ -13,7 +14,7 @@ export interface WordRowProps {
 }
 
 export interface WordRowComponentProps extends WordRowProps {
-    index: number
+  index: number;
 }
 export interface Definition {
   id: number;
@@ -25,9 +26,9 @@ export interface Definition {
 }
 
 export interface Meaning {
-    id: number;
-    wordId: number;
-    meaningText: string;
+  id: number;
+  wordId: number;
+  meaningText: string;
 }
 
 export interface ExampleWord {
@@ -54,7 +55,8 @@ export interface SynonymAntonym {
 export interface WordCategory {
   id: number;
   wordId: number;
-  category: string;
+  categoryName: string;
+  categoryId?: number;
 }
 
 export interface Word {

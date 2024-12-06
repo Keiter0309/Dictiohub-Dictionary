@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 import { PollyService } from "../src/services/aws/polly.service";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 

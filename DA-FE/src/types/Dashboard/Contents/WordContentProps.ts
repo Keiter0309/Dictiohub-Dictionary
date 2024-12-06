@@ -4,7 +4,7 @@ export interface WordContentProps {
     meanings: string,
     definitionText: string,
     partOfSpeech: string,
-    categoryName: string,
+    categoryNames: string,
     exampleText: string,
     dialect: string,
     ipaText: string,

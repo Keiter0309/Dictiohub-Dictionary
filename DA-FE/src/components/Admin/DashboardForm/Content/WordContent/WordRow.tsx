@@ -8,7 +8,7 @@ import { message } from 'antd';
 interface WordRowProps extends WordRowComponentProps {
   handleEditWord: (id: number) => void;
   fetchWord: (id: number) => void;
-  fetchAllWords: (page:number) => void;
+  fetchAllWords: (page: number) => void;
 }
 
 const WordRow: React.FC<WordRowProps> = ({
@@ -92,6 +92,9 @@ const WordRow: React.FC<WordRowProps> = ({
         ) : (
           ''
         )}
+      </td>
+      <td className="py-3 px-5 text-left whitespace-nowrap">
+        {item.categoryNames || ''}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
         {item.synonyms || ''}

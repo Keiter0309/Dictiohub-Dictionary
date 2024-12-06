@@ -128,6 +128,7 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
+      console.log(`response:::: ${response.data.data}`);
       return response.data.data;
     } catch (error) {
       console.error(error);
@@ -153,7 +154,7 @@ export class AdminWordServices {
     meanings: string,
     definitionText: string,
     partOfSpeech: string,
-    categoryName: string,
+    categoryNames: string,
     exampleText: string,
     dialect: string,
     ipaText: string,
@@ -169,7 +170,7 @@ export class AdminWordServices {
           meanings,
           definitionText,
           partOfSpeech,
-          categoryName,
+          categoryNames,
           exampleText,
           dialect,
           ipaText,
@@ -178,10 +179,14 @@ export class AdminWordServices {
           antonyms,
         },
       );
-
+      console.log(`response:::: ${response.data}`);
       return response.data;
     } catch (error: any) {
-      throw new Error(`Failed to create word: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `Failed to create word: ${
+          error.response?.data?.message || error.message
+        }`,
+      );
     }
   }
 
@@ -194,6 +199,106 @@ export class AdminWordServices {
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to delete word: ${error.message}`);
+    }
+  }
+}
+
+export class AdminCategoryService {
+  public static async fetchAllCategories() {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORIES}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data.data;
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
+
+  public static async fetchCategory(id: number) {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORY}/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async createCategory(
+    categoryName: string,
+    categoryDescription: string,
+  ) {
+    try {
+      const response = await axios.post(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_CATEGORY}`,
+        { categoryName, categoryDescription },
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async deleteCategory(id: number) {
+    try {
+      const response = await axios.delete(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_CATEGORY}/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // fetch last time a category was updated or created
+  public static async lastTimeCategoryUpdated() {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORIES}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async updateCategory(
+    id: number,
+    categoryName: string,
+    categoryDescription: string,
+  ) {
+    try {
+      const response = await axios.put(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_CATEGORY}/${id}`,
+        { categoryName, categoryDescription },
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
     }
   }
 }

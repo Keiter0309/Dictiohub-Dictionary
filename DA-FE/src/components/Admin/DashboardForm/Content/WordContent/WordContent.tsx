@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination, Input, Modal, message } from 'antd';
+import { Pagination, Input, Modal, message, Select } from 'antd';
 import { Search, Plus, ChevronUp } from 'lucide-react';
-import { AdminWordServices } from '../../../../../services/admin/adminServices';
+import {
+  AdminCategoryService,
+  AdminWordServices,
+} from '../../../../../services/admin/adminServices';
 import WordRow from './WordRow';
 import {
   Word,
@@ -10,9 +13,11 @@ import {
   SynonymAntonym,
   Pronunciation,
   Meaning,
+  WordCategory,
 } from '../../../../../types/Dashboard/Contents/WordRowProps';
 import { wordData } from '../../../../../utils/Data/Data';
 import { WordContentProps } from '../../../../../types/Dashboard/Contents/WordContentProps';
+import { ICategoriesContentProps } from '../../../../../types/Dashboard/Contents/CategoriesContentProps';
 
 const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,15 +28,18 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   const [exampleWords, setExampleWords] = useState<ExampleWord[]>([]);
   const [synonymsAntonyms, setSynonymAntonyms] = useState<SynonymAntonym[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
+  const [category, setCategory] = useState<WordCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [totalWords, setTotalWords] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [titleTable, setTitleTable] = useState('Add Word');
+  const [categories, setCategories] = useState<ICategoriesContentProps[]>([]);
   const [word, setWord] = useState({
     word: '',
     meanings: '',
     definitionText: '',
     partOfSpeech: '',
-    categoryName: '',
+    categoryNames: '',
     exampleText: '',
     audioPath: '',
     dialect: '',
@@ -42,15 +50,17 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
   });
   const { TextArea } = Input;
 
-  const fetchAllWords = async (page:number) => {
+  const fetchAllWords = async (page: number) => {
     try {
       const response = await AdminWordServices.fetchAllWords(page, 10);
+      console.log('response', response);
       if (response) {
         const {
           words,
           meaning,
           definitions,
           exampleWords,
+          wordCategories,
           pronunciations,
           synonymsAntonyms,
         } = response.words.data;
@@ -58,6 +68,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           Array.isArray(words) &&
           Array.isArray(meaning) &&
           Array.isArray(definitions) &&
+          Array.isArray(wordCategories) &&
           Array.isArray(exampleWords) &&
           Array.isArray(pronunciations) &&
           Array.isArray(synonymsAntonyms)
@@ -66,6 +77,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
           setMeaning(meaning);
           setDefinitions(definitions);
           setExampleWords(exampleWords);
+          setCategory(wordCategories);
           setSynonymAntonyms(synonymsAntonyms);
           setPronunciations(pronunciations);
           setTotalWords(response.words.meta.totalWords);
@@ -90,14 +102,13 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     try {
       const response = await AdminWordServices.fetchWord(id);
       const data = response.data;
-      console.log(data)
 
       setWord({
         word: data.word,
         meanings: data.meanings?.[0]?.meaningText || '',
         definitionText: data.definitions?.[0]?.definitionText || '',
         partOfSpeech: data.definitions?.[0]?.partOfSpeech || '',
-        categoryName: data.category || '',
+        categoryNames: data.wordCategories || '',
         exampleText: data.exampleWords?.[0]?.exampleText || '',
         audioPath: data.pronunciations?.[0]?.audioPath || '',
         dialect: data.pronunciations?.[0]?.dialect || '',
@@ -113,6 +124,18 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     }
   };
 
+  const fetchAllCategories = async () => {
+    try {
+      const response = await AdminCategoryService.fetchAllCategories();
+      if (response) {
+        setCategories(response.categories);
+        return response.categories;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const combinedData = words.map((word) => {
     const meaningText = meaning
       .filter((m) => m.wordId === word.id)
@@ -125,6 +148,10 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       .map((ex) => ex.exampleText);
     const synonymAntonym = synonymsAntonyms.find((sa) => sa.wordId === word.id);
     const pronunciation = pronunciations.find((pr) => pr.wordId === word.id);
+    const categories = category
+      .filter((cat) => cat.wordId === word.id)
+      .map((cat) => cat.categoryName);
+    console.log('categories', categories);
     return {
       ...word,
       meaningText: meaningText,
@@ -139,6 +166,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       ipa: pronunciation ? pronunciation.ipaText : '',
       dialect: pronunciation ? pronunciation.dialect : '',
       audioPath: pronunciation ? pronunciation.audioPath : '',
+      categoryNames: categories.join(', '), // Join category names into a single string
     };
   });
 
@@ -161,7 +189,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       word.meanings,
       word.definitionText,
       word.partOfSpeech,
-      word.categoryName,
+      selectedCategory,
       word.exampleText,
       word.dialect,
       word.ipaText,
@@ -175,7 +203,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       meanings: '',
       definitionText: '',
       partOfSpeech: '',
-      categoryName: '',
+      categoryNames: '',
       exampleText: '',
       audioPath: '',
       dialect: '',
@@ -187,6 +215,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
     message.success('Word added successfully');
     handleCloseModal();
     fetchAllWords(currentPage);
+    setSelectedCategory('');
   };
 
   const handlePageChange = (page: number) => {
@@ -205,7 +234,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       meanings: '',
       definitionText: '',
       partOfSpeech: '',
-      categoryName: '',
+      categoryNames: '',
       exampleText: '',
       audioPath: '',
       dialect: '',
@@ -226,6 +255,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
 
   useEffect(() => {
     fetchAllWords(currentPage);
+    fetchAllCategories();
   }, [currentPage]);
 
   return (
@@ -332,12 +362,30 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
               />
               <Input
                 placeholder="Category"
-                name="categoryName"
-                value={word.categoryName}
+                name="categoryNames"
                 onChange={(e) =>
-                  setWord({ ...word, categoryName: e.target.value })
+                  setWord({ ...word, categoryNames: e.target.value })
                 }
+                value={word.categoryNames}
               />
+              <Select
+                placeholder="Select a Category"
+                className="w-full"
+                mode="multiple"
+                value={selectedCategory}
+                onChange={(value) => setSelectedCategory(value)}
+              >
+                {categories.map((category) => {
+                  return (
+                    <Select.Option
+                      key={category.id}
+                      value={category.categoryName}
+                    >
+                      {category.categoryName}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
               <TextArea
                 placeholder="Usage example"
                 name="usageExample"
@@ -418,6 +466,9 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
                 </th>
                 <th className="py-3 px-5 text-left font-semibold text-gray-700">
                   Part Of Speech
+                </th>
+                <th className="py-3 px-5 text-left font-semibold text-gray-700">
+                  Categories
                 </th>
                 <th className="py-3 px-5 text-left font-semibold text-gray-700">
                   Synonyms
