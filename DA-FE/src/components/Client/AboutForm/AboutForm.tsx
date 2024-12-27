@@ -36,7 +36,7 @@ const FeatureCard = ({
 const AboutForm: React.FC = () => {
   return (
     <div>
-      <NavbarForm />
+      <NavbarForm/>
 
       <Content style={{ backgroundColor: '#f0f2f5', paddingBottom: 24 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px' }}>

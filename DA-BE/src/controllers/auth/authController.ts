@@ -163,6 +163,13 @@ class AuthController {
     }
   }
 
+  public async logout(req: Request, res: Response) {
+    res.clearCookie("token");
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  }
+
   public async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     // Check for empty email field
