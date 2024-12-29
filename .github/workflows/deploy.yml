@@ -18,7 +18,7 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SECRET_KEY }}
 
       - name: Build Frontend
         run: |
