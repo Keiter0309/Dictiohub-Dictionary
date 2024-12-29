@@ -22,13 +22,13 @@ jobs:
 
       - name: Build Frontend
         run: |
-          cd fe
+          cd DA-FE
           npm install
           npm run build
 
       - name: Deploy Frontend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r fe/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             sudo rm -rf /var/www/DA-FE/*
             sudo mv /var/www/DA-FE/* /var/www/DA-FE
