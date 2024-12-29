@@ -29,7 +29,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
-            pm2 delete all
           EOF
 
       - name: Setup Node.js
