@@ -20,6 +20,23 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SECRET_KEY }}
 
+      - name: Debug SSH connection
+        run: |
+          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com 'echo "SSH connection successful"'
+
+      - name: Create necessary directories on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            sudo mkdir -p /var/www/DA-FE /var/www/DA-BE
+            sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
+            sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
+          EOF
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
       - name: Build Frontend
         run: |
           cd DA-FE
@@ -28,21 +45,27 @@ jobs:
 
       - name: Deploy Frontend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
-            sudo rm -rf /var/www/DA-FE/*
-            sudo mv /var/www/DA-FE/* /var/www/DA-FE
             cd /var/www/DA-FE
-            pm2 restart all
+            pm2 restart all || pm2 start nginx --name "my-app-fe"
             sudo systemctl restart nginx
           EOF
 
       - name: Deploy Backend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r be/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE
+          scp -o StrictHostKeyChecking=no -r be/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
-            sudo chown -R $USER:$USER DA-BE
             cd /var/www/DA-BE
             npm install
             pm2 restart all || pm2 start npm --name "my-app-be" -- start
+          EOF
+
+      - name: Verify deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            echo "Checking PM2 processes..."
+            pm2 list
+            echo "Checking Nginx status..."
+            sudo systemctl status nginx
           EOF
