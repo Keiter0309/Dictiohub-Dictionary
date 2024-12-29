@@ -54,7 +54,7 @@ jobs:
 
       - name: Deploy Backend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r be/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
+          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             cd /var/www/DA-BE
             npm install
