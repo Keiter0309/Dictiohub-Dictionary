@@ -29,6 +29,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
+            pm2 delete all
           EOF
 
       - name: Setup Node.js
@@ -50,7 +51,7 @@ jobs:
 
             touch .env.production
             echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
-            pm2 restart all || pm2 start --name da-fe "npm run preview"
+            pm2 start --name da-fe "npm run preview"
             sudo systemctl restart nginx
           EOF
 
@@ -79,7 +80,7 @@ jobs:
             echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
             npm install
-            pm2 restart all || pm2 start --name da-be "npm start"
+            pm2 start --name da-be "npm start"
           EOF
 
       - name: Verify deployment
