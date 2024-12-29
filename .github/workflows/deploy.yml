@@ -39,18 +39,18 @@ jobs:
 
       - name: Deploy Frontend to EC2
         run: |
-            sudo rm -f -r /var/www/DA-FE/dist/*
-            scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/dist
-            ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
-            cd /var/www/DA-FE
+          sudo rm -f -r /var/www/DA-FE/dist/*
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/dist
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          cd /var/www/DA-FE
 
-            if [ ! -f .env.production ]; then
-              touch .env.production
-              echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
-            fi
-            pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
-            sudo systemctl restart nginx
-            EOF
+          if [ ! -f .env.production ]; then
+            touch .env.production
+            echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+          fi
+          pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
+          sudo systemctl restart nginx
+          EOF
 
       - name: Deploy Backend to EC2
         run: |
