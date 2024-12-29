@@ -48,8 +48,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             cd /var/www/DA-FE
 
-            touch .env.production
-            echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+            if [ ! -f .env.production ]; then
+              touch .env.production
+              echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+            fi
             pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
             sudo systemctl restart nginx
           EOF
@@ -58,28 +60,30 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
-            cd /var/www/DA-BE
-            touch .env
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-            echo "GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}" >> .env
-            echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}" >> .env
-            echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}" >> .env
-            echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
-            echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
-            echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
-            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
-            echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
-            echo "PORT=${{ secrets.PORT }}" >> .env
-            npm install
-            pm2 restart da-be || pm2 start --name da-be "npm start"
+                cd /var/www/DA-BE
+                if [ ! -f .env ]; then
+                  touch .env
+                  echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+                  echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+                  echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+                  echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+                  echo "GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}" >> .env
+                  echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}" >> .env
+                  echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}" >> .env
+                  echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
+                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+                  echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
+                  echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
+                  echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
+                  echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+                  echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+                  echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+                  echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
+                  echo "PORT=${{ secrets.PORT }}" >> .env
+                fi
+                npm install
+                pm2 restart da-be || pm2 start --name da-be "npm start"
           EOF
 
       - name: Verify deployment
