@@ -47,6 +47,9 @@ jobs:
           scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
             cd /var/www/DA-FE
+
+            touch .env.production
+            echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
             pm2 restart all || pm2 start --name da-fe "npm run preview"
             sudo systemctl restart nginx
           EOF
