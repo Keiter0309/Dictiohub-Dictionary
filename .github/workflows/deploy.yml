@@ -1,6 +1,5 @@
-name: Push-to-EC2
+name: Deploy FE and BE to EC2
 
-# Trigger deployment only on push to main branch
 on:
   push:
     branches:
@@ -8,33 +7,42 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to EC2 on master branch push
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the files
-        uses: actions/checkout@v2
-
-      - name: Deploy to Server 1
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST_DNS }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
-
-      - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
+      - name: Pull code from main branch
+        uses: actions/checkout@v3
         with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo cp -r /home/ubuntu/app/DA-FE /var/www/
+          ref: main
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+      - name: Build Frontend
+        run: |
+          cd fe
+          npm install
+          npm run build
+
+      - name: Deploy Frontend to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r fe/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            sudo rm -rf /var/www/DA-FE/*
+            sudo mv /var/www/DA-FE/* /var/www/DA-FE
             cd /var/www/DA-FE
-            sudo npm install
-            sudo npm run build
-            cd /home/ubuntu/app/DA-BE
-            sudo npm install
             pm2 restart all
             sudo systemctl restart nginx
+          EOF
+
+      - name: Deploy Backend to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r be/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            sudo chown -R $USER:$USER DA-BE
+            cd /var/www/DA-BE
+            npm install
+            pm2 restart all || pm2 start npm --name "my-app-be" -- start
+          EOF
