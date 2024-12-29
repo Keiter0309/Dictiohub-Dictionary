@@ -35,6 +35,12 @@ jobs:
         run: |
           cd DA-FE
           npm install
+
+          if [ ! -f .env.production ]; then
+                      touch .env.production
+                      echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+          fi
+
           npm run build
 
       - name: Deploy Frontend to EC2
