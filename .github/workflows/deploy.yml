@@ -1,0 +1,48 @@
+name: Deploy FE and BE to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull code from main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+      - name: Build Frontend
+        run: |
+          cd fe
+          npm install
+          npm run build
+
+      - name: Deploy Frontend to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r fe/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            sudo rm -rf /var/www/DA-FE/*
+            sudo mv /var/www/DA-FE/* /var/www/DA-FE
+            cd /var/www/DA-FE
+            pm2 restart all
+            sudo systemctl restart nginx
+          EOF
+
+      - name: Deploy Backend to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r be/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            sudo chown -R $USER:$USER DA-BE
+            cd /var/www/DA-BE
+            npm install
+            pm2 restart all || pm2 start npm --name "my-app-be" -- start
+          EOF
