@@ -40,7 +40,7 @@ jobs:
       - name: Deploy Frontend to EC2
         run: |
           sudo rm -f -r /var/www/DA-FE/dist/*
-          scp -o StrictHostKeyChecking=no -r DA-FE/dist/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/dist
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
           cd /var/www/DA-FE
 
