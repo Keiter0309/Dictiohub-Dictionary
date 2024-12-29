@@ -76,6 +76,18 @@ class AuthServices {
     }
   }
 
+  public async logout() {
+    try {
+      const response=await axios.post(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGOUT}`
+      )
+      console.log(response.data.message)
+      return response.data.message
+    } catch(err: any) {
+      throw new Error(err)
+    }
+  }
+
   public async forgotPassword(email: string) {
     try {
       const response = await axios.post(

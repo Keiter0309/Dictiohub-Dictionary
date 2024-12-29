@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Menu, X } from 'lucide-react';
+import authServices from '../../../services/auth/authServices';
 
 const NavbarForm: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,14 +21,15 @@ const NavbarForm: React.FC = () => {
   ];
 
   const handleLogoutClick = () => {
+    authServices.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('favorites');
 
-    window.location.href = '/';
+    // window.location.href = '/';
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center">
@@ -108,44 +110,44 @@ const NavbarForm: React.FC = () => {
           <div className="flex justify-between items-center p-4 border-b">
             <span className="text-xl font-bold text-gray-900">
               {isLogged ? (
-            <div className="items-center lg:hidden flex">
-              <div className="relative">
-                <button
-                  className="flex items-center"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  <img
-                    src="https://avatar.iran.liara.run/public"
-                    alt="Avatar"
-                    className="h-10 w-10 rounded-full hover:cursor-pointer"
-                  />
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
-                    {avatarItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={() => {
-                          if (item.to === '/logout') {
-                            handleLogoutClick();
-                          }
-                          setIsDropdownOpen(false);
-                        }}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                <div className="items-center lg:hidden flex">
+                  <div className="relative">
+                    <button
+                      className="flex items-center"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      <img
+                        src="https://avatar.iran.liara.run/public"
+                        alt="Avatar"
+                        className="h-10 w-10 rounded-full hover:cursor-pointer"
+                      />
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                        {avatarItems.map((item) => (
+                          <Link
+                            key={item.to}
+                            to={item.to}
+                            onClick={() => {
+                              if (item.to === '/logout') {
+                                handleLogoutClick();
+                              }
+                              setIsDropdownOpen(false);
+                            }}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <span className="text-xl-font-bold text-gray-900">
-              Dictiohub
-            </span>
-          )}
+                </div>
+              ) : (
+                <span className="text-xl-font-bold text-gray-900">
+                  Dictiohub
+                </span>
+              )}
             </span>
             <button onClick={() => setIsOpen(false)}>
               <X className="h-6 w-6" />
@@ -167,9 +169,7 @@ const NavbarForm: React.FC = () => {
             </div>
             <div className="p-4 mt-auto border-t">
               {isLogged ? (
-                <button>
-
-                </button>
+                <button></button>
               ) : (
                 <Link
                   to="/login"
