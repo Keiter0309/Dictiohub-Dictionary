@@ -6,6 +6,9 @@ import {
 import fs from "fs";
 import path from "path";
 import { S3Service } from "./s3.service";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const polly = new PollyClient({
   region: process.env.AWS_REGION,

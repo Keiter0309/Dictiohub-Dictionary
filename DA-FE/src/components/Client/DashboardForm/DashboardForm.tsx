@@ -34,6 +34,7 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
 
   const handleSelectChange = (value: string) => {
     setWord(value);
+    onSubmit(value);
   };
 
   const fuse = new Fuse(options, {
@@ -83,15 +84,19 @@ const DashboardForm: React.FC<DashboardFormProps> = ({
               >
                 <Select
                   showSearch
-                  value={word}
                   onChange={handleSelectChange}
+                  allowClear
                   onSearch={handleInputChange}
                   placeholder="Search for a word"
                   filterOption={false}
                   className="flex-grow"
                 >
                   {filteredOptions.map((option) => (
-                    <Option key={option.value} value={option.value}>
+                    <Option
+                      key={option.value}
+                      value={option.value}
+                      onClick={handleSubmit}
+                    >
                       {option.label}
                     </Option>
                   ))}

@@ -16,7 +16,7 @@ export class Words {
     }
   }
 
-  static async fetchAllWords() {
+  static async getAllWords() {
     try {
       const words = await prisma.word.findMany();
       const exampleWords = await prisma.exampleWord.findMany();
@@ -34,6 +34,81 @@ export class Words {
         wordCategories,
         synonymsAntonyms,
         meaning,
+      };
+    } catch (error) {
+      console.error("Error fetching all words:", error);
+      throw new Error("Error fetching all words");
+    }
+  }
+
+  static async fetchAllWords(page: number, limit = 10) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const words = await prisma.word.findMany({
+        skip,
+        take: limit,
+      });
+
+      const exampleWords = await prisma.exampleWord.findMany({
+        skip,
+        take: limit,
+      });
+
+      const pronunciations = await prisma.pronunciation.findMany({
+        skip,
+        take: limit,
+      });
+
+      const definitions = await prisma.definition.findMany({
+        skip,
+        take: limit,
+      });
+
+      const wordCategories = await prisma.wordCategory.findMany({
+        skip,
+        take: limit,
+      });
+
+      const synonymsAntonyms = await prisma.synonymsAntonyms.findMany({
+        skip,
+        take: limit,
+      });
+
+      const meaning = await prisma.meaning.findMany({
+        skip,
+        take: limit,
+      });
+
+      const totalWords = await prisma.word.count();
+      const totalExampleWords = await prisma.exampleWord.count();
+      const totalPronunciations = await prisma.pronunciation.count();
+      const totalDefinitions = await prisma.definition.count();
+      const totalWordCategories = await prisma.wordCategory.count();
+      const totalSynonymsAntonyms = await prisma.synonymsAntonyms.count();
+      const totalMeanings = await prisma.meaning.count();
+
+      return {
+        data: {
+          words,
+          exampleWords,
+          pronunciations,
+          definitions,
+          wordCategories,
+          synonymsAntonyms,
+          meaning,
+        },
+        meta: {
+          totalWords,
+          totalExampleWords,
+          totalPronunciations,
+          totalDefinitions,
+          totalWordCategories,
+          totalSynonymsAntonyms,
+          totalMeanings,
+          currentPage: page,
+          totalPages: Math.ceil(totalWords / limit),
+        },
       };
     } catch (error) {
       console.error("Error fetching all words:", error);
@@ -293,7 +368,6 @@ export class Favorites {
         },
       });
 
-      console.log("userId:::", userId);
       return favorites;
     } catch (error) {
       console.error("Error fetching all favorite words:", error);

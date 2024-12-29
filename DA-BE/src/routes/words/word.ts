@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { EWords } from "../../enums/EWords/EWords";
 import WordsController from "../../controllers/words/wordsController";
-import { authenticateToken } from "../../middlewares/auth/authMiddleware";
 export const wordsRoute = Router();
 
 wordsRoute.get(EWords.WORDS, WordsController.getAllWords);

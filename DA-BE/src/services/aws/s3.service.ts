@@ -1,6 +1,9 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export class S3Service {
   private static client = new S3Client({
@@ -17,7 +20,7 @@ export class S3Service {
     for (const file of files) {
       const filePath = path.join("audio", file);
       const fileContent = fs.readFileSync(filePath);
-      
+
       const command = new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `audio/${file}`,

@@ -12,6 +12,13 @@ export enum EAdmin {
   ADMIN_CREATE_WORD = 'api/v1/admin/words/create',
   ADMIN_UPDATE_WORD = 'api/v1/admin/words/update',
   ADMIN_DELETE_WORD = 'api/v1/admin/words/delete',
+
+  // Categories management endpoints
+  ADMIN_FETCH_CATEGORIES = 'api/v1/admin/categories',
+  ADMIN_FETCH_CATEGORY = 'api/v1/admin/categories',
+  ADMIN_CREATE_CATEGORY = 'api/v1/admin/categories/create',
+  ADMIN_UPDATE_CATEGORY = 'api/v1/admin/categories/update',
+  ADMIN_DELETE_CATEGORY = 'api/v1/admin/categories/delete',
 }
 
 const ADMIN_CLIENT_HOST: string = import.meta.env.VITE_API_BASE_URL;

@@ -84,7 +84,6 @@ class AuthServices {
       );
 
       return response.data;
-      console.log(response.data);
     } catch (err: any) {
       throw new Error(err);
     }

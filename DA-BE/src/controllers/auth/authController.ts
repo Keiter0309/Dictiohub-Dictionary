@@ -163,6 +163,13 @@ class AuthController {
     }
   }
 
+  public async logout(req: Request, res: Response) {
+    res.clearCookie("token");
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  }
+
   public async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     // Check for empty email field
@@ -222,8 +229,6 @@ class AuthController {
     try {
       // Check existing user
       const existingUser = (await User.fetchByOTP(otp)) as IResetPassword;
-      console.log(existingUser);
-      console.log(otp);
 
       if (!existingUser) {
         return res.status(404).json({

@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
-import {PollyService} from '../src/services/aws/polly.service'
+import { PollyService } from "../src/services/aws/polly.service";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 
@@ -54,13 +57,16 @@ async function main() {
           {
             posId: partsOfSpeech[0].id,
             partOfSpeech: "adjective",
-            definitionText: "Having the quality of being able to return to original form after being bent or compressed",
-            usageExample: "The resilient material bounced back to its original shape.",
+            definitionText:
+              "Having the quality of being able to return to original form after being bent or compressed",
+            usageExample:
+              "The resilient material bounced back to its original shape.",
           },
         ],
         examples: [
           {
-            exampleText: "The resilient economy quickly recovered from the recession.",
+            exampleText:
+              "The resilient economy quickly recovered from the recession.",
             source: "Financial Times",
           },
           {
@@ -77,7 +83,8 @@ async function main() {
         ],
         meanings: [
           {
-            meaningText: "Having the ability to withstand or recover quickly from difficult conditions",
+            meaningText:
+              "Having the ability to withstand or recover quickly from difficult conditions",
           },
         ],
         synonymsAntonyms: {
@@ -132,7 +139,8 @@ async function main() {
         ],
         examples: [
           {
-            exampleText: "The company aims to make its products ubiquitous in the market.",
+            exampleText:
+              "The company aims to make its products ubiquitous in the market.",
             source: "Business Insider",
           },
         ],
@@ -160,9 +168,10 @@ async function main() {
           {
             posId: partsOfSpeech[1].id,
             partOfSpeech: "noun",
-            definitionText: "A combination of qualities that pleases the aesthetic senses",
+            definitionText:
+              "A combination of qualities that pleases the aesthetic senses",
             usageExample: "The beauty of a sunset",
-          }
+          },
         ],
         examples: [
           {
@@ -179,7 +188,8 @@ async function main() {
         ],
         meanings: [
           {
-            meaningText: "A combination of qualities that pleases the aesthetic senses",
+            meaningText:
+              "A combination of qualities that pleases the aesthetic senses",
           },
         ],
         synonymsAntonyms: {
@@ -194,19 +204,22 @@ async function main() {
           {
             posId: partsOfSpeech[1].id,
             partOfSpeech: "noun",
-            definitionText: "The devotion of time and attention to acquiring knowledge",
+            definitionText:
+              "The devotion of time and attention to acquiring knowledge",
             usageExample: "She spent hours in the library for her study.",
           },
           {
             posId: partsOfSpeech[1].id,
             partOfSpeech: "noun",
-            definitionText: "A detailed investigation and analysis of a subject or situation",
+            definitionText:
+              "A detailed investigation and analysis of a subject or situation",
             usageExample: "The study of climate change",
           },
         ],
         examples: [
           {
-            exampleText: "The study of history helps us understand the present.",
+            exampleText:
+              "The study of history helps us understand the present.",
             source: "Historical Journal",
           },
         ],
@@ -219,15 +232,87 @@ async function main() {
         ],
         meanings: [
           {
-            meaningText: "The devotion of time and attention to acquiring knowledge",
+            meaningText:
+              "The devotion of time and attention to acquiring knowledge",
           },
           {
-            meaningText: "A detailed investigation and analysis of a subject or situation",
+            meaningText:
+              "A detailed investigation and analysis of a subject or situation",
           },
         ],
         synonymsAntonyms: {
           synonyms: "research, learning, investigation, analysis",
           antonyms: "ignorance, neglect, disregard",
+        },
+        categories: [categories[0].id],
+      },
+      {
+        word: "miracle",
+        definitions: [
+          {
+            posId: partsOfSpeech[1].id,
+            partOfSpeech: "noun",
+            definitionText:
+              "A surprising and welcome event that is not explicable by natural or scientific laws",
+            usageExample: "The recovery of the patient was a miracle.",
+          },
+        ],
+        examples: [
+          {
+            exampleText: "The discovery of penicillin was a medical miracle.",
+            source: "Medical Journal",
+          },
+        ],
+        pronunciations: [
+          {
+            audioPath: "/audio/miracle-us.mp3",
+            dialect: "American",
+            ipaText: "ˈmɪrək(ə)l",
+          },
+        ],
+        meanings: [
+          {
+            meaningText:
+              "A surprising and welcome event that is not explicable by natural or scientific laws",
+          },
+        ],
+        synonymsAntonyms: {
+          synonyms: "wonder, marvel, phenomenon, supernatural event",
+          antonyms: "disaster, tragedy, misfortune",
+        },
+        categories: [categories[2].id],
+      },
+      {
+        word: "courage",
+        definitions: [
+          {
+            posId: partsOfSpeech[1].id,
+            partOfSpeech: "noun",
+            definitionText: "The ability to do something that frightens one",
+            usageExample: "He showed great courage in the face of danger.",
+          },
+        ],
+        examples: [
+          {
+            exampleText: "The soldier was awarded a medal for his courage.",
+            source: "Military News",
+          },
+        ],
+        pronunciations: [
+          {
+            audioPath: "/audio/courage-us.mp3",
+            dialect: "American",
+            ipaText: "ˈkʌrɪdʒ",
+          },
+        ],
+        meanings: [
+          {
+            meaningText: "The ability to do something that frightens one",
+          },
+        ],
+        synonymsAntonyms: {
+          synonyms: "bravery, valor, fearlessness, boldness",
+          antonyms: "cowardice, timidity, fear",
         },
         categories: [categories[0].id],
       },
@@ -266,13 +351,9 @@ async function main() {
       // Create pronunciations and generate audio files
       await Promise.all(
         wordData.pronunciations.map(async (pron) => {
-          const audioPath = path.join(
-            `audio/${wordData.word}.mp3`
-          );
-          
-          const audio = path.join(
-            `${wordData.word}.mp3`
-          )
+          const audioPath = path.join(`audio/${wordData.word}.mp3`);
+
+          const audio = path.join(`${wordData.word}.mp3`);
           await PollyService.synthesizeSpeech(wordData.word, audioPath);
           await prisma.pronunciation.create({
             data: {

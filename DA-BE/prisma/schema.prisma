@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Category {
-  id             Int            @id @default(autoincrement())
-  categoryName   String         @unique
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now())
-  deletedAt      DateTime?
-  deletedBy      Int?
-  updatedBy      Int?
-  wordCategories WordCategory[]
+  id                  Int            @id @default(autoincrement())
+  categoryName        String         @unique
+  categoryDescription String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @default(now())
+  deletedAt           DateTime?
+  deletedBy           String?
+  createdBy           String?
+  updatedBy           String?
+  wordCategories      WordCategory[]
 
   @@map("category")
 }
@@ -87,7 +89,7 @@ model Meaning {
 model PartOfSpeech {
   id           Int          @id @default(autoincrement())
   definitionId Int?
-  partOfSpeech String       @unique
+  partOfSpeech String
   definitions  Definition[]
 
   @@map("partofspeech")

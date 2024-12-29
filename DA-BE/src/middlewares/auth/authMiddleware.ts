@@ -17,7 +17,7 @@ export const authenticateToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.token || req.cookies.aToken
+  const token = req.cookies.token || req.cookies.aToken;
 
   if (!token) {
     return res.status(401).json({
@@ -57,14 +57,18 @@ export const verifyAdmin = (
   next();
 };
 
-export const verifyUser = (req: Request & {user?: JwtPayload}, res: Response, next: NextFunction) => {
+export const verifyUser = (
+  req: Request & { user?: JwtPayload },
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     return res.status(401).json({
       message: "Unauthorized. No user information found.",
     });
   }
-}
+};
 
 export const generateToken = (payload: JwtPayload) => {
   return jwt.sign(payload, secretKey, { expiresIn: "1h" });
-}
+};

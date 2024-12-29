@@ -4,7 +4,6 @@ import { ADMIN_CLIENT_HOST } from '../../enums/Admin/EAdmin';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
-    console.log(`${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`);
     try {
       const response = await axios.post(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGIN}`,
@@ -23,7 +22,6 @@ export class AdminServices {
         (error) => {
           if (error.response && error.response.status === 401) {
             localStorage.removeItem('aToken');
-            console.log('Token expired');
           }
           return Promise.reject(error);
         },
@@ -122,10 +120,10 @@ export class AdminServices {
 }
 
 export class AdminWordServices {
-  public static async fetchAllWords() {
+  public static async fetchAllWords(page: number, limit: number) {
     try {
       const response = await axios.get(
-        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}?page=${page}&limit=${limit}`,
         {
           withCredentials: true,
         },
@@ -144,7 +142,6 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
-      console.log(response.data);
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to fetch word: ${error.message}`);
@@ -156,7 +153,7 @@ export class AdminWordServices {
     meanings: string,
     definitionText: string,
     partOfSpeech: string,
-    categoryName: string,
+    categoryNames: string,
     exampleText: string,
     dialect: string,
     ipaText: string,
@@ -165,21 +162,6 @@ export class AdminWordServices {
     antonyms: string,
   ) {
     try {
-      console.log(`Request URL: ${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`);
-      console.log('Request Payload:', {
-        word,
-        meanings,
-        definitionText,
-        partOfSpeech,
-        categoryName,
-        exampleText,
-        dialect,
-        ipaText,
-        usageExample,
-        synonyms,
-        antonyms,
-      });
-
       const response = await axios.post(
         `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_WORD}`,
         {
@@ -187,7 +169,7 @@ export class AdminWordServices {
           meanings,
           definitionText,
           partOfSpeech,
-          categoryName,
+          categoryNames,
           exampleText,
           dialect,
           ipaText,
@@ -196,12 +178,13 @@ export class AdminWordServices {
           antonyms,
         },
       );
-
-      console.log('Response Data:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('Error creating word:', error.response?.data || error.message);
-      throw new Error(`Failed to create word: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `Failed to create word: ${
+          error.response?.data?.message || error.message
+        }`,
+      );
     }
   }
 
@@ -214,6 +197,106 @@ export class AdminWordServices {
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to delete word: ${error.message}`);
+    }
+  }
+}
+
+export class AdminCategoryService {
+  public static async fetchAllCategories() {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORIES}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data.data;
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
+
+  public static async fetchCategory(id: number) {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORY}/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async createCategory(
+    categoryName: string,
+    categoryDescription: string,
+  ) {
+    try {
+      const response = await axios.post(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_CREATE_CATEGORY}`,
+        { categoryName, categoryDescription },
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async deleteCategory(id: number) {
+    try {
+      const response = await axios.delete(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_DELETE_CATEGORY}/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // fetch last time a category was updated or created
+  public static async lastTimeCategoryUpdated() {
+    try {
+      const response = await axios.get(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_CATEGORIES}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public static async updateCategory(
+    id: number,
+    categoryName: string,
+    categoryDescription: string,
+  ) {
+    try {
+      const response = await axios.put(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_UPDATE_CATEGORY}/${id}`,
+        { categoryName, categoryDescription },
+        {
+          withCredentials: true,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
     }
   }
 }

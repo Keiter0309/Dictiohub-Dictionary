@@ -8,7 +8,7 @@ const WordContent: React.FC = () => {
     meanings: string,
     definitionText: string,
     partOfSpeech: string,
-    categoryName: string,
+    categoryNames: string,
     exampleText: string,
     dialect: string,
     ipaText: string,
@@ -22,7 +22,7 @@ const WordContent: React.FC = () => {
         meanings,
         definitionText,
         partOfSpeech,
-        categoryName,
+        categoryNames,
         exampleText,
         dialect,
         ipaText,
@@ -30,7 +30,6 @@ const WordContent: React.FC = () => {
         synonyms,
         antonyms,
       );
-      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error(error);

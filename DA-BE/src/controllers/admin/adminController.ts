@@ -6,7 +6,9 @@ import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { PollyService } from "../../services/aws/polly.service";
+import { JwtPayload } from "../../interface/JwtPayload";
 import path from "path";
+import { randomInt } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -47,7 +49,7 @@ export class AdminAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 24,  
+        maxAge: 1000 * 60 * 24,
       });
 
       return res.status(200).json({
@@ -324,8 +326,10 @@ export class AdminUserController {
 
 export class AdminWordController {
   public static async fetchAllWords(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
     try {
-      const words = await Words.fetchAllWords();
+      const words = await Words.fetchAllWords(page, limit);
       return res.status(200).json({
         status_code: 200,
         message: "success",
@@ -358,13 +362,17 @@ export class AdminWordController {
     }
   }
 
-  public static async createWord(req: Request, res: Response) {
+  public static async createWord(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
+    const user = req.user as JwtPayload;
     const {
       word,
       meanings,
       definitionText,
       partOfSpeech,
-      categoryName,
+      categoryNames,
       exampleText,
       usageExample,
       dialect,
@@ -379,7 +387,7 @@ export class AdminWordController {
         !meanings ||
         !definitionText ||
         !partOfSpeech ||
-        !categoryName ||
+        !categoryNames ||
         !exampleText ||
         !usageExample ||
         !dialect ||
@@ -387,7 +395,6 @@ export class AdminWordController {
         !synonyms ||
         !antonyms
       ) {
-        
         return res.status(400).json({
           status_code: 400,
           message: `All fields are required word`,
@@ -403,9 +410,7 @@ export class AdminWordController {
 
       // Create audio file
       const audio = `${newWord.word}.mp3`;
-      const audioPath = path.join(
-            `audio/${newWord.word}.mp3`
-          );
+      const audioPath = path.join(`audio/${newWord.word}.mp3`);
 
       await PollyService.synthesizeSpeech(word, audioPath);
 
@@ -433,11 +438,21 @@ export class AdminWordController {
         },
       });
 
-      const newCategory = await prisma.category.create({
-        data: {
-          categoryName: categoryName,
-        },
+      const category = await prisma.category.findMany({
+        where: { categoryName: { in: categoryNames } },
       });
+
+      const newCategory = await Promise.all(
+        category.map((category) => {
+          return prisma.wordCategory.create({
+            data: {
+              wordId: newWord.id,
+              categoryId: category.id,
+              categoryName: category.categoryName,
+            },
+          });
+        })
+      );
 
       const newExample = await prisma.exampleWord.create({
         data: {
@@ -510,15 +525,19 @@ export class AdminWordController {
           where: { id: id, definitionId: id },
         });
 
-        const categoryNames = await prisma.wordCategory.findMany({
-          where: { wordId: id },
-          select: { categoryName: true },
-        });
+        // const categoryNames = await prisma.wordCategory.findMany({
+        //   where: { wordId: id },
+        //   select: { categoryName: true },
+        // });
 
-        await prisma.category.deleteMany({
-          where: {
-            categoryName: { in: categoryNames.map((c) => c.categoryName) },
-          },
+        // await prisma.category.deleteMany({
+        //   where: {
+        //     categoryName: { in: categoryNames.map((c) => c.categoryName) },
+        //   },
+        // });
+
+        await prisma.wordCategory.deleteMany({
+          where: { wordId: id },
         });
 
         await prisma.exampleWord.deleteMany({
@@ -684,9 +703,16 @@ export class AdminCategoryController {
     }
   }
 
-  public static async createCategory(req: Request, res: Response) {
+  public static async createCategory(
+    req: Request & {
+      user?: JwtPayload;
+    },
+    res: Response
+  ) {
     try {
-      const { categoryName } = req.body;
+      const { categoryName, categoryDescription } = req.body;
+      const user = req.user as JwtPayload;
+
       if (!categoryName) {
         return res.status(400).json({ error: "Category name is required" });
       }
@@ -694,6 +720,9 @@ export class AdminCategoryController {
       const newCategory = await prisma.category.create({
         data: {
           categoryName,
+          categoryDescription,
+          createdBy: user.email,
+          updatedBy: user.email,
         },
       });
 
@@ -727,17 +756,27 @@ export class AdminCategoryController {
     }
   }
 
-  public static async updateCategory(req: Request, res: Response) {
+  public static async updateCategory(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
     try {
       const id = parseInt(req.params.id);
-      const { categoryName } = req.body;
+      const user = req.user as JwtPayload;
+      const { categoryName, categoryDescription } = req.body;
+
       if (!categoryName) {
         return res.status(400).json({ error: "Category name is required" });
       }
 
       const updatedCategory = await prisma.category.update({
         where: { id },
-        data: { categoryName },
+        data: {
+          categoryName,
+          categoryDescription,
+          updatedBy: user.email,
+          updatedAt: new Date(),
+        },
       });
 
       return res.status(200).json({
@@ -745,8 +784,11 @@ export class AdminCategoryController {
         message: "Category updated successfully",
         data: updatedCategory,
       });
-    } catch (err) {
-      return res.status(500).json({ error: "Error updating category" });
+    } catch (err: any) {
+      console.error("Error updating category:", err);
+      return res
+        .status(500)
+        .json({ error: `Error updating category: ${err.message}` });
     }
   }
 }
