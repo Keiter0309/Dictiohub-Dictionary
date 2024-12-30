@@ -140,6 +140,7 @@ class AuthController {
         secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: "strict",
+        path: "/",
       });
 
       return res.status(200).json({
@@ -164,10 +165,24 @@ class AuthController {
   }
 
   public async logout(req: Request, res: Response) {
-    res.clearCookie("token");
-    return res.status(200).json({
-      message: "Logout successful",
-    });
+    try {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      });
+      console.log("cookie cleared::", req.cookies.token);
+
+      return res.status(200).json({
+        message: "Logout successful",
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        message: "Logout failed",
+        error: error.message,
+      });
+    }
   }
 
   public async forgotPassword(req: Request, res: Response) {

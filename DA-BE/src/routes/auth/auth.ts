@@ -11,6 +11,11 @@ authRoute.post(
   RateLimiter.loginLimiter(),
   AuthController.login
 );
+authRoute.post(
+  `${EAuth.AUTH}/logout`,
+  authenticateToken,
+  AuthController.logout
+);
 authRoute.post(`${EAuth.AUTH}/forgot-password`, AuthController.forgotPassword);
 authRoute.post(`${EAuth.AUTH}/reset-password`, AuthController.resetPassword);
 authRoute.post(

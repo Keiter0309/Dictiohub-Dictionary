@@ -25,7 +25,7 @@ const NavbarForm: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('favorites');
 
-    // window.location.href = '/';
+    window.location.href = '/';
   };
 
   return (
@@ -64,7 +64,7 @@ const NavbarForm: React.FC = () => {
                   />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     {avatarItems.map((item) => (
                       <Link
                         key={item.to}
@@ -123,7 +123,7 @@ const NavbarForm: React.FC = () => {
                       />
                     </button>
                     {isDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                         {avatarItems.map((item) => (
                           <Link
                             key={item.to}

@@ -78,13 +78,29 @@ class AuthServices {
 
   public async logout() {
     try {
-      const response=await axios.post(
-        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGOUT}`
-      )
-      console.log(response.data.message)
-      return response.data.message
-    } catch(err: any) {
-      throw new Error(err)
+      const response = await axios.post(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_LOGOUT}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      localStorage.removeItem('id');
+      localStorage.removeItem('token');
+
+      console.log('Logout successful:', response.data.message);
+      return response.data.message;
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          console.error('Logout error (API response):', err.response.data);
+          throw new Error(err.response.data.message || 'Logout failed');
+        }
+      }
+      // Xử lý lỗi không phải Axios
+      console.error('Logout error:', err.message);
+      throw new Error('An unexpected error occurred while logging out.');
     }
   }
 
