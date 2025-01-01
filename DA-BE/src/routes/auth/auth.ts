@@ -3,6 +3,8 @@ import { EAuth } from "../../enums/EAuth/EAuth";
 import AuthController from "../../controllers/auth/authController";
 import { authenticateToken } from "../../middlewares/auth/authMiddleware";
 import { RateLimiter } from "../../middlewares/limiter/rateLimit.middleware";
+import { checkPermission } from "../../middlewares/roles/roles.middlewares";
+import authController from "../../controllers/auth/authController";
 export const authRoute = Router();
 
 authRoute.post(`${EAuth.AUTH}/register`, AuthController.register);
@@ -33,4 +35,10 @@ authRoute.post(
   `${EAuth.AUTH}/change-password`,
   authenticateToken,
   AuthController.changePassword
+);
+
+authRoute.get(
+  `${EAuth.AUTH}/view`,
+  checkPermission(["write"]),
+  authController.checkPermission
 );

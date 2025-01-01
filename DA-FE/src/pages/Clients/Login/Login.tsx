@@ -19,7 +19,7 @@ const Login: React.FC = () => {
   const handleLogin = async (email: string, password: string) => {
     try {
       await AuthServices.login(email, password);
-      message.success("User logged in successfully");
+      message.success("Logged in successfully");
       navigate("/");
     } catch (err: any) {
       message.error("Invalid email or password");

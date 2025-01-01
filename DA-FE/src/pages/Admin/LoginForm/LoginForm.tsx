@@ -35,6 +35,7 @@ const AdminLogin: React.FC = () => {
       }
     } catch (err: any) {
       message.error('Invalid email or password');
+      message.error(err.response.data.message);
       console.error(err.message);
     }
   };

@@ -7,6 +7,7 @@ export enum EAdmin {
   FETCH_USER_BY_ID = "/api/v1/admin/user/id/:id",
   UPDATE_USER = "/api/v1/admin/update/:id",
   LOGIN = "/api/v1/admin/login",
+  LOGOUT = "/api/v1/admin/logout",
 
   // Word management urls
   FETCH_WORD = "/api/v1/admin/words/:id",

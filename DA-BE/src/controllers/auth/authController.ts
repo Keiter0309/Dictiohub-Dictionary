@@ -13,6 +13,9 @@ import { randomOtpDigit } from "../../utils/randomOtpDigit";
 import bcrypt from "bcrypt";
 import jwt, { Jwt } from "jsonwebtoken";
 import { JwtPayload } from "../../interface/JwtPayload";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 class AuthController {
   public async register(req: Request, res: Response) {
@@ -172,7 +175,6 @@ class AuthController {
         sameSite: "strict",
         path: "/",
       });
-      console.log("cookie cleared::", req.cookies.token);
 
       return res.status(200).json({
         message: "Logout successful",
@@ -396,6 +398,10 @@ class AuthController {
         error: err.message,
       });
     }
+  }
+
+  public async checkPermission(req: Request, res: Response) {
+    res.send("Hi there");
   }
 }
 

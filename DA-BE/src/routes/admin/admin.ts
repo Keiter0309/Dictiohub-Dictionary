@@ -11,11 +11,13 @@ import {
   verifyAdmin,
 } from "../../middlewares/auth/authMiddleware";
 import { EWords } from "../../enums/EWords/EWords";
+import { checkPermission } from "../../middlewares/roles/roles.middlewares";
 
 export const adminRoute = Router();
 
 // Admin & User management routes
 adminRoute.post(EAdmin.LOGIN, AdminAuthController.login);
+adminRoute.post(EAdmin.LOGOUT, authenticateToken, AdminAuthController.logout);
 adminRoute.post(EAdmin.CREATE_USER, AdminUserController.createUser);
 adminRoute.put(EAdmin.UPDATE_USER, AdminUserController.updateUser);
 adminRoute.delete(EAdmin.DELETE_USER, AdminUserController.deleteUser);
@@ -33,8 +35,16 @@ adminRoute.get(
 
 // Word management routes
 adminRoute.get(EAdmin.FETCH_WORD, AdminWordController.fetchWord);
-adminRoute.put(EAdmin.UPDATE_WORD, AdminWordController.updateWord);
-adminRoute.post(EAdmin.CREATE_WORD, AdminWordController.createWord);
+adminRoute.put(
+  EAdmin.UPDATE_WORD,
+  checkPermission(["read", "write"]),
+  AdminWordController.updateWord
+);
+adminRoute.post(
+  EAdmin.CREATE_WORD,
+  checkPermission(["write"]),
+  AdminWordController.createWord
+);
 adminRoute.delete(EAdmin.DELETE_WORD, AdminWordController.deleteWord);
 adminRoute.get(
   EAdmin.FETCH_WORDS,

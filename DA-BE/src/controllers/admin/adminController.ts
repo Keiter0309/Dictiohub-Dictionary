@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 import { User } from "../../model/User/User";
 import { Words } from "../../model/Words/Word";
 import { ILogin, IUser } from "../../interface/User";
-import bycrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { PollyService } from "../../services/aws/polly.service";
 import { JwtPayload } from "../../interface/JwtPayload";
+import bycrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import path from "path";
-import { randomInt } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -28,7 +27,7 @@ export class AdminAuthController {
       }
 
       if (user.role !== "admin") {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const payload = {
@@ -64,6 +63,18 @@ export class AdminAuthController {
       });
     } catch (err) {
       return res.status(500).json({ error: "Error logging in user" });
+    }
+  }
+
+  public static async logout(req: Request, res: Response) {
+    try {
+      res.clearCookie("aToken");
+      return res.status(200).json({
+        status_code: 200,
+        message: "Logoout succesfull",
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server" });
     }
   }
 }

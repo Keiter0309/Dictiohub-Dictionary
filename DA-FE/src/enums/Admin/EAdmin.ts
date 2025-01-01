@@ -1,5 +1,6 @@
 export enum EAdmin {
   ADMIN_LOGIN = 'api/v1/admin/login',
+  ADMIN_LOGOUT = 'api/v1/admin/logout',
   ADMIN_CREATE_USER = 'api/v1/admin/create',
   ADMIN_DELETE_USER = 'api/v1/admin/delete',
   ADMIN_FETCH_USERS = 'api/v1/admin/users',

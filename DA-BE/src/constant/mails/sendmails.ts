@@ -1,9 +1,9 @@
 export class SendMailTemplates {
     public static readonly MAIL_REGISTRATION = (firstName: string) => ({
-        subject: "Welcome to Our Platform!",
+        subject: "Welcome to Dictiohub!",
         text: `Hello ${firstName},
         
-        Welcome to Our Platform! We're excited to have you on board.
+        Welcome to Our Dictiohub! We're excited to have you on board.
         
         Here are some resources to get you started:
         - Visit our website: https://dictiohub.site
@@ -13,9 +13,9 @@ export class SendMailTemplates {
         If you have any questions, feel free to reply to this email or contact our support team at support@ourplatform.com.
         
         Best regards,
-        The Our Platform Team`,
+        The Dictiohub Team`,
         html: `<p>Hello ${firstName},</p>
-             <p>Welcome to <strong>Our Platform</strong>! We're excited to have you on board.</p>
+             <p>Welcome to <strong>Dictiohub</strong>! We're excited to have you on board.</p>
              <p>Here are some resources to get you started:</p>
              <ul>
                  <li>Visit our website: <a href="https://dictiohub.site">https://dictiohub.site</a></li>
@@ -37,7 +37,7 @@ export class SendMailTemplates {
         If you did not request this, please ignore this email.
         
         Best regards,
-        The Our Platform Team`,
+        The Dictiohub Team`,
         html: `<p>Hello ${firstName},</p>
              <p>You are receiving this email because you have requested to reset your password.</p>
              <p>Your OTP is <strong>${otp}</strong>.</p>
@@ -54,7 +54,7 @@ export class SendMailTemplates {
         If you did not request this, please contact our support team immediately.
 
         Best regards,
-        The Our Platform Team`,
+        The Dictiohub Team`,
         html: `<p>Hello ${firstName},</p>
              <p>Your password has been successfully reset.</p>
              <p>If you did not request this, please contact our support team immediately.</p>
@@ -70,7 +70,7 @@ export class SendMailTemplates {
         If you did not request this, please contact our support team immediately.
 
         Best regards,
-        The Our Platform Team`,
+        The Dictiohub Team`,
         html: `<p>Hello ${firstName},</p>
              <p>Your password has been successfully changed.</p>
              <p>If you did not request this, please contact our support team immediately.</p>

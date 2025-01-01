@@ -42,19 +42,33 @@ export const verifyAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.user) {
+  const token = req.cookies.aToken;
+
+  if (!token) {
     return res.status(401).json({
-      message: "Unauthorized. No user information found.",
+      message: "Access denied",
     });
   }
 
-  if (req.user.role !== "admin") {
-    return res.status(403).json({
-      message: "Forbidden. Admin access required.",
-    });
-  }
+  try {
+    const decoded = jwt.verify(token, secretKey) as JwtPayload;
+    req.user = decoded;
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized. No user information found.",
+      });
+    }
 
-  next();
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Forbidden. Admin access required.",
+      });
+    }
+
+    next();
+  } catch (err) {
+    return res.status(400).json({ message: "Invalid Credentials" });
+  }
 };
 
 export const verifyUser = (

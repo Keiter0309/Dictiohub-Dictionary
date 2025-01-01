@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { EAdmin } from '../../enums/Admin/EAdmin';
 import { ADMIN_CLIENT_HOST } from '../../enums/Admin/EAdmin';
+import { message } from 'antd';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
@@ -31,7 +32,33 @@ export class AdminServices {
 
       return access_token;
     } catch (error: any) {
+      message.error(error.response.data.message)
       return error.response.data;
+    }
+  }
+
+  public static async logout() {
+    try {
+      const response = await axios.post(
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_LOGOUT}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      localStorage.removeItem('aToken');
+
+      return response.data.message;
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          console.error('Logout error (API response):', err.response.data);
+          throw new Error(err.response.data.message || 'Logout failed');
+        }
+      }
+      console.error('Logout error:', err.message);
+      throw new Error('An unexpected error occurred while logging out.');
     }
   }
 
@@ -176,6 +203,9 @@ export class AdminWordServices {
           usageExample,
           synonyms,
           antonyms,
+        },
+        {
+          withCredentials: true,
         },
       );
       return response.data;

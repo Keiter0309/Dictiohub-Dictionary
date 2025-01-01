@@ -98,7 +98,6 @@ class AuthServices {
           throw new Error(err.response.data.message || 'Logout failed');
         }
       }
-      // Xử lý lỗi không phải Axios
       console.error('Logout error:', err.message);
       throw new Error('An unexpected error occurred while logging out.');
     }

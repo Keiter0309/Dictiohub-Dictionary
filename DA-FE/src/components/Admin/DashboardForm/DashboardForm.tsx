@@ -51,6 +51,7 @@ const SidebarForm: React.FC = () => {
       icon: <ArrowLeft className="h-5 w-5" />,
       label: 'Logout',
       onClick: () => {
+        AdminServices.logout();
         localStorage.removeItem('aToken');
         navigate('/admin/login');
       },
@@ -92,6 +93,7 @@ const SidebarForm: React.FC = () => {
         if (error.response && error.response.status === 401) {
           localStorage.removeItem('token');
           message.error('Session expired. Please login again.');
+          AdminServices.logout();
           navigate('/admin/login');
         }
         return Promise.reject(error);

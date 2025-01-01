@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Menu, X } from 'lucide-react';
 import authServices from '../../../services/auth/authServices';
+import { message } from 'antd';
 
 const NavbarForm: React.FC = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isLogged = localStorage.getItem('token');
@@ -17,15 +19,16 @@ const NavbarForm: React.FC = () => {
   const avatarItems = [
     { to: '/profile', label: 'Profile' },
     { to: '/favorites', label: 'Favorites' },
-    { to: '/logout', label: 'Logout' },
+    { to: '/', label: 'Logout' },
   ];
 
   const handleLogoutClick = () => {
     authServices.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('favorites');
+    message.success('Logout successful');
 
-    window.location.href = '/';
+    navigate('/');
   };
 
   return (
@@ -70,7 +73,7 @@ const NavbarForm: React.FC = () => {
                         key={item.to}
                         to={item.to}
                         onClick={() => {
-                          if (item.to === '/logout') {
+                          if (item.to === '/') {
                             handleLogoutClick();
                           }
                           setIsDropdownOpen(false);
