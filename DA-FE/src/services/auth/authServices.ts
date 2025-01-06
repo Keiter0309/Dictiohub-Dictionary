@@ -30,7 +30,7 @@ class AuthServices {
       if (axios.isAxiosError(err) && err.response) {
         const errorData = err.response.data;
         if (errorData.message) {
-          if (errorData.message === 'User already registerd') {
+          if (errorData.message === 'User already registered') {
             throw new Error('User already registered');
           } else if (errorData.message === 'Password does not match') {
             throw new Error('Password does not match');

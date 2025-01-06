@@ -37,6 +37,29 @@ export const authenticateToken = (
   }
 };
 
+export const optionalAuth = (
+  req: Request & { user?: JwtPayload },
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.cookies.token || null;
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey) as JwtPayload;
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error("Token verification error:", err);
+    return res.status(400).json({
+      message: "Invalid token",
+    });
+  }
+};
+
 export const verifyAdmin = (
   req: Request & { user?: JwtPayload },
   res: Response,

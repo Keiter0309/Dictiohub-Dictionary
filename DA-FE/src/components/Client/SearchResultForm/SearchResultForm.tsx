@@ -17,28 +17,34 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedFavorites = localStorage.getItem('favorites');
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
-    }
+    fetchFavorite();
   }, []);
 
   useEffect(() => {
     setSearchResults(result);
   }, [result]);
 
+  const fetchFavorite = async () => {
+    try {
+      const response = await wordServices.getFavoriteWords();
+      if (response) {
+        const words = response.words;
+        setFavorites(words.map((word: any) => word.word));
+      }
+    } catch (error: any) {
+      message.error(error.message);
+    }
+  };
+
   const handleFavorite = async (word: string) => {
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('id');
-    const wordId = localStorage.getItem('ord');
+    const wordId = searchResults.id;
     if (token) {
       if (favorites.includes(word)) {
         const updatedFavorites = favorites.filter((fav) => fav !== word);
         setFavorites(updatedFavorites);
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
         try {
-          await wordServices.removeFavoriteWord(Number(wordId), Number(userId));
-          localStorage.removeItem('ord');
+          await wordServices.removeFavoriteWord(Number(wordId));
         } catch (err: any) {
           console.error(err);
         }
@@ -46,11 +52,9 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
       } else {
         const updatedFavorites = [...favorites, word];
         setFavorites(updatedFavorites);
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
         message.success('Added to favorites');
         try {
-          await wordServices.addFavoriteWord(Number(wordId), Number(userId));
-          localStorage.removeItem('ord');
+          await wordServices.addFavoriteWord(Number(wordId));
         } catch (err: any) {
           console.error(err);
         }
@@ -78,6 +82,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="bg-blue-50 px-6 py-4">
         <div className="flex items-center justify-between">
+          <input type="text" hidden value={searchResults.id} />
           <h2 className="text-3xl font-bold text-gray-900">
             {searchResults.word}
           </h2>

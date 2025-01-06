@@ -213,6 +213,22 @@ export class User {
     });
   }
 
+  static updateUsername(email: string, username: string) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "UPDATE user SET username = ? WHERE email = ?",
+        [username, email],
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
   // Update last login
   static updateLastLogin(email: string, lastLogin: Date) {
     return new Promise((resolve, reject) => {

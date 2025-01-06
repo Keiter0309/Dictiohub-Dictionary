@@ -364,19 +364,18 @@ class AuthController {
       });
     }
   }
-
   public async getMe(req: Request & { user?: JwtPayload }, res: Response) {
     try {
       // Get user data from token
       const user = req.user as JwtPayload;
 
-      const existingUser = (await User.fetchByEmail(user.email)) as IUser;
       if (!user) {
         return res.status(401).json({
           status_code: 401,
           message: "Unauthorized",
         });
       }
+      const existingUser = (await User.fetchByEmail(user.email)) as IUser;
 
       const payload = {
         id: existingUser.id,

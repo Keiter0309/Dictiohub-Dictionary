@@ -375,6 +375,20 @@ export class Favorites {
     }
   }
 
+  static async fetchFavoriteById(userId: number) {
+    try {
+      const favorites = await prisma.favoriteWord.findMany({
+        where: {
+          userId,
+        },
+      });
+      return favorites;
+    } catch (error) {
+      console.error(`Error fetching favorite word ${error}`);
+      throw new Error(`Error fetching favorite word`);
+    }
+  }
+
   static async deleteFavorite(id: number, userId: number) {
     try {
       const favorite = await prisma.favoriteWord.deleteMany({

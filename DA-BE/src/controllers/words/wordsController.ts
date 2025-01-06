@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Words, Favorites } from "../../model/Words/Word";
+import { JwtPayload } from "../../interface/JwtPayload";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 class WordsController {
   // Create a new word
   public async createWord(req: Request, res: Response) {
@@ -55,8 +58,12 @@ class WordsController {
     }
   }
 
-  public async searchWords(req: Request, res: Response) {
+  public async searchWords(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
     const word = req.query.word as string;
+    const user = req.user?.id as unknown as number;
     if (!word) {
       return res
         .status(400)
@@ -65,6 +72,18 @@ class WordsController {
 
     try {
       const words = await Words.fetchByWord(word);
+      const searchDateTimestamp = new Date();
+
+      if (user) {
+        await prisma.userSearchHistory.create({
+          data: {
+            userId: user,
+            wordId: words.id,
+            searchTime: searchDateTimestamp,
+          },
+        });
+      }
+
       return res.status(200).json(words);
     } catch (err) {
       console.error("Error fetching word:", err);
@@ -72,9 +91,12 @@ class WordsController {
     }
   }
 
-  public async addFavorite(req: Request, res: Response) {
+  public async addFavorite(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
     const id = req.body.wordId;
-    const userId = req.body.userId;
+    const userId = req.user?.id as unknown as number;
 
     try {
       const favorite = await Favorites.addFavorite(id, userId);
@@ -84,21 +106,44 @@ class WordsController {
     }
   }
 
-  public async fetchAllFavorites(req: Request, res: Response) {
-    const userId = parseInt(req.params.userId);
+  public async fetchAllFavorites(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
+    const userId = req.user?.id as unknown as number;
 
     try {
-      const favorites = await Favorites.fetchAll(userId);
+      const favorites = await Favorites.fetchFavoriteById(userId);
+      const wordIds = favorites.map(
+        (favorite: { wordId: any }) => favorite.wordId
+      );
+
+      if (wordIds.length === 0) {
+        return res.status(200).json({
+          status_code: 200,
+          message: "No favorite words found",
+          words: [],
+        });
+      }
+
+      const words = await Promise.all(
+        wordIds.map((id: number) => Words.fetchById(id))
+      );
+
+      const selectedFields = words.map((word: any) => ({
+        word: word.word,
+      }));
+
       return res.status(200).json({
-        data: {
-          wordId: favorites.map((favorite: { wordId: any }) => favorite.wordId),
-          userId: favorites.map((favorite: { userId: any }) => favorite.userId),
-        },
+        status_code: 200,
+        message: "Fetch data successfully",
+        words: selectedFields,
       });
     } catch (err: any) {
-      return res
-        .status(500)
-        .json({ error: "Error fetching all favorite words" });
+      console.error("Error fetching favorite words:", err);
+      return res.status(500).json({
+        error: "Error fetching all favorite words",
+      });
     }
   }
 
@@ -113,6 +158,34 @@ class WordsController {
       });
     } catch (err: any) {
       console.error("Error deleting favorite:", err);
+    }
+  }
+
+  public async fetchSearchLog(
+    req: Request & { user?: JwtPayload },
+    res: Response
+  ) {
+    try {
+      const user = req.user?.id as unknown as number;
+      const searchLogs = await prisma.userSearchHistory.findMany({
+        where: {
+          userId: user,
+        },
+        include: {
+          word: true,
+        },
+      });
+
+      return res.status(200).json({
+        status_code: 200,
+        message: "Fetch data successfully",
+        searchLogs: searchLogs,
+      });
+    } catch (err: any) {
+      console.error(`Error fetching search log: ${err}`);
+      return res.status(500).json({
+        message: "Error fetching search log",
+      });
     }
   }
 }

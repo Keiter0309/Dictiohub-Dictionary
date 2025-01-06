@@ -22,6 +22,8 @@ import { BookOpen } from 'lucide-react';
 import { menuItems } from '../../../mock/Clients/Profile/menu.mock';
 import { Link } from 'react-router-dom';
 import authServices from '../../../services/auth/authServices';
+import wordServices from '../../../services/word/wordServices';
+import formatDateTime from '../../../utils/Format/FormatDateTime';
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -31,6 +33,11 @@ interface PersonalData {
   label: string;
   value: string;
   icon: React.ReactNode;
+}
+
+interface SearchHistory {
+  word: string;
+  searchTime: string;
 }
 
 const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({
@@ -71,24 +78,24 @@ const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({
 );
 
 // Word List Component
-const WordList: React.FC<{ words: string[] }> = ({ words }) => (
+const WordList: React.FC<{ searchHistories: SearchHistory[] }> = ({
+  searchHistories,
+}) => (
   <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-    {words.map((word, index) => (
+    {searchHistories.map(({ word, searchTime }, index) => (
       <li
-        key={word}
+        key={index}
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '12px 0',
           borderBottom:
-            index === words.length - 1 ? 'none' : '1px solid #f0f0f0',
+            index === searchHistories.length - 1 ? 'none' : '1px solid #f0f0f0',
         }}
       >
         <Text strong>{word}</Text>
-        <Text type="secondary">
-          {index + 1} hour{index !== 0 ? 's' : ''} ago
-        </Text>
+        <Text type="secondary">{searchTime}</Text>
       </li>
     ))}
   </ul>
@@ -96,13 +103,8 @@ const WordList: React.FC<{ words: string[] }> = ({ words }) => (
 
 const ProfileForm = () => {
   const [personalData, setPersonalData] = useState<PersonalData[]>([]);
-  const words = [
-    'serendipity',
-    'eloquent',
-    'ephemeral',
-    'ubiquitous',
-    'panacea',
-  ];
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [searchHistories, setSearchHistories] = useState<SearchHistory[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,7 +145,37 @@ const ProfileForm = () => {
       }
     };
 
+    const fetchFavoriteWords = async () => {
+      try {
+        const response = await wordServices.getFavoriteWords();
+        if (response) {
+          const words = response.words;
+          setFavorites(words.map((word: any) => word.word));
+        }
+      } catch (error: any) {
+        console.error('Error fetching favorite words:', error);
+      }
+    };
+
+    const fetchSearchLogs = async () => {
+      try {
+        const response = await wordServices.getSearchLogs();
+        if (response) {
+          const searchLogs = response.searchLogs;
+          const formattedSearchHistories = searchLogs.map((searchLog: any) => ({
+            word: searchLog.word.word,
+            searchTime: formatDateTime(searchLog.searchTime),
+          }));
+          setSearchHistories(formattedSearchHistories);
+        }
+      } catch (error: any) {
+        console.error('Error fetching search logs: ', error);
+      }
+    };
+
     fetchData();
+    fetchFavoriteWords();
+    fetchSearchLogs();
   }, []);
 
   const menu = (
@@ -224,7 +256,7 @@ const ProfileForm = () => {
                 </Space>
               }
             >
-              <WordList words={words} />
+              <WordList searchHistories={searchHistories} />
             </Card>
           </TabPane>
           <TabPane
@@ -244,7 +276,12 @@ const ProfileForm = () => {
                 </Space>
               }
             >
-              <WordList words={words} />
+              <WordList
+                searchHistories={favorites.map((word) => ({
+                  word,
+                  searchTime: '',
+                }))}
+              />
             </Card>
           </TabPane>
         </Tabs>

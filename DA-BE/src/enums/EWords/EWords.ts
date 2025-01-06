@@ -5,5 +5,6 @@ export enum EWords {
   CREATE_WORD = "/api/v1/words/create",
   ADD_FAVORITE = "/api/v1/words/favorite",
   DELETE_FAVORITE = "/api/v1/words/favorite",
-  FETCH_FAVORITE = "/api/v1/words/favorite/userId=:userId",
+  FETCH_FAVORITE = "/api/v1/words/favorite",
+  FETCH_SEARCH_LOG = "/api/v1/words/search-log",
 }

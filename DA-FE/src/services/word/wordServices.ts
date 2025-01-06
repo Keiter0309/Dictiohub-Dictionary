@@ -1,15 +1,15 @@
-import axios from "axios";
-import { EWord } from "../../enums/Word/EWord";
-import { WORD_CLIENT_HOST } from "../../enums/Word/EWord";
+import axios from 'axios';
+import { EWord } from '../../enums/Word/EWord';
+import { WORD_CLIENT_HOST } from '../../enums/Word/EWord';
 class WordServices {
   public async searchWord(word: string) {
     try {
       const response = await axios.get(
-      
-        `${WORD_CLIENT_HOST}/${EWord.WORD_SEARCH}/?word=${word}`
+        `${WORD_CLIENT_HOST}/${EWord.WORD_SEARCH}/?word=${word}`,
+        { withCredentials: true },
       );
       const wordId = response.data.id;
-      localStorage.setItem('ord', wordId)
+      localStorage.setItem('ord', wordId);
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
@@ -20,10 +20,28 @@ class WordServices {
     }
   }
 
+  public async getSearchLogs() {
+    try {
+      const response = await axios.get(
+        `${WORD_CLIENT_HOST}/${EWord.WORD_SEARCH_LOGS}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (response) {
+        console.log(response.data.searchLogs);
+        return response.data;
+      }
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
+
   public async getAllWords() {
     try {
       const response = await axios.get(
-        `${WORD_CLIENT_HOST}/${EWord.WORD_LIST}`
+        `${WORD_CLIENT_HOST}/${EWord.WORD_LIST}`,
       );
 
       if (response.status === 200) {
@@ -34,40 +52,12 @@ class WordServices {
     }
   }
 
-  public async addFavoriteWord(wordId: number, userId: number) {
+  public async addFavoriteWord(wordId: number) {
     try {
       const response = await axios.post(
         `${WORD_CLIENT_HOST}/${EWord.WORD_FAVORITE}`,
-        { wordId, userId }
-      );
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (err: any) {
-      console.error(err);
-    }
-  } 
-
-  public async getFavoriteWords(userId: number) {
-    try {
-      const response = await axios.get(
-        `${WORD_CLIENT_HOST}/${EWord.WORD_FAVORITE}/userId=${userId}`
-      );
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (err: any) {
-      console.error(err);
-    }
-  } 
-
-  public async removeFavoriteWord(wordId: number, userId: number) {
-    try {
-      const response = await axios.delete(
-        `${WORD_CLIENT_HOST}/${EWord.WORD_FAVORITE}`,
-        { data: { wordId, userId } }
+        { wordId },
+        { withCredentials: true },
       );
 
       if (response.status === 200) {
@@ -78,6 +68,35 @@ class WordServices {
     }
   }
 
+  public async getFavoriteWords() {
+    try {
+      const response = await axios.get(
+        `${WORD_CLIENT_HOST}/${EWord.WORD_FAVORITE}`,
+        { withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
+
+  public async removeFavoriteWord(wordId: number) {
+    try {
+      const response = await axios.delete(
+        `${WORD_CLIENT_HOST}/${EWord.WORD_FAVORITE}`,
+        { data: { wordId }, withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (err: any) {
+      console.error(err);
+    }
+  }
 }
 
 export default new WordServices();
