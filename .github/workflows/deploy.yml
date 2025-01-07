@@ -27,8 +27,6 @@ jobs:
       - name: Create necessary directories on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
-            sudo mkdir /var/www/DA-FE
-            sudo mkdir /var/www/DA-BE
             sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
           EOF
