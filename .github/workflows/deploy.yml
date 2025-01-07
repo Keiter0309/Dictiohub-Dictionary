@@ -22,11 +22,11 @@ jobs:
 
       - name: Debug SSH connection
         run: |
-          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com 'echo "SSH connection successful"'
+          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com 'echo "SSH connection successful"'
 
       - name: Create necessary directories on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
             sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
           EOF
@@ -42,8 +42,8 @@ jobs:
       - name: Deploy Frontend to EC2
         run: |
           sudo rm -f -r /var/www/DA-FE/dist/*
-          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
           cd /var/www/DA-FE
 
           if [ ! -f .env.production ]; then
@@ -56,8 +56,8 @@ jobs:
 
       - name: Deploy Backend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
                 cd /var/www/DA-BE
                 if [ ! -f .env ]; then
                   touch .env
@@ -86,7 +86,7 @@ jobs:
 
       - name: Verify deployment
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-64-40-253.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
             echo "Checking PM2 processes..."
             pm2 list
             echo "Checking Nginx status..."
