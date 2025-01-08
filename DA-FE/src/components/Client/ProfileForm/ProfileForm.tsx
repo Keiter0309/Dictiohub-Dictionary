@@ -8,6 +8,7 @@ import {
   Menu,
   Space,
   Typography,
+  Pagination,
 } from 'antd';
 import {
   SettingOutlined,
@@ -16,7 +17,6 @@ import {
   UserOutlined,
   MailOutlined,
   CalendarOutlined,
-  IdcardOutlined,
 } from '@ant-design/icons';
 import { BookOpen } from 'lucide-react';
 import { menuItems } from '../../../mock/Clients/Profile/menu.mock';
@@ -77,106 +77,119 @@ const PersonalInfo: React.FC<{ personalData: PersonalData[] }> = ({
   </Card>
 );
 
-// Word List Component
-const WordList: React.FC<{ searchHistories: SearchHistory[] }> = ({
-  searchHistories,
-}) => (
-  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-    {searchHistories.map(({ word, searchTime }, index) => (
-      <li
-        key={index}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          borderBottom:
-            index === searchHistories.length - 1 ? 'none' : '1px solid #f0f0f0',
-        }}
-      >
-        <Text strong>{word}</Text>
-        <Text type="secondary">{searchTime}</Text>
-      </li>
-    ))}
-  </ul>
+const WordList: React.FC<{
+  searchHistories: SearchHistory[];
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}> = ({ searchHistories, currentPage, totalPages, onPageChange }) => (
+  <>
+    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+      {searchHistories.map(({ word, searchTime }, index) => (
+        <li
+          key={index}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 0',
+            borderBottom:
+              index === searchHistories.length - 1
+                ? 'none'
+                : '1px solid #f0f0f0',
+          }}
+        >
+          <Text strong>{word}</Text>
+          <Text type="secondary">{searchTime}</Text>
+        </li>
+      ))}
+    </ul>
+    <Pagination
+      style={{ textAlign: 'center', marginTop: '16px' }}
+      current={currentPage}
+      total={totalPages * 10}
+      pageSize={10}
+      onChange={onPageChange}
+    />
+  </>
 );
 
 const ProfileForm = () => {
   const [personalData, setPersonalData] = useState<PersonalData[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [searchHistories, setSearchHistories] = useState<SearchHistory[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const fetchPersonalData = async () => {
+    try {
+      const response = await authServices.getMe();
+      if (response) {
+        const data = response.data;
+        const formattedData: PersonalData[] = [
+          {
+            id: 'username',
+            label: 'Username',
+            value: data.username,
+            icon: <UserOutlined />,
+          },
+          {
+            id: 'email',
+            label: 'Email',
+            value: data.email,
+            icon: <MailOutlined />,
+          },
+          {
+            id: 'joined',
+            label: 'Joined',
+            value: new Date(data.joined).toLocaleDateString(),
+            icon: <CalendarOutlined />,
+          },
+        ];
+        setPersonalData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching personal data:', error);
+    }
+  };
+
+  const fetchFavoriteWords = async () => {
+    try {
+      const response = await wordServices.getFavoriteWords();
+      if (response) {
+        setFavorites(response.words.map((word: any) => word.word));
+      }
+    } catch (error) {
+      console.error('Error fetching favorite words:', error);
+    }
+  };
+
+  const fetchSearchLogs = async (page: number) => {
+    try {
+      const response = await wordServices.getSearchLogs(page);
+      if (response) {
+        const searchLogs = response.data;
+        const formattedSearchHistories = searchLogs.map((searchLog: any) => ({
+          word: searchLog.word.word,
+          searchTime: formatDateTime(searchLog.searchTime),
+        }));
+        setSearchHistories(formattedSearchHistories);
+        setTotalPages(response.meta.totalPages);
+      }
+    } catch (error) {
+      console.error('Error fetching search logs:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await authServices.getMe();
-        if (response) {
-          const data = response.data;
-          const formattedData: PersonalData[] = [
-            {
-              id: 'username',
-              label: 'Username',
-              value: data.username,
-              icon: <UserOutlined />,
-            },
-            {
-              id: 'email',
-              label: 'Email',
-              value: data.email,
-              icon: <MailOutlined />,
-            },
-            {
-              id: 'role',
-              label: 'Role',
-              value: data.role,
-              icon: <IdcardOutlined />,
-            },
-            {
-              id: 'joined',
-              label: 'Joined',
-              value: new Date(data.joined).toLocaleDateString(),
-              icon: <CalendarOutlined />,
-            },
-          ];
-          setPersonalData(formattedData);
-        }
-      } catch (error: any) {
-        console.error('Error fetching personal data:', error);
-      }
-    };
-
-    const fetchFavoriteWords = async () => {
-      try {
-        const response = await wordServices.getFavoriteWords();
-        if (response) {
-          const words = response.words;
-          setFavorites(words.map((word: any) => word.word));
-        }
-      } catch (error: any) {
-        console.error('Error fetching favorite words:', error);
-      }
-    };
-
-    const fetchSearchLogs = async () => {
-      try {
-        const response = await wordServices.getSearchLogs();
-        if (response) {
-          const searchLogs = response.searchLogs;
-          const formattedSearchHistories = searchLogs.map((searchLog: any) => ({
-            word: searchLog.word.word,
-            searchTime: formatDateTime(searchLog.searchTime),
-          }));
-          setSearchHistories(formattedSearchHistories);
-        }
-      } catch (error: any) {
-        console.error('Error fetching search logs: ', error);
-      }
-    };
-
-    fetchData();
+    fetchPersonalData();
     fetchFavoriteWords();
-    fetchSearchLogs();
-  }, []);
+    fetchSearchLogs(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const menu = (
     <Menu>
@@ -190,7 +203,6 @@ const ProfileForm = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
-      {/* Header */}
       <header
         style={{
           backgroundColor: '#3b82f6',
@@ -228,7 +240,6 @@ const ProfileForm = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main
         style={{
           maxWidth: '1200px',
@@ -256,7 +267,12 @@ const ProfileForm = () => {
                 </Space>
               }
             >
-              <WordList searchHistories={searchHistories} />
+              <WordList
+                searchHistories={searchHistories}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </Card>
           </TabPane>
           <TabPane
@@ -281,6 +297,9 @@ const ProfileForm = () => {
                   word,
                   searchTime: '',
                 }))}
+                currentPage={1}
+                totalPages={1}
+                onPageChange={() => {}}
               />
             </Card>
           </TabPane>

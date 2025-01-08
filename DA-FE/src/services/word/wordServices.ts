@@ -20,17 +20,14 @@ class WordServices {
     }
   }
 
-  public async getSearchLogs() {
+  public async getSearchLogs(page: number = 1, limit: number = 10) {
     try {
       const response = await axios.get(
         `${WORD_CLIENT_HOST}/${EWord.WORD_SEARCH_LOGS}`,
-        {
-          withCredentials: true,
-        },
+        { params: { page, limit }, withCredentials: true },
       );
 
       if (response) {
-        console.log(response.data.searchLogs);
         return response.data;
       }
     } catch (err: any) {
