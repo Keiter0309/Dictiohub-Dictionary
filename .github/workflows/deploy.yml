@@ -22,11 +22,18 @@ jobs:
 
       - name: Debug SSH connection
         run: |
-          ssh -v -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com 'echo "SSH connection successful"'
-
+          ssh -v -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} 'echo "SSH connection successful"'
       - name: Create necessary directories on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            if [ ! -d /var/www/DA-FE ]; then
+              sudo mkdir /var/www/DA-FE
+            fi
+
+            if [ ! -d /var/www/DA-BE ]; then
+              sudo mkdir /var/www/DA-BE
+            fi
+
             sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
           EOF
@@ -42,8 +49,9 @@ jobs:
       - name: Deploy Frontend to EC2
         run: |
           sudo rm -f -r /var/www/DA-FE/dist/*
-          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com:/var/www/DA-FE/
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          # scp -O StrictHostKeyChecking=no -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE
+          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
+          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
           cd /var/www/DA-FE
 
           if [ ! -f .env.production ]; then
@@ -56,8 +64,8 @@ jobs:
 
       - name: Deploy Backend to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com:/var/www/DA-BE/
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
+          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
                 cd /var/www/DA-BE
                 if [ ! -f .env ]; then
                   touch .env
@@ -69,7 +77,7 @@ jobs:
                   echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}" >> .env
                   echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}" >> .env
                   echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
-                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+                  echo "DATABASE_URL="${{ secrets.DATABASE_URL }}"" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
                   echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
@@ -81,14 +89,16 @@ jobs:
                   echo "PORT=${{ secrets.PORT }}" >> .env
                 fi
                 npm install
+                npx prisma migrate deploy
                 pm2 restart da-be || pm2 start --name da-be "npm start"
           EOF
 
       - name: Verify deployment
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-65-128-160.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
             echo "Checking PM2 processes..."
             pm2 list
+            pm2 log
             echo "Checking Nginx status..."
             sudo systemctl status nginx
           EOF

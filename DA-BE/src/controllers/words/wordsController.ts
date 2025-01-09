@@ -166,20 +166,37 @@ class WordsController {
     res: Response
   ) {
     try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
       const user = req.user?.id as unknown as number;
-      const searchLogs = await prisma.userSearchHistory.findMany({
-        where: {
-          userId: user,
-        },
-        include: {
-          word: true,
-        },
-      });
+      const [searchLogs, totalItems] = await Promise.all([
+        prisma.userSearchHistory.findMany({
+          where: {
+            userId: user,
+          },
+          include: {
+            word: true,
+          },
+          skip,
+          take: limit,
+          orderBy: { searchTime: "asc" },
+        }),
+        prisma.userSearchHistory.count({ where: { userId: user } }),
+      ]);
+
+      const totalPages = Math.ceil(totalItems / limit);
 
       return res.status(200).json({
         status_code: 200,
         message: "Fetch data successfully",
-        searchLogs: searchLogs,
+        data: searchLogs,
+        meta: {
+          totalItems,
+          totalPages,
+          currentPage: page,
+          limit,
+        },
       });
     } catch (err: any) {
       console.error(`Error fetching search log: ${err}`);
