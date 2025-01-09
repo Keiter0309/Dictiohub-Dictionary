@@ -34,7 +34,7 @@ jobs:
               sudo mkdir /var/www/DA-BE
             fi
 
-            sudo chown -R ubuntu:ubuntu /var/www/DA-FE /var/www/DA-BE
+            sudo chown -R $USER:$USER /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
           EOF
 
@@ -49,7 +49,7 @@ jobs:
       - name: Deploy Frontend to EC2
         run: |
           sudo rm -f -r /var/www/DA-FE/dist/*
-          # scp -O StrictHostKeyChecking=no -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE
+          # scp -O StrictHostKeyChecking=no -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
           scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
           ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
           cd /var/www/DA-FE
@@ -73,15 +73,15 @@ jobs:
                   echo "DB_USER=${{ secrets.DB_USER }}" >> .env
                   echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
                   echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-                  echo "GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}" >> .env
-                  echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}" >> .env
+                  echo "GOOGLE_EMAIL=\"${{ secrets.GOOGLE_EMAIL }}\"" >> .env
+                  echo "GOOGLE_PASSWORD=\"${{ secrets.GOOGLE_PASSWORD }}\"" >> .env
+                  echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" >> .env
+                  echo "ADMIN_EMAIL=\"${{ secrets.ADMIN_EMAIL }}\"" >> .env
+                  echo "ADMIN_PASSWORD=\"${{ secrets.ADMIN_PASSWORD }}\"" >> .env
                   echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}" >> .env
                   echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
-                  echo "DATABASE_URL="${{ secrets.DATABASE_URL }}"" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
-                  echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
-                  echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
                   echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
                   echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
                   echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
