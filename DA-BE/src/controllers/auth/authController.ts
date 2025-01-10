@@ -364,6 +364,21 @@ class AuthController {
       });
     }
   }
+
+  public async checkAuth(req: Request, res: Response) {
+    const token = req.cookies.token || req.cookies.aToken;
+    if (!token) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    try {
+      jwt.verify(token, process.env.JWT_SECRET as string);
+      return res.status(200).json({ message: "Authenticated" });
+    } catch (err) {
+      console.error("Token verification error:", err);
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+  }
+
   public async getMe(req: Request & { user?: JwtPayload }, res: Response) {
     try {
       // Get user data from token

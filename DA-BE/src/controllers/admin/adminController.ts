@@ -8,6 +8,9 @@ import { JwtPayload } from "../../interface/JwtPayload";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 
@@ -339,13 +342,34 @@ export class AdminWordController {
   public static async fetchAllWords(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
     try {
-      const words = await Words.fetchAllWords(page, limit);
+      const [words, totalItems] = await Promise.all([
+        prisma.word.findMany({
+          skip,
+          take: limit,
+          include: {
+            exampleWords: true,
+            pronunciations: true,
+            definitions: true,
+            wordCategories: true,
+            synonymsAntonyms: true,
+            meanings: true,
+          },
+        }),
+        prisma.word.count(),
+      ]);
+
+      const totalPages = Math.ceil(totalItems / limit);
       return res.status(200).json({
         status_code: 200,
-        message: "success",
-        data: {
-          words: words,
+        message: "Fetch data successfully",
+        data: words,
+        meta: {
+          totalItems,
+          totalPages,
+          currentPage: page,
+          limit,
         },
       });
     } catch (err) {
@@ -356,6 +380,7 @@ export class AdminWordController {
   public static async fetchWord(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
+      console.log(id);
       const word = await Words.fetchById(id);
 
       if (!word) {
@@ -391,6 +416,7 @@ export class AdminWordController {
       synonyms,
       antonyms,
     } = req.body;
+
     try {
       // Validate input
       if (
@@ -408,9 +434,14 @@ export class AdminWordController {
       ) {
         return res.status(400).json({
           status_code: 400,
-          message: `All fields are required word`,
+          message: `All fields are required`,
         });
       }
+
+      // Ensure categoryNames is an array
+      const categoryNamesArray = Array.isArray(categoryNames)
+        ? categoryNames
+        : categoryNames.split(",").map((name: any) => name.trim());
 
       // Create the word
       const newWord = await prisma.word.create({
@@ -450,7 +481,7 @@ export class AdminWordController {
       });
 
       const category = await prisma.category.findMany({
-        where: { categoryName: { in: categoryNames } },
+        where: { categoryName: { in: categoryNamesArray } },
       });
 
       const newCategory = await Promise.all(
@@ -503,8 +534,11 @@ export class AdminWordController {
           synonymsAntonyms: newSynonymsAntonyms,
         },
       });
-    } catch (err) {
-      return res.status(500).json({ error: `Error creating word ${err}` });
+    } catch (err: any) {
+      console.error(`Error creating word: ${err.message}`, err);
+      return res
+        .status(500)
+        .json({ error: `Error creating word: ${err.message}` });
     }
   }
 

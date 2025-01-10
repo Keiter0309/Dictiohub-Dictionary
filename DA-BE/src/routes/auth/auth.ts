@@ -8,11 +8,7 @@ import authController from "../../controllers/auth/authController";
 export const authRoute = Router();
 
 authRoute.post(`${EAuth.AUTH}/register`, AuthController.register);
-authRoute.post(
-  `${EAuth.AUTH}/login`,
-  RateLimiter.loginLimiter(),
-  AuthController.login
-);
+authRoute.post(`${EAuth.AUTH}/login`, AuthController.login);
 authRoute.post(
   `${EAuth.AUTH}/logout`,
   authenticateToken,
@@ -41,4 +37,9 @@ authRoute.get(
   `${EAuth.AUTH}/view`,
   checkPermission(["write"]),
   authController.checkPermission
+);
+authRoute.get(
+  `${EAuth.AUTH}/check-auth`,
+  authenticateToken,
+  AuthController.checkAuth
 );
