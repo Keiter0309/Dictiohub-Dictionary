@@ -2,6 +2,7 @@ import axios from 'axios';
 import { EAdmin } from '../../enums/Admin/EAdmin';
 import { ADMIN_CLIENT_HOST } from '../../enums/Admin/EAdmin';
 import { message } from 'antd';
+import useAuthStore from '../../stores/authStore';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
@@ -14,25 +15,11 @@ export class AdminServices {
         },
       );
 
-      const access_token = response.data.data.access_token;
-
-      localStorage.setItem('aToken', 'true');
-
-      const interceptor = axios.interceptors.response.use(
-        (response) => response,
-        (error) => {
-          if (error.response && error.response.status === 401) {
-            localStorage.removeItem('aToken');
-          }
-          return Promise.reject(error);
-        },
-      );
-
-      console.log(`Session expired:::: ${interceptor}`);
-
-      return access_token;
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(true);
+      return response;
     } catch (error: any) {
-      message.error(error.response.data.message)
+      message.error(error.response.data.message);
       return error.response.data;
     }
   }
@@ -46,9 +33,8 @@ export class AdminServices {
           withCredentials: true,
         },
       );
-
-      localStorage.removeItem('aToken');
-
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(false);
       return response.data.message;
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
@@ -150,12 +136,13 @@ export class AdminWordServices {
   public static async fetchAllWords(page: number, limit: number) {
     try {
       const response = await axios.get(
-        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}?page=${page}&limit=${limit}`,
+        `${ADMIN_CLIENT_HOST}/${EAdmin.ADMIN_FETCH_WORDS}`,
         {
+          params: { page, limit },
           withCredentials: true,
         },
       );
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error(error);
     }
@@ -169,6 +156,7 @@ export class AdminWordServices {
           withCredentials: true,
         },
       );
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       throw new Error(`Failed to fetch word: ${error.message}`);
@@ -210,6 +198,11 @@ export class AdminWordServices {
       );
       return response.data;
     } catch (error: any) {
+      message.error(
+        `Failed to create word: ${
+          error.response?.data?.message || error.message
+        }`,
+      );
       throw new Error(
         `Failed to create word: ${
           error.response?.data?.message || error.message

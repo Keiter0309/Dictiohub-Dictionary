@@ -133,7 +133,7 @@ const SidebarForm: React.FC = () => {
     meanings: string,
     definitionText: string,
     partOfSpeech: string,
-    categoryNames: string,
+    categoryNames: string | string[],
     exampleText: string,
     dialect: string,
     ipaText: string,
@@ -142,12 +142,17 @@ const SidebarForm: React.FC = () => {
     antonyms: string,
   ) => {
     try {
+      // Ensure categoryNames is an array
+      const categoriesArray = Array.isArray(categoryNames)
+        ? categoryNames
+        : categoryNames.split(', ');
+
       const response = await AdminWordServices.createWord(
         word,
         meanings,
         definitionText,
         partOfSpeech,
-        categoryNames,
+        categoriesArray.join(', '),
         exampleText,
         dialect,
         ipaText,

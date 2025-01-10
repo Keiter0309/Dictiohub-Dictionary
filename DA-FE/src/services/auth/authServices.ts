@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { EAuth } from '../../enums/Auth/EAuth';
 import { AUTH_CLIENT_HOST } from '../../enums/Auth/EAuth';
+import useAuthStore from '../../stores/authStore';
 
 class AuthServices {
   public async register(
@@ -55,16 +56,10 @@ class AuthServices {
         },
       );
 
-      // Validate response structure
-      if (response.data && response.data.data && response.data.data.id) {
-        const userId = response.data.data.id;
-        localStorage.setItem('id', userId);
-        localStorage.setItem('token', 'true');
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(true);
 
-        return response.data;
-      } else {
-        throw new Error('Invalid response structure');
-      }
+      return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         console.error('Error logging in:', err.response.data);
@@ -86,8 +81,8 @@ class AuthServices {
         },
       );
 
-      localStorage.removeItem('id');
-      localStorage.removeItem('token');
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(false);
 
       console.log('Logout successful:', response.data.message);
       return response.data.message;
@@ -150,6 +145,33 @@ class AuthServices {
       return response.data;
     } catch (err: any) {
       throw new Error(err);
+    }
+  }
+
+  public async checkAuth() {
+    try {
+      const response = await axios.get(
+        `${AUTH_CLIENT_HOST}/${EAuth.AUTH_CHECK}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(true);
+
+      return response.data;
+    } catch (err: any) {
+      const { setAuthenticated } = useAuthStore.getState();
+      setAuthenticated(false);
+
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        return null;
+      }
+
+      throw new Error(
+        'An unexpected error occurred while checking authentication.',
+      );
     }
   }
 

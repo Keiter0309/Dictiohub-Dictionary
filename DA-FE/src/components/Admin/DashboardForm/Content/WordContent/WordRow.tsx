@@ -19,7 +19,7 @@ const WordRow: React.FC<WordRowProps> = ({
 }) => {
   const showConfirmSwal = async (id: number) => {
     const result = await Confirm(
-      `Are you sure you want to delete this ${item.word}?`,
+      `Are you sure you want to delete the word "${item.word}"?`,
       'error',
     );
 
@@ -31,16 +31,27 @@ const WordRow: React.FC<WordRowProps> = ({
   const handleDeleteWord = async (id: number) => {
     try {
       const response = await AdminWordServices.deleteWord(id);
-      message.success('Word deleted successfully');
-      fetchAllWords(1);
-      if (response.status === 200) {
-        return response;
+      if (response.status_code === 200) {
+        message.success('Word deleted successfully');
+        fetchAllWords(1);
       } else {
+        message.error('Failed to delete the word. Please try again.');
         console.error('Failed to delete word:', response);
       }
     } catch (error: any) {
+      message.error('An error occurred while deleting the word.');
       console.error('Error deleting word:', error);
     }
+  };
+
+  const renderList = (items?: string | string[] | string[][]) => {
+    if (!items) return null;
+    const list = Array.isArray(items) ? items.flat() : items.split('\n');
+    return list.map((item, index) => (
+      <li key={index} className="list-none">
+        {item}
+      </li>
+    ));
   };
 
   return (
@@ -50,77 +61,47 @@ const WordRow: React.FC<WordRowProps> = ({
         {item.word}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.meaningText && item.meaningText.length > 0 ? (
-          <ul>
-            {item.meaningText.map((meaning, index) => (
-              <li key={index}>{meaning}</li>
-            ))}
-          </ul>
-        ) : (
-          ''
-        )}
+        {renderList(item.meaningText)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.definitionText && item.definitionText.length > 0 ? (
-          <ul>
-            {item.definitionText.map((definition, index) => (
-              <li key={index}>{definition}</li>
-            ))}
-          </ul>
-        ) : (
-          ''
-        )}
+        {renderList(item.definitionText)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.usageExample && item.usageExample.length > 0 ? (
-          <ul>
-            {item.usageExample.map((example, index) => (
-              <li key={index}>{example}</li>
-            ))}
-          </ul>
-        ) : (
-          ''
-        )}
+        {renderList(item.usageExample)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.partOfSpeech && item.partOfSpeech.length > 0 ? (
-          <ul>
-            {item.partOfSpeech.map((part, index) => (
-              <li key={index}>{part}</li>
-            ))}
-          </ul>
-        ) : (
-          ''
-        )}
+        {renderList(item.partOfSpeech)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.categoryNames || ''}
+        {renderList(item.categoryNames)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.synonyms || ''}
+        {renderList(item.synonyms)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.antonyms || ''}
+        {renderList(item.antonyms)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.ipa || ''}
+        {renderList(item.ipa)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.dialect || ''}
+        {renderList(item.dialect)}
       </td>
       <td className="py-3 px-5 text-left whitespace-nowrap">
-        {item.audioPath || ''}
+        {renderList(item.audioPath)}
       </td>
       <td className="py-3 px-5 text-left sticky right-0 z-10 bg-white">
         <button
           className="text-blue-500 hover:text-blue-700 transition-all duration-300"
           onClick={() => handleEditWord(item.id)}
+          aria-label="Edit Word"
         >
           <Pencil className="w-5 h-5" />
         </button>
         <button
           className="text-red-500 hover:text-red-700 ml-3"
           onClick={() => showConfirmSwal(item.id)}
+          aria-label="Delete Word"
         >
           <Trash2 className="w-5 h-5" />
         </button>
