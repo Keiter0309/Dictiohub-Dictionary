@@ -85,6 +85,14 @@ jobs:
           scp -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
           ssh ubuntu@${{secrets.PUBLIC_DNS}} "cd /var/www/DA-FE && rm -rf DA-BE"
 
+      - name: Build Frontend
+        run: |
+          cd DA-FE
+          npm install
+          touch .env.production
+          echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+          npm run build
+
       - name: Copy Backend code to server
         run: |
           scp -r DA-BE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
@@ -94,11 +102,14 @@ jobs:
       - name: Install and Build Frontend
         run: |
           ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            sudo rm -rf /var/www/DA-FE/dist/
+            scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
             cd /var/www/DA-FE
-            npm i
+            npm ci
             touch .env.production
             echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
-            npm run build
+            pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
+            sudo systemctl restart nginx
           EOF
 
       - name: Deploy Frontend
