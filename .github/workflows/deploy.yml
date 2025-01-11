@@ -95,7 +95,7 @@ jobs:
         run: |
           ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
             cd /var/www/DA-FE
-            npm ci
+            npm i
             touch .env.production
             echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
             npm run build
@@ -106,7 +106,7 @@ jobs:
         run: |
           ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
             cd /var/www/DA-FE
-            npm ci --production
+            npm i
             if [ ! -f .env.production ]; then
               touch .env.production
               echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
@@ -115,7 +115,7 @@ jobs:
             if [ $? -eq 0 ]; then
               pm2 restart da-fe
             else
-              pm2 start npm --name da-fe -- run preview
+              pm2 start --name da-fe -- npm run preview
             fi
           EOF
 
@@ -146,10 +146,10 @@ jobs:
                 echo "AWS_REGION=${{ secrets.AWS_REGION }}"
                 echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}"
                 echo "PORT=${{ secrets.PORT }}"
+                echo "NODE_ENV=production"
               } > .env
             fi
-            npm ci --production
-            npx prisma generate
+            npm i
             npx prisma migrate deploy
             pm2 describe da-be > /dev/null
             if [ $? -eq 0 ]; then
