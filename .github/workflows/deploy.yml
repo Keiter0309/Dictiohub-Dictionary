@@ -101,9 +101,9 @@ jobs:
       # Frontend Deployment
       - name: Install and Build Frontend
         run: |
+          sudo rm -rf /var/www/DA-FE/dist/
+          scp -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
           ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
-            sudo rm -rf /var/www/DA-FE/dist/
-            scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
             cd /var/www/DA-FE
             npm ci
             touch .env.production
