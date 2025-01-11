@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: "18"
+  NODE_VERSION: "20"
 
 jobs:
   deploy:
@@ -115,7 +115,7 @@ jobs:
             if [ $? -eq 0 ]; then
               pm2 restart da-fe
             else
-              pm2 start --name da-fe -- npm run preview
+              pm2 start --name da-fe -- "npm run preview"
             fi
           EOF
 
@@ -155,7 +155,7 @@ jobs:
             if [ $? -eq 0 ]; then
               pm2 restart da-be
             else
-              pm2 start npm --name da-be -- start
+              pm2 start --name da-be "npm start"
             fi
           EOF
 
