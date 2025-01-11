@@ -5,103 +5,188 @@ on:
     branches:
       - main
 
+env:
+  NODE_VERSION: "18"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Pull code from main branch
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           ref: main
+
+      # Cache dependencies
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_SECRET_KEY }}
 
-      - name: Debug SSH connection
+      - name: Add EC2 host to known_hosts
         run: |
-          ssh -v -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} 'echo "SSH connection successful"'
-      - name: Create necessary directories on EC2
+          ssh-keyscan -H ${{secrets.PUBLIC_DNS}} >> ~/.ssh/known_hosts
+
+      - name: Create backup directories
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
-            if [ ! -d /var/www/DA-FE ]; then
-              sudo mkdir /var/www/DA-FE
-            fi
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            sudo mkdir -p /var/www/backups/DA-FE
+            sudo mkdir -p /var/www/backups/DA-BE
+            sudo chown -R $USER:$USER /var/www/backups
+          EOF
 
-            if [ ! -d /var/www/DA-BE ]; then
-              sudo mkdir /var/www/DA-BE
+      - name: Backup existing deployment
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << EOF
+            if [ -d "/var/www/DA-FE" ]; then
+              sudo tar -czf "/var/www/backups/DA-FE/backup_\${TIMESTAMP}.tar.gz" -C /var/www DA-FE
             fi
+            if [ -d "/var/www/DA-BE" ]; then
+              sudo tar -czf "/var/www/backups/DA-BE/backup_\${TIMESTAMP}.tar.gz" -C /var/www DA-BE
+            fi
+          EOF
 
+      - name: Initial server setup
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PUBLIC_DNS }} << 'EOF'
+            sudo apt update && sudo apt upgrade -y
+            sudo apt install -y nginx nodejs npm curl git build-essential
+            sudo npm install -g pm2
+            sudo systemctl start nginx
+            sudo systemctl enable nginx
+
+      - name: Create deployment directories
+        run: |
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            sudo mkdir -p /var/www/DA-FE
+            sudo mkdir -p /var/www/DA-BE
             sudo chown -R $USER:$USER /var/www/DA-FE /var/www/DA-BE
             sudo chmod -R 755 /var/www/DA-FE /var/www/DA-BE
           EOF
 
-      - name: Copy folder to server
+      # Copy source code to server
+      - name: Copy Frontend code to server
         run: |
-          scp -o StrictHostKeyChecking=no -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
+          scp -r ./* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} "cd /var/www/DA-FE && rm -rf DA-BE"
 
-      - name: Build Frontend
+      - name: Copy Backend code to server
         run: |
-          cd DA-FE
-          npm install
-          touch .env.production
-          echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
-          npm run build
+          scp -r ./* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} "cd /var/www/DA-BE && rm -rf DA-FE"
 
-      - name: Deploy Frontend to EC2
+      # Frontend Deployment
+      - name: Install and Build Frontend
         run: |
-          sudo rm -f -r /var/www/DA-FE/dist/*
-          scp -o StrictHostKeyChecking=no -r DA-FE/dist ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
-          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
-          cd /var/www/DA-FE
-          npm i
-
-          if [ ! -f .env.production ]; then
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            cd /var/www/DA-FE
+            npm ci
             touch .env.production
             echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
-          fi
-          pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
-          sudo systemctl restart nginx
+            npm run build
           EOF
 
-      - name: Deploy Backend to EC2
+      - name: Deploy Frontend
+        id: deploy-frontend
         run: |
-          scp -o StrictHostKeyChecking=no -r DA-BE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
-          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
-                cd /var/www/DA-BE
-                if [ ! -f .env ]; then
-                  touch .env
-                  echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-                  echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-                  echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-                  echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-                  echo "GOOGLE_EMAIL=\"${{ secrets.GOOGLE_EMAIL }}\"" >> .env
-                  echo "GOOGLE_PASSWORD=\"${{ secrets.GOOGLE_PASSWORD }}\"" >> .env
-                  echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" >> .env
-                  echo "ADMIN_EMAIL=\"${{ secrets.ADMIN_EMAIL }}\"" >> .env
-                  echo "ADMIN_PASSWORD=\"${{ secrets.ADMIN_PASSWORD }}\"" >> .env
-                  echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}" >> .env
-                  echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
-                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-                  echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
-                  echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-                  echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-                  echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
-                  echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
-                  echo "PORT=${{ secrets.PORT }}" >> .env
-                fi
-                npm install
-                npx prisma migrate deploy
-                pm2 restart da-be || pm2 start --name da-be "npm start"
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            cd /var/www/DA-FE
+            npm ci --production
+            if [ ! -f .env.production ]; then
+              touch .env.production
+              echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
+            fi
+            pm2 describe da-fe > /dev/null
+            if [ $? -eq 0 ]; then
+              pm2 restart da-fe
+            else
+              pm2 start npm --name da-fe -- run preview
+            fi
+          EOF
+
+      # Backend Deployment
+      - name: Deploy Backend
+        id: deploy-backend
+        run: |
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+            cd /var/www/DA-BE
+            if [ ! -f .env ]; then
+              touch .env
+              {
+                echo "DB_HOST=${{ secrets.DB_HOST }}"
+                echo "DB_USER=${{ secrets.DB_USER }}"
+                echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+                echo "DB_NAME=${{ secrets.DB_NAME }}"
+                echo "GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}"
+                echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}"
+                echo "DATABASE_URL="${{ secrets.DATABASE_URL }}"
+                echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}"
+                echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}"
+                echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}"
+                echo "SERVER_HOST=${{ secrets.SERVER_HOST }}"
+                echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+                echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}"
+                echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
+                echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+                echo "AWS_REGION=${{ secrets.AWS_REGION }}"
+                echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}"
+                echo "PORT=${{ secrets.PORT }}"
+              } > .env
+            fi
+            npm ci --production
+            npx prisma generate
+            npx prisma migrate deploy
+            pm2 describe da-be > /dev/null
+            if [ $? -eq 0 ]; then
+              pm2 restart da-be
+            else
+              pm2 start npm --name da-be -- start
+            fi
           EOF
 
       - name: Verify deployment
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
+          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
             echo "Checking PM2 processes..."
             pm2 list
             echo "Checking Nginx status..."
             sudo systemctl status nginx
+            echo "Checking application logs..."
+            pm2 logs --lines 10
           EOF
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "Deployment completed successfully!"
+          else
+            echo "Deployment failed!"
+            ssh ubuntu@${{secrets.PUBLIC_DNS}} << EOF
+              LATEST_FE_BACKUP=\$(ls -t /var/www/backups/DA-FE | head -n1)
+              LATEST_BE_BACKUP=\$(ls -t /var/www/backups/DA-BE | head -n1)
+              if [ -n "\$LATEST_FE_BACKUP" ]; then
+                sudo tar -xzf "/var/www/backups/DA-FE/\$LATEST_FE_BACKUP" -C /var/www
+                pm2 restart da-fe
+              fi
+              if [ -n "\$LATEST_BE_BACKUP" ]; then
+                sudo tar -xzf "/var/www/backups/DA-BE/\$LATEST_BE_BACKUP" -C /var/www
+                pm2 restart da-be
+              fi
+            EOF
+          fi
