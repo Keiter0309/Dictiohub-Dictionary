@@ -82,12 +82,12 @@ jobs:
       # Copy source code to server
       - name: Copy Frontend code to server
         run: |
-          scp -r ./* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
+          scp -r DA-FE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-FE/
           ssh ubuntu@${{secrets.PUBLIC_DNS}} "cd /var/www/DA-FE && rm -rf DA-BE"
 
       - name: Copy Backend code to server
         run: |
-          scp -r ./* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
+          scp -r DA-BE/* ubuntu@${{secrets.PUBLIC_DNS}}:/var/www/DA-BE/
           ssh ubuntu@${{secrets.PUBLIC_DNS}} "cd /var/www/DA-BE && rm -rf DA-FE"
 
       # Frontend Deployment
