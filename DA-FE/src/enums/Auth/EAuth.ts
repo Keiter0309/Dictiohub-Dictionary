@@ -5,6 +5,7 @@ export enum EAuth {
   AUTH_FORGOT_PASSWORD = 'api/v1/auth/forgot-password',
   AUTH_RESET_PASSWORD = 'api/v1/auth/reset-password',
   AUTH_CHANGE_PASSWORD = 'api/v1/auth/change-password',
+  AUTH_CHECK = 'api/v1/auth/check-auth',
   AUTH_ME = 'api/v1/auth/me',
 }
 

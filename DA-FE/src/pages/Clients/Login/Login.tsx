@@ -1,28 +1,32 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthServices from "../../../services/auth/authServices";
-import LoginForm from "../../../components/Client/LoginForm/LoginForm";
-import { message } from "antd";
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthServices from '../../../services/auth/authServices';
+import LoginForm from '../../../components/Client/LoginForm/LoginForm';
+import { message } from 'antd';
+import useAuthStore from '../../../stores/authStore';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, setAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/");
-    } else {
-      navigate("/login");
-    }
-  }, [navigate]);
+    const checkAuth = async () => {
+      await AuthServices.checkAuth();
+      if (isAuthenticated) {
+        navigate('/');
+      }
+    };
+    checkAuth();
+  }, [navigate, setAuthenticated]);
 
   const handleLogin = async (email: string, password: string) => {
     try {
       await AuthServices.login(email, password);
-      message.success("Logged in successfully");
-      navigate("/");
+      message.success('Logged in successfully');
+      setAuthenticated(true);
+      navigate('/');
     } catch (err: any) {
-      message.error("Invalid email or password");
+      message.error('Invalid email or password');
     }
   };
 

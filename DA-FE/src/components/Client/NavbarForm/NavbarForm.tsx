@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+// filepath: /src/components/Client/NavbarForm/NavbarForm.tsx
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Menu, X } from 'lucide-react';
 import authServices from '../../../services/auth/authServices';
 import { message } from 'antd';
+import useAuthStore from '../../../stores/authStore';
 
 const NavbarForm: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const isLogged = localStorage.getItem('token');
+  const { isAuthenticated, setAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await authServices.checkAuth();
+      } catch (error) {
+        console.error('User is not authenticated:', error);
+        setAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, [setAuthenticated]);
 
   const navItems = [
     { to: '/', label: 'Home' },
@@ -22,13 +37,15 @@ const NavbarForm: React.FC = () => {
     { to: '/', label: 'Logout' },
   ];
 
-  const handleLogoutClick = () => {
-    authServices.logout();
-    localStorage.removeItem('token');
-    localStorage.removeItem('favorites');
-    message.success('Logout successful');
-
-    navigate('/');
+  const handleLogoutClick = async () => {
+    try {
+      await authServices.logout();
+      message.success('Logout successful');
+      navigate('/');
+    } catch (error) {
+      message.error('Logout failed');
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -53,7 +70,7 @@ const NavbarForm: React.FC = () => {
             ))}
           </nav>
           {/* Dropdown Profile */}
-          {isLogged ? (
+          {isAuthenticated ? (
             <div className="items-center ml-4 hidden md:flex">
               <div className="relative">
                 <button
@@ -112,7 +129,7 @@ const NavbarForm: React.FC = () => {
         <div className="bg-white w-64 h-full shadow-lg transition-transform transform flex flex-col">
           <div className="flex justify-between items-center p-4 border-b">
             <span className="text-xl font-bold text-gray-900">
-              {isLogged ? (
+              {isAuthenticated ? (
                 <div className="items-center lg:hidden flex">
                   <div className="relative">
                     <button
@@ -132,7 +149,7 @@ const NavbarForm: React.FC = () => {
                             key={item.to}
                             to={item.to}
                             onClick={() => {
-                              if (item.to === '/logout') {
+                              if (item.to === '/') {
                                 handleLogoutClick();
                               }
                               setIsDropdownOpen(false);
@@ -171,8 +188,13 @@ const NavbarForm: React.FC = () => {
               ))}
             </div>
             <div className="p-4 mt-auto border-t">
-              {isLogged ? (
-                <button></button>
+              {isAuthenticated ? (
+                <button
+                  onClick={handleLogoutClick}
+                  className="block px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+                >
+                  Logout
+                </button>
               ) : (
                 <Link
                   to="/login"

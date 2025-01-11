@@ -2,17 +2,16 @@ export interface WordRowProps {
   item: Word & {
     definitionText?: string[];
     meaningText?: string[];
-    partOfSpeech?: string[];
+    partOfSpeech?: string[] | string[][];
     usageExample?: string[];
-    categoryNames?: string;
-    synonyms?: string;
-    antonyms?: string;
-    ipa?: string;
-    dialect?: string;
-    audioPath?: string;
+    categoryNames?: string[];
+    synonyms?: string[];
+    antonyms?: string[];
+    ipa?: string[];
+    dialect?: string[];
+    audioPath?: string[];
   };
 }
-
 export interface WordRowComponentProps extends WordRowProps {
   index: number;
 }
@@ -62,6 +61,7 @@ export interface WordCategory {
 export interface Word {
   id: number;
   word: string;
+  meanings: Meaning[];
   definitions: Definition[];
   exampleWords: ExampleWord[];
   pronunciations: Pronunciation[];

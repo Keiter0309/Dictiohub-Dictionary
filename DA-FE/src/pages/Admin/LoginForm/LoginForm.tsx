@@ -3,21 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import AdminLoginForm from '../../../components/Admin/LoginForm/LoginForm';
 import { AdminServices } from '../../../services/admin/adminServices';
 import { message } from 'antd';
+import authServices from '../../../services/auth/authServices';
+import useAuthStore from '../../../stores/authStore';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, setAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    const token = localStorage.getItem('aToken');
-    if (token) {
-      navigate('/admin/dashboard');
-    }
-  }, [navigate]);
+    const checkAuth = async () => {
+      try {
+        const response = await authServices.checkAuth();
+        if (response === null) {
+          // Token expired, navigate to login
+          navigate('/admin/login');
+        } else if (isAuthenticated) {
+          navigate('/admin/dashboard');
+        }
+      } catch (error) {
+        console.error('User is not authenticated', error);
+      }
+    };
+    checkAuth();
+  }, [navigate, setAuthenticated, isAuthenticated]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      localStorage.removeItem('aToken');
-
       message.warning('Session expired. Please login again.');
       navigate('/admin/login');
     }, 900000); // 15 minutes
@@ -27,8 +38,9 @@ const AdminLogin: React.FC = () => {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const accessToken = await AdminServices.loginAdmin(email, password);
-      if (accessToken) {
+      const response = await AdminServices.loginAdmin(email, password);
+      if (response) {
+        setAuthenticated(true);
         navigate('/admin/dashboard');
       } else {
         message.error('Invalid email or password');

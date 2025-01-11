@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { audioRoute } from "./routes/audio/audio";
+import { RateLimiter } from "./middlewares/limiter/rateLimit.middleware";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(bodyParser.json());
+// app.use(RateLimiter.rateLimiter());
 app.use(cookieParser());
 app.use("/api/v1/audio", express.static(path.join(__dirname, "..", "audio")));
 app.get("/", (req: Request, res: Response) => {
