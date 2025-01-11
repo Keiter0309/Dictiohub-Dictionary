@@ -112,11 +112,7 @@ jobs:
               echo "VITE_API_BASE_URL=${{ secrets.SERVER_HOST }}" >> .env.production
             fi
             pm2 describe da-fe > /dev/null
-            if [ $? -eq 0 ]; then
-              pm2 restart da-fe
-            else
-              pm2 start --name da-fe -- "npm run preview"
-            fi
+            pm2 restart da-fe || pm2 start --name da-fe "npm run preview"
           EOF
 
       # Backend Deployment
@@ -151,12 +147,7 @@ jobs:
             fi
             npm i
             npx prisma migrate deploy
-            pm2 describe da-be > /dev/null
-            if [ $? -eq 0 ]; then
-              pm2 restart da-be
-            else
-              pm2 start --name da-be "npm start"
-            fi
+            pm2 restart da-be || pm2 start --name da-be "npm start"
           EOF
 
       - name: Verify deployment
