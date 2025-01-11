@@ -130,7 +130,7 @@ jobs:
                 echo "DB_NAME=${{ secrets.DB_NAME }}"
                 echo "GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}"
                 echo "GOOGLE_PASSWORD=${{ secrets.GOOGLE_PASSWORD }}"
-                echo "DATABASE_URL="${{ secrets.DATABASE_URL }}"
+                echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"
                 echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}"
                 echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}"
                 echo "CLIENT_HOST=${{ secrets.CLIENT_HOST }}"
