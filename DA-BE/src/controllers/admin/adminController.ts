@@ -26,7 +26,7 @@ export class AdminAuthController {
       const isInvalidPassword = bycrypt.compareSync(password, user.password);
 
       if (!isInvalidPassword) {
-        return res.status(401).json({ error: "Invalid password" });
+        return res.status(401).json({ error: "Invalid email or password" });
       }
 
       if (user.role !== "admin") {
@@ -51,6 +51,7 @@ export class AdminAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
+        path: '/',
         maxAge: 1000 * 60 * 24,
       });
 
@@ -61,7 +62,6 @@ export class AdminAuthController {
           id: user.id,
           email: user.email,
           role: user.role,
-          access_token: token,
         },
       });
     } catch (err) {

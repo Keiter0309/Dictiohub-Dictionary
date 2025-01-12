@@ -1,23 +1,25 @@
-import React, { useState } from "react";
-import { BookOpen } from "lucide-react";
-import { LoginFormProps } from "../../../types/Users/Auth";
+import React, { useState } from 'react';
+import { BookOpen } from 'lucide-react';
+import { onSubmitLogin } from '../../../types/Users/Auth';
 
-const AdminLoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const AdminLoginForm: React.FC<onSubmitLogin> = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(email, password);
-    if (email === "" || password === "") {
-      setError("Please fill in all fields");
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email address");
+    onSubmit(formData);
+    if (formData.email === '' || formData.password === '') {
+      setError('Please fill in all fields');
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setError('Please enter a valid email address');
     } else {
-      setError("");
+      setError('');
     }
   };
 
@@ -47,8 +49,8 @@ const AdminLoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
               id="email"
               type="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
           </div>
           <div className="mb-6">
@@ -62,10 +64,10 @@ const AdminLoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
               />
               <button
                 type="button"

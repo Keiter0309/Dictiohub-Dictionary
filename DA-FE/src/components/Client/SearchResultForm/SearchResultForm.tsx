@@ -5,6 +5,7 @@ import { Modal, message } from 'antd';
 import { SearchResultFormProps } from '../../../types/Dashboard/SearchResultFormProps';
 import wordServices from '../../../services/word/wordServices';
 import { EAws } from '../../../enums/Aws/EAws';
+import useAuthStore from '../../../stores/authStore';
 
 const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -15,6 +16,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   );
   const [searchResults, setSearchResults] = useState(result);
   const navigate = useNavigate();
+  const {authUser}=useAuthStore()
 
   useEffect(() => {
     fetchFavorite();
@@ -37,7 +39,7 @@ const SearchResultForm: React.FC<SearchResultFormProps> = ({ result }) => {
   };
 
   const handleFavorite = async (word: string) => {
-    const token = localStorage.getItem('token');
+    const token = authUser
     const wordId = searchResults.id;
     if (token) {
       if (favorites.includes(word)) {

@@ -149,7 +149,6 @@ class AuthController {
       return res.status(200).json({
         status_code: 200,
         message: "Login successful",
-        access_token: token,
         data: {
           id: existingUser.id,
           firstName: existingUser.firstName,
@@ -365,18 +364,14 @@ class AuthController {
     }
   }
 
-  public async checkAuth(req: Request, res: Response) {
-    const token = req.cookies.token || req.cookies.aToken;
-    if (!token) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    try {
-      jwt.verify(token, process.env.JWT_SECRET as string);
-      return res.status(200).json({ message: "Authenticated" });
-    } catch (err) {
-      console.error("Token verification error:", err);
-      return res.status(401).json({ message: "Not authenticated" });
-    }
+  public async checkAuth(req: Request & {user?: JwtPayload}, res: Response) {
+    const id=req.user?.id as unknown as number
+    const user=await User.fetchById(id)
+    return res.status(200).json({
+      status_code:200,
+      message: "Authenticated",
+      data: user
+    });
   }
 
   public async getMe(req: Request & { user?: JwtPayload }, res: Response) {

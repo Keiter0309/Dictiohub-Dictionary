@@ -2,7 +2,6 @@ import axios from 'axios';
 import { EAdmin } from '../../enums/Admin/EAdmin';
 import { ADMIN_CLIENT_HOST } from '../../enums/Admin/EAdmin';
 import { message } from 'antd';
-import useAuthStore from '../../stores/authStore';
 
 export class AdminServices {
   public static async loginAdmin(email: string, password: string) {
@@ -14,12 +13,9 @@ export class AdminServices {
           withCredentials: true,
         },
       );
-
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(true);
       return response;
     } catch (error: any) {
-      message.error(error.response.data.message);
+      message.error(error.message);
       return error.response.data;
     }
   }
@@ -33,8 +29,6 @@ export class AdminServices {
           withCredentials: true,
         },
       );
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(false);
       return response.data.message;
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

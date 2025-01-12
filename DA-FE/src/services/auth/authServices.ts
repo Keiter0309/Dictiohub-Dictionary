@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { EAuth } from '../../enums/Auth/EAuth';
 import { AUTH_CLIENT_HOST } from '../../enums/Auth/EAuth';
-import useAuthStore from '../../stores/authStore';
 
 class AuthServices {
   public async register(
@@ -56,9 +55,6 @@ class AuthServices {
         },
       );
 
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(true);
-
       return response.data;
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
@@ -80,10 +76,6 @@ class AuthServices {
           withCredentials: true,
         },
       );
-
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(false);
-
       console.log('Logout successful:', response.data.message);
       return response.data.message;
     } catch (err: any) {
@@ -157,13 +149,9 @@ class AuthServices {
         },
       );
 
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(true);
 
       return response.data;
     } catch (err: any) {
-      const { setAuthenticated } = useAuthStore.getState();
-      setAuthenticated(false);
 
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         return null;

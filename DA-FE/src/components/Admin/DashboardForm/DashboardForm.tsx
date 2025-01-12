@@ -91,7 +91,6 @@ const SidebarForm: React.FC = () => {
       (response) => response,
       (error) => {
         if (error.response && error.response.status === 401) {
-          localStorage.removeItem('token');
           message.error('Session expired. Please login again.');
           AdminServices.logout();
           navigate('/admin/login');

@@ -5,12 +5,17 @@ export interface SignupFormProps {
     email: string,
     username: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
   ) => void;
 }
 
 export interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
+  email: string;
+  password: string;
+}
+
+export interface onSubmitLogin {
+  onSubmit: (formData: LoginFormProps) => Promise<void>;
 }
 
 export interface IUser {

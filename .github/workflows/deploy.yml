@@ -41,26 +41,6 @@ jobs:
         run: |
           ssh-keyscan -H ${{secrets.PUBLIC_DNS}} >> ~/.ssh/known_hosts
 
-      - name: Create backup directories
-        run: |
-          ssh ubuntu@${{secrets.PUBLIC_DNS}} << 'EOF'
-            sudo mkdir -p /var/www/backups/DA-FE
-            sudo mkdir -p /var/www/backups/DA-BE
-            sudo chown -R $USER:$USER /var/www/backups
-          EOF
-
-      - name: Backup existing deployment
-        run: |
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          ssh ubuntu@${{secrets.PUBLIC_DNS}} << EOF
-            if [ -d "/var/www/DA-FE" ]; then
-              sudo tar -czf "/var/www/backups/DA-FE/backup_\${TIMESTAMP}.tar.gz" -C /var/www DA-FE
-            fi
-            if [ -d "/var/www/DA-BE" ]; then
-              sudo tar -czf "/var/www/backups/DA-BE/backup_\${TIMESTAMP}.tar.gz" -C /var/www DA-BE
-            fi
-          EOF
-
       - name: Initial server setup
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PUBLIC_DNS }} << 'EOF'
@@ -171,24 +151,3 @@ jobs:
             echo "Checking application logs..."
             pm2 logs --lines 10
           EOF
-
-      - name: Notify deployment status
-        if: always()
-        run: |
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "Deployment completed successfully!"
-          else
-            echo "Deployment failed!"
-            ssh ubuntu@${{secrets.PUBLIC_DNS}} << EOF
-              LATEST_FE_BACKUP=\$(ls -t /var/www/backups/DA-FE | head -n1)
-              LATEST_BE_BACKUP=\$(ls -t /var/www/backups/DA-BE | head -n1)
-              if [ -n "\$LATEST_FE_BACKUP" ]; then
-                sudo tar -xzf "/var/www/backups/DA-FE/\$LATEST_FE_BACKUP" -C /var/www
-                pm2 restart da-fe
-              fi
-              if [ -n "\$LATEST_BE_BACKUP" ]; then
-                sudo tar -xzf "/var/www/backups/DA-BE/\$LATEST_BE_BACKUP" -C /var/www
-                pm2 restart da-be
-              fi
-            EOF
-          fi

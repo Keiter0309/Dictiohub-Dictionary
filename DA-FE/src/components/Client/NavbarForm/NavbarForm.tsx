@@ -1,29 +1,14 @@
-// filepath: /src/components/Client/NavbarForm/NavbarForm.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Menu, X } from 'lucide-react';
-import authServices from '../../../services/auth/authServices';
 import { message } from 'antd';
 import useAuthStore from '../../../stores/authStore';
 
 const NavbarForm: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const {authUser, logout}=useAuthStore()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { isAuthenticated, setAuthenticated } = useAuthStore();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await authServices.checkAuth();
-      } catch (error) {
-        console.error('User is not authenticated:', error);
-        setAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-  }, [setAuthenticated]);
 
   const navItems = [
     { to: '/', label: 'Home' },
@@ -39,9 +24,9 @@ const NavbarForm: React.FC = () => {
 
   const handleLogoutClick = async () => {
     try {
-      await authServices.logout();
+      logout()
       message.success('Logout successful');
-      navigate('/');
+      navigate('/')
     } catch (error) {
       message.error('Logout failed');
       console.error('Logout failed:', error);
@@ -70,7 +55,7 @@ const NavbarForm: React.FC = () => {
             ))}
           </nav>
           {/* Dropdown Profile */}
-          {isAuthenticated ? (
+          {authUser ? (
             <div className="items-center ml-4 hidden md:flex">
               <div className="relative">
                 <button
@@ -129,7 +114,7 @@ const NavbarForm: React.FC = () => {
         <div className="bg-white w-64 h-full shadow-lg transition-transform transform flex flex-col">
           <div className="flex justify-between items-center p-4 border-b">
             <span className="text-xl font-bold text-gray-900">
-              {isAuthenticated ? (
+              {authUser ? (
                 <div className="items-center lg:hidden flex">
                   <div className="relative">
                     <button
@@ -188,7 +173,7 @@ const NavbarForm: React.FC = () => {
               ))}
             </div>
             <div className="p-4 mt-auto border-t">
-              {isAuthenticated ? (
+              {authUser ? (
                 <button
                   onClick={handleLogoutClick}
                   className="block px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"

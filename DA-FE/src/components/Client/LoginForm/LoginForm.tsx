@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import signinBackground from '../../../assets/signin_background.png';
 import NavbarForm from '../NavbarForm/NavbarForm';
-import { LoginFormProps } from '../../../types/Users/Auth';
+import {onSubmitLogin } from '../../../types/Users/Auth';
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginForm: React.FC<onSubmitLogin> = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(email, password);
+    onSubmit(formData)
   };
 
   const toggleShowPassword = () => {
@@ -50,8 +52,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     className="w-full px-5 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                     type="email"
                     name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                     placeholder="Enter your email"
                     required
                   />
@@ -60,8 +62,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                       className="w-full px-5 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                       type={showPassword ? 'text' : 'password'}
                       name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={formData.password}
+                      onChange={(e) => setFormData({...formData, password: e.target.value})}
                       placeholder="Password"
                       required
                     />

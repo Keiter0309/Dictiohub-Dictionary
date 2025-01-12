@@ -1,46 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLoginForm from '../../../components/Admin/LoginForm/LoginForm';
 import { AdminServices } from '../../../services/admin/adminServices';
 import { message } from 'antd';
-import authServices from '../../../services/auth/authServices';
-import useAuthStore from '../../../stores/authStore';
+import { LoginFormProps } from '../../../types/Users/Auth';
+
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, setAuthenticated } = useAuthStore();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await authServices.checkAuth();
-        if (response === null) {
-          // Token expired, navigate to login
-          navigate('/admin/login');
-        } else if (isAuthenticated) {
-          navigate('/admin/dashboard');
-        }
-      } catch (error) {
-        console.error('User is not authenticated', error);
-      }
-    };
-    checkAuth();
-  }, [navigate, setAuthenticated, isAuthenticated]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      message.warning('Session expired. Please login again.');
-      navigate('/admin/login');
-    }, 900000); // 15 minutes
-
-    return () => clearTimeout(timeout);
-  }, [navigate]);
-
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (formData: LoginFormProps) => {
     try {
-      const response = await AdminServices.loginAdmin(email, password);
+      const response = await AdminServices.loginAdmin(formData.email, formData.password);
       if (response) {
-        setAuthenticated(true);
         navigate('/admin/dashboard');
       } else {
         message.error('Invalid email or password');

@@ -113,7 +113,7 @@ const WordContentForm: React.FC<WordContentProps> = ({ onSubmit }) => {
       });
 
       setSelectedCategory(
-        data.category?.map((category: any) => category.categoryName) || [],
+        data.category?.map((category: any) => category),
       );
 
       return response;
